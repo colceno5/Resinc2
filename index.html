@@ -312,12 +312,12 @@ const ST={
 const isDone=e=>e==="Resuelto"||e==="Cerrado";
 const avg=g=>g.length?g.reduce((a,b)=>a+b,0)/g.length:0;
 function repModel(items){
- const n=items.length,done=items.filter(i=>isDone(i.estado)),dent=done.filter(i=>i.pr<=100);
+ const n=items.length,done=items.filter(i=>i.ev),dent=done.filter(i=>i.ok);
  const base=["Resuelto","Cerrado","Asignado","En Proceso","Cancelado"];
  const extra=[...new Set(items.map(i=>i.estado).filter(e=>e&&!base.includes(e)))];
  const estados=base.concat(extra).map(e=>({e,n:items.filter(i=>i.estado===e).length}));
  const rank=key=>{const m=new Map();items.forEach(i=>{if(!m.has(i[key]))m.set(i[key],[]);m.get(i[key]).push(i)});
-  const L=[...m].map(([k,g])=>{const d=g.filter(i=>isDone(i.estado)),w=d.filter(i=>i.pr<=100);return{k,t:g.length,d:d.length,w:w.length,f:d.length-w.length,kpi:d.length?w.length/d.length:"-",o:g.length-d.length}});
+  const L=[...m].map(([k,g])=>{const d=g.filter(i=>i.ev),w=d.filter(i=>i.ok);return{k,t:g.length,d:d.length,w:w.length,f:d.length-w.length,kpi:d.length?w.length/d.length:"-",o:g.length-d.length}});
   L.sort((a,b)=>b.d-a.d||b.t-a.t);L.forEach(x=>{x.rk=1+L.filter(y=>y.d>x.d).length});return L};
  const pend=items.filter(i=>!isDone(i.estado)),pg=pend.map(i=>i.pr);
  const pe=estados.filter(x=>!isDone(x.e)).map(x=>{const g=items.filter(i=>i.estado===x.e).map(i=>i.pr);return{e:x.e,n:g.length,avg:avg(g),min:g.length?Math.min(...g):0,max:g.length?Math.max(...g):0,le:g.filter(v=>v<=100).length,gt:g.filter(v=>v>100).length}});
@@ -328,24 +328,26 @@ function repModel(items){
 function layout(M,meta){
  const C=[],H={},CF=[],last=5+Math.max(M.n,1);
  const put=(a,v,s,f)=>{C.push({a,v,s,f})};
- const rg=c=>"$"+c+"$6:$"+c+"$"+last,O=rg("O"),P=rg("P"),Q=rg("Q"),R=rg("R"),SS=rg("S"),cols="BCDEFGHI";
+ const rg=c=>"$"+c+"$6:$"+c+"$"+last,O=rg("O"),P=rg("P"),Q=rg("Q"),R=rg("R"),SS=rg("S"),TE=rg("T"),UD=rg("U"),cols="BCDEFGHI";
  const sec=(r,t)=>{put("B"+r,t,"sec");for(const c of "CDEFGHI")put(c+r,null,"sec");H[r]=15.75};
  const th=(r,arr)=>{arr.forEach((t,i)=>put(cols[i]+r,t,"th"));H[r]=31.5};
  put("B1",meta.title,"title");H[1]=20.25;
  put("B2",'Fuente: hoja "Soporte". Todas las cifras son fórmulas y se recalculan si cambian los datos.',"note");
  sec(4,"1. KPI Resolución de incidencias");
- put("B5","Tickets Resueltos o Cerrados (denominador)","tx");put("C5",M.den,"c0",'COUNTIF('+O+',"Resuelto")+COUNTIF('+O+',"Cerrado")');H[5]=25.5;
- put("B6","Atendidos dentro del 100% de progreso (numerador)","tx");put("C6",M.num,"c0",'COUNTIFS('+O+',"Resuelto",'+R+',"<=100")+COUNTIFS('+O+',"Cerrado",'+R+',"<=100")');
- put("B7","Atendidos fuera del 100% (progreso > 100%)","tx");put("C7",M.den-M.num,"c0","C5-C6");
+ put("B5","Tickets evaluados (sin cancelados ni sin progreso) (denominador)","tx");put("C5",M.den,"c0",'COUNTIF('+TE+',"Sí")');H[5]=25.5;
+ put("B6","Dentro del 100% de progreso, con justificaciones aprobadas (numerador)","tx");put("C6",M.num,"c0",'COUNTIF('+UD+',"Sí")');
+ put("B7","Fuera del 100% (progreso > 100% sin justificación aprobada)","tx");put("C7",M.den-M.num,"c0","C5-C6");
  put("B8","KPI Resolución de incidencias","kl");put("C8",M.kpi,"kv","IF(C5=0,0,C6/C5)");H[8]=18;
- put("B9","Fórmula: tickets Resuelto/Cerrado con Progreso ≤ 100% ÷ total de tickets Resuelto/Cerrado","hint");
+ put("B9","Fórmula: tickets evaluados dentro del 100% (incluye justificaciones aprobadas) ÷ tickets evaluados — igual al «KPI justificado» del aplicativo","hint");
  /* datos auxiliares */
  put("N4","Datos auxiliares (vinculados a la hoja Soporte; Progreso convertido de texto a número)","note");
- ["Caso","Estado","Responsable","Categoría","Progreso (%)","¿Pendiente?"].forEach((t,i)=>put("NOPQRS"[i]+5,t,"ah"));
+ ["Caso","Estado","Responsable","Categoría","Progreso (%)","¿Pendiente?","¿Evaluado?","¿Dentro del 100 %?"].forEach((t,i)=>put("NOPQRSTU"[i]+5,t,"ah"));
  meta.items.forEach((it,i)=>{const r=6+i,s=2+i,m="Soporte!M"+s;
   put("N"+r,it.caso,"ax","Soporte!A"+s);put("O"+r,it.estado,"ax","Soporte!C"+s);put("P"+r,it.resp,"ax","Soporte!K"+s);put("Q"+r,it.cat,"ax","Soporte!Q"+s);
-  put("R"+r,it.pr,"axn",'IF(ISNUMBER(FIND(",",'+m+')),VALUE(LEFT('+m+',FIND(",",'+m+')-1))+VALUE(MID('+m+',FIND(",",'+m+')+1,9))/10^LEN(MID('+m+',FIND(",",'+m+')+1,9)),VALUE('+m+'))');
-  put("S"+r,isDone(it.estado)?"No":"Sí","ax",'IF(OR(O'+r+'="Resuelto",O'+r+'="Cerrado"),"No","Sí")')});
+  put("R"+r,it.np?"":it.pr,"axn",'IF('+m+'="","",IF(ISNUMBER(FIND(",",'+m+')),VALUE(LEFT('+m+',FIND(",",'+m+')-1))+VALUE(MID('+m+',FIND(",",'+m+')+1,9))/10^LEN(MID('+m+',FIND(",",'+m+')+1,9)),VALUE('+m+')))');
+  put("S"+r,isDone(it.estado)?"No":"Sí","ax",'IF(OR(O'+r+'="Resuelto",O'+r+'="Cerrado"),"No","Sí")');
+  put("T"+r,it.ev?"Sí":"No","ax",'IF(OR(O'+r+'="Cancelado",R'+r+'=""),"No","Sí")');
+  put("U"+r,it.ok?"Sí":"No","ax",'IF(T'+r+'="No","No",IF(OR(R'+r+'<=100,ISNUMBER(SEARCH("Justificado",Soporte!Z'+s+'))),"Sí","No"))')});
  /* 2. estados */
  sec(10,"2. Resumen general por estado");th(11,["Estado","Cantidad","% del total"]);
  let r=12;const tot2=12+M.estados.length;
@@ -353,21 +355,21 @@ function layout(M,meta){
  put("B"+r,"Total","tot");put("C"+r,M.n,"totc","SUM(C12:C"+(r-1)+")");put("D"+r,M.n?1:0,"totp","SUM(D12:D"+(r-1)+")");
  /* 3 y 4. rankings */
  const rk=(start,title,key,L,col)=>{
-  sec(start,title);th(start+1,["Responsable","Total tickets","Resueltos / Cerrados","Dentro del 100%","Fuera del 100%","KPI Resolución","Otros estados","Ranking"].map((t,i)=>i===0&&col==="Q"?"Categoría":t));
+  sec(start,title);th(start+1,["Responsable","Total tickets","Evaluados","Dentro del 100%","Fuera del 100%","KPI Resolución","No evaluados","Ranking"].map((t,i)=>i===0&&col==="Q"?"Categoría":t));
   const a=start+2,b=a+L.length-1;
   L.forEach((x,i)=>{const q=a+i,z=i%2?"z":"";
    put("B"+q,x.k,"tx"+z);put("C"+q,x.t,"gen"+z,'COUNTIF('+(col==="P"?P:Q)+',B'+q+')');
    const K=col==="P"?P:Q;
-   put("D"+q,x.d,"gen"+z,'COUNTIFS('+K+',B'+q+','+O+',"Resuelto")+COUNTIFS('+K+',B'+q+','+O+',"Cerrado")');
-   put("E"+q,x.w,"gen"+z,'COUNTIFS('+K+',B'+q+','+O+',"Resuelto",'+R+',"<=100")+COUNTIFS('+K+',B'+q+','+O+',"Cerrado",'+R+',"<=100")');
+   put("D"+q,x.d,"gen"+z,'COUNTIFS('+K+',B'+q+','+TE+',"Sí")');
+   put("E"+q,x.w,"gen"+z,'COUNTIFS('+K+',B'+q+','+UD+',"Sí")');
    put("F"+q,x.f,"gen"+z,"D"+q+"-E"+q);put("G"+q,x.kpi,"pc"+z,'IF(D'+q+'=0,"-",E'+q+'/D'+q+')');put("H"+q,x.o,"gen"+z,"C"+q+"-D"+q);
    put("I"+q,x.rk,"gen"+z,'RANK(D'+q+',$D$'+a+':$D$'+b+',0)')});
   const t=b+1,S=L.reduce((o,x)=>({t:o.t+x.t,d:o.d+x.d,w:o.w+x.w,f:o.f+x.f,o:o.o+x.o}),{t:0,d:0,w:0,f:0,o:0});
   put("B"+t,"Total","tot");["C","D","E","F"].forEach((c,i)=>put(c+t,[S.t,S.d,S.w,S.f][i],"totc",'SUM('+c+a+':'+c+b+')'));
   put("G"+t,S.d?S.w/S.d:"-","totp",'IF(D'+t+'=0,"-",E'+t+'/D'+t+')');put("H"+t,S.o,"totc",'SUM(H'+a+':H'+b+')');put("I"+t,null,"totc");
   CF.push({col:"D",a,b});return t};
- const t3=rk(tot2+2,"3. Ranking de especialistas / responsables (ordenado por tickets resueltos/cerrados)","resp",M.resp,"P");
- const t4=rk(t3+2,"4. Ranking por categoría (ordenado por tickets resueltos/cerrados)","cat",M.cat,"Q");
+ const t3=rk(tot2+2,"3. Ranking de especialistas / responsables (ordenado por tickets evaluados)","resp",M.resp,"P");
+ const t4=rk(t3+2,"4. Ranking por categoría (ordenado por tickets evaluados)","cat",M.cat,"Q");
  /* 5. pendientes */
  const s5=t4+2;sec(s5,"5. Progreso de tickets con estado distinto a Resuelto o Cerrado");
  th(s5+1,["Estado","Cantidad","Progreso promedio (%)","Progreso mínimo (%)","Progreso máximo (%)","Hasta 100%","Mayor a 100%"]);
@@ -389,8 +391,8 @@ function layout(M,meta){
  /* notas */
  const n0=dt+2;put("B"+n0,"Notas:","sub");
  ['• El Progreso (columna M de "Soporte") está guardado como texto con coma decimal; se convierte a número en la columna R de datos auxiliares.',
-  '• "Dentro del 100%" = Progreso ≤ 100. "Fuera del 100%" = Progreso > 100 (superó el tiempo previsto).',
-  '• "Otros estados" en los rankings incluye Asignado, En Proceso y Cancelado.',
+  '• "Evaluados" = tickets no cancelados con progreso. "Dentro del 100%" = Progreso ≤ 100 o justificación aprobada en auditoría. "Fuera del 100%" = Progreso > 100 sin justificación aprobada.',
+  '• "No evaluados" en los rankings = tickets cancelados o sin progreso.',
   '• El orden de las filas en los rankings se fijó según los datos actuales; la columna Ranking se recalcula con fórmula.',
   '• '+meta.nota].forEach((t,i)=>put("B"+(n0+1+i),t,"fn"));
  return{C,H,CF};
@@ -416,7 +418,7 @@ async function xlsxBuild(B){
  sheet("Datos",B.W.map(rowArr));sheet("Soporte",B.items.map(rowArr));
  const NV="FF1B2E6B",AC="FF2F5FD0",GRN="FF1B7F4B",RED="FFC62828",MU="FF667085",TL="FFF3F6FC",WH="FFFFFFFF",BDc="FFE3E6EB";
  const ws=wb.addWorksheet("Informe KPI",{properties:{tabColor:{argb:AC}}});ws.views=[{showGridLines:false,zoomScale:90}];
- Object.entries({A:2,B:48,C:16,D:14,E:14,F:14,G:14,H:14,I:14,J:3,N:12,O:13,P:34,Q:30,R:13,S:12}).forEach(([k,w])=>{ws.getColumn(k).width=w});
+ Object.entries({A:2,B:48,C:16,D:14,E:14,F:14,G:14,H:14,I:14,J:3,N:12,O:13,P:34,Q:30,R:13,S:12,T:12,U:16}).forEach(([k,w])=>{ws.getColumn(k).width=w});
  B.lay.C.forEach(x=>{const c=ws.getCell(x.a);c.value=x.f?{formula:x.f,result:x.v==null?undefined:x.v}:x.v;stX(c,ST[x.s])});
  Object.entries(B.lay.H).forEach(([r,h])=>{ws.getRow(+r).height=h});
  const fl=a=>({type:"pattern",pattern:"solid",fgColor:{argb:a}});
@@ -440,7 +442,7 @@ async function xlsxBuild(B){
   const l=ws.getCell(5,c1);l.value=lab;l.font={name:"Calibri",size:8.5,bold:true,color:{argb:MU}};l.alignment={horizontal:"left",vertical:"bottom",indent:1};
   const v=ws.getCell(6,c1);v.value=f?{formula:f,result:val}:val;v.numFmt=nf;v.font={name:"Calibri",size:24,bold:true,color:{argb:"FF1B1F27"}};v.alignment={horizontal:"left",vertical:"middle",indent:1};
   const p=ws.getCell(8,c1);p.value=cap;p.font={name:"Calibri",size:9,color:{argb:MU}};p.alignment={horizontal:"left",vertical:"top",indent:1,wrapText:true}};
- card(4,5,"KPI RESOLUCIÓN",KP,"0.0%","Dentro del 100 % ÷ atendidos",AC,"C8");
+ card(4,5,"KPI RESOLUCIÓN",KP,"0.0%","Dentro del 100 % ÷ evaluados",AC,"C8");
  card(6,7,"META",MT,"0%","Objetivo de cumplimiento",AC);
  card(8,9,"DIFERENCIA VS META",DF,'+0.0" pts";-0.0" pts";0.0" pts"',okK?"Meta alcanzada":"Por debajo de la meta",okK?GRN:RED,"(D6-F6)*100");
  ws.getCell("H8").value={formula:'IF(D6>=F6,"Meta alcanzada","Por debajo de la meta")',result:okK?"Meta alcanzada":"Por debajo de la meta"};
@@ -472,14 +474,15 @@ function xlsxFallback(B){
 /* ---------- Reporte Excel de la semana (Datos · Soporte · Informe KPI) ---------- */
 const GDEV="Grupo Soporte de desarrollo",dmyF=d=>dmy(d)+"/"+d.getFullYear();
 const fx=d=>dmyF(d)+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0");
-function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
+function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],it.np?null:fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":it.ap?"✔ Justificado · aprobado en auditoría":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
 function repBuildX(w){
  const[y,m,d0]=w.split("-").map(Number),mon0=new Date(y,m-1,d0),sun=new Date(y,m-1,d0+6),fin=new Date(y,m-1,d0+7);
- const inW=rows.filter(r=>r.d>=mon0&&r.d<fin&&infFl(r)&&!(S.no&&OPEN.includes(r.e))).sort((a,b)=>b.d-a.d);if(!inW.length)return null;
+ const inW=rows.filter(r=>r.d>=mon0&&r.d<fin).sort((a,b)=>b.d-a.d);if(!inW.length)return null;
+ const inS=inW.filter(r=>infFl(r)&&!(S.no&&OPEN.includes(r.e)));
  const lockOf=r=>{const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r))return null;const j=new Date(a.real);return isNaN(j)||j<r.d?null:j};
- const mk=r=>{const jd=lockOf(r),pc=jd?wminW(r.d,jd)/4.8:r.p,rw=r.raw||{};return{raw:rw,jd,caso:r.c,estado:r.e,resp:rw.Responsable||"(sin asignar)",cat:rw["Categoría"]||"(sin categoría)",pr:Math.round((pc==null?0:pc)*100)/100}};
- const W=inW.map(mk),items=inW.filter(r=>r.g!==GDEV).map(mk),wn=isoW(mon0)[1],nj=W.filter(x=>x.jd).length,M=repModel(items),title="Informe de Resolución de Incidencias – Semana "+wn;
- const nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · Alcance: Soporte (sin Desarrollo) · "+infAlc()+" · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de Datos y Soporte).":"");
+ const mk=r=>{const jd=lockOf(r),pc=jd?wminW(r.d,jd)/4.8:r.p,rw=r.raw||{};const pr=Math.round((pc==null?0:pc)*100)/100,ap=isCl(r)&&(aud[r.c]||{}).ap==="Aprobada",np=pc==null,ev=r.e!=="Cancelado"&&!np;return{raw:rw,jd,ap,np,ev,ok:ev&&(pr<=100||ap),caso:r.c,estado:r.e,resp:rw.Responsable||"(sin asignar)",cat:rw["Categoría"]||"(sin categoría)",pr}};
+ const W=inW.map(mk),items=inS.map(mk),wn=isoW(mon0)[1],nj=W.filter(x=>x.jd).length,M=repModel(items),title="Informe de Resolución de Incidencias – Semana "+wn;
+ const nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · Hoja Datos: todos los tickets del periodo · Hoja Soporte e Informe KPI: solo tickets que pasan los filtros. "+infAlc()+" · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de Datos y Soporte).":"");
  return{wn,fn:"CasosSemana"+wn+"-Reporte.xlsx",nj,items,W,M,lay:layout(M,{title,items,nota}),title,n:inW.length}}
 $("ixl").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
  const B=repBuildX(iw);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
