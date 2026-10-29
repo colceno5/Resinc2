@@ -475,14 +475,14 @@ const fx=d=>dmyF(d)+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+
 function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
 function repBuildX(w){
  const[y,m,d0]=w.split("-").map(Number),mon0=new Date(y,m-1,d0),sun=new Date(y,m-1,d0+6),fin=new Date(y,m-1,d0+7);
- const inW=rows.filter(r=>r.d>=mon0&&r.d<fin).sort((a,b)=>b.d-a.d);if(!inW.length)return null;
+ const inW=rows.filter(r=>r.d>=mon0&&r.d<fin&&infFl(r)&&!(S.no&&OPEN.includes(r.e))).sort((a,b)=>b.d-a.d);if(!inW.length)return null;
  const lockOf=r=>{const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r))return null;const j=new Date(a.real);return isNaN(j)||j<r.d?null:j};
  const mk=r=>{const jd=lockOf(r),pc=jd?wminW(r.d,jd)/4.8:r.p,rw=r.raw||{};return{raw:rw,jd,caso:r.c,estado:r.e,resp:rw.Responsable||"(sin asignar)",cat:rw["Categoría"]||"(sin categoría)",pr:Math.round((pc==null?0:pc)*100)/100}};
  const W=inW.map(mk),items=inW.filter(r=>r.g!==GDEV).map(mk),wn=isoW(mon0)[1],nj=W.filter(x=>x.jd).length,M=repModel(items),title="Informe de Resolución de Incidencias – Semana "+wn;
- const nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · Alcance: Soporte (sin Desarrollo) · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de Datos y Soporte).":"");
+ const nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · Alcance: Soporte (sin Desarrollo) · "+infAlc()+" · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de Datos y Soporte).":"");
  return{wn,fn:"CasosSemana"+wn+"-Reporte.xlsx",nj,items,W,M,lay:layout(M,{title,items,nota}),title,n:inW.length}}
 $("ixl").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
- const B=repBuildX(iw);if(!B||!B.items.length){toast("No hay tickets de Soporte registrados en la semana elegida.");return}
+ const B=repBuildX(iw);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
  let data;try{if(typeof ExcelJS==="undefined")throw 0;data=await xlsxBuild(B)}catch(e){if(typeof XLSX==="undefined"){toast("No se pudo generar el Excel.");return}data=xlsxFallback(B)}
  dl(B.fn,data);toast("Reporte generado: "+B.fn)};
 
