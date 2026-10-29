@@ -286,16 +286,16 @@ function wminW(a,b){if(!a||!b||b<=a)return 0;let t=0;const d=new Date(a.getFullY
 while(d<=b){for(const [s,e] of SCHW(d.getDay())){const lo=Math.max(atw(d,s),a),hi=Math.min(atw(d,e),b);if(hi>lo)t+=(hi-lo)/6e4}d.setDate(d.getDate()+1)}return t}
 
 /*CORE-START*/
-const NAVY="1F3864";
+const NAVY="1B2E6B",ACC="2F5FD0",MUT="667085",SOFT="F3F6FC",ZEB="F8FAFD",TOT="E8EEFC";
 const ST={
- title:{sz:16,b:1,c:NAVY},note:{sz:10,i:1,c:"595959"},sec:{sz:12,b:1,c:NAVY,bb:1},sub:{sz:10,b:1,c:NAVY},hint:{sz:9,i:1,c:"595959"},fn:{sz:9,i:1,c:"595959"},
- th:{b:1,c:"FFFFFF",fill:NAVY,al:"center",va:"center",wrap:1,bd:1},
- tx:{bd:1},gen:{bd:1,al:"center",va:"center",wrap:1},c0:{bd:1,al:"center",va:"center",wrap:1,fmt:"0"},pc:{bd:1,al:"center",va:"center",wrap:1,fmt:"0.0%"},n2:{bd:1,al:"center",va:"center",wrap:1,fmt:"0.00"},
- tot:{bd:1,b:1,fill:"D9E2F3"},totc:{bd:1,b:1,fill:"D9E2F3",al:"center",va:"center",wrap:1},totp:{bd:1,b:1,fill:"D9E2F3",al:"center",va:"center",wrap:1,fmt:"0.0%"},totn:{bd:1,b:1,fill:"D9E2F3",al:"center",va:"center",wrap:1,fmt:"0.00"},
- kl:{bd:1,b:1,fill:"D9E2F3"},kv:{sz:14,b:1,c:NAVY,fill:"D9E2F3",al:"center",bd:1,fmt:"0.0%"},
- ah:{b:1,c:"FFFFFF",fill:NAVY,al:"center",va:"center",wrap:1},ax:{c:"595959"},axn:{c:"595959",fmt:"0.00"}
+ title:{sz:22,b:1,c:"FFFFFF",fill:NAVY,va:"center"},note:{sz:10,c:"C9D6F5",fill:NAVY,va:"center"},sec:{sz:13,b:1,c:NAVY,bb:1,va:"center"},sub:{sz:11,b:1,c:NAVY,va:"center"},hint:{sz:9,i:1,c:MUT},fn:{sz:9,i:1,c:MUT},
+ th:{sz:9.5,b:1,c:"FFFFFF",fill:NAVY,al:"center",va:"center",wrap:1},
+ tx:{bd:1,va:"center",wrap:1},gen:{bd:1,al:"center",va:"center",wrap:1},c0:{bd:1,al:"center",va:"center",wrap:1,fmt:"0"},pc:{bd:1,al:"center",va:"center",wrap:1,fmt:"0.0%"},n2:{bd:1,al:"center",va:"center",wrap:1,fmt:"0.00"},
+ tot:{bd:1,b:1,fill:TOT,va:"center"},totc:{bd:1,b:1,fill:TOT,al:"center",va:"center",wrap:1},totp:{bd:1,b:1,fill:TOT,al:"center",va:"center",wrap:1,fmt:"0.0%"},totn:{bd:1,b:1,fill:TOT,al:"center",va:"center",wrap:1,fmt:"0.00"},
+ kl:{bd:1,b:1,sz:12,c:NAVY,fill:SOFT,va:"center"},kv:{sz:20,b:1,c:NAVY,fill:SOFT,al:"center",va:"center",bd:1,fmt:"0.0%"},
+ ah:{sz:9,b:1,c:"FFFFFF",fill:NAVY,al:"center",va:"center",wrap:1},ax:{sz:9,c:MUT},axn:{sz:9,c:MUT,fmt:"0.00"}
 };
-["tx","gen","c0","pc","n2"].forEach(k=>{ST[k+"z"]=Object.assign({},ST[k],{fill:"F2F2F2"})});
+["tx","gen","c0","pc","n2"].forEach(k=>{ST[k+"z"]=Object.assign({},ST[k],{fill:ZEB})});
 const isDone=e=>e==="Resuelto"||e==="Cerrado";
 const avg=g=>g.length?g.reduce((a,b)=>a+b,0)/g.length:0;
 function repModel(items){
@@ -325,7 +325,7 @@ function layout(M,meta){
  put("B6","Atendidos dentro del 100% de progreso (numerador)","tx");put("C6",M.num,"c0",'COUNTIFS('+O+',"Resuelto",'+R+',"<=100")+COUNTIFS('+O+',"Cerrado",'+R+',"<=100")');
  put("B7","Atendidos fuera del 100% (progreso > 100%)","tx");put("C7",M.den-M.num,"c0","C5-C6");
  put("B8","KPI Resolución de incidencias","kl");put("C8",M.kpi,"kv","IF(C5=0,0,C6/C5)");H[8]=18;
- put("D8","Fórmula: tickets Resuelto/Cerrado con Progreso ≤ 100% ÷ total de tickets Resuelto/Cerrado","hint");
+ put("B9","Fórmula: tickets Resuelto/Cerrado con Progreso ≤ 100% ÷ total de tickets Resuelto/Cerrado","hint");
  /* datos auxiliares */
  put("N4","Datos auxiliares (vinculados a la hoja Soporte; Progreso convertido de texto a número)","note");
  ["Caso","Estado","Responsable","Categoría","Progreso (%)","¿Pendiente?"].forEach((t,i)=>put("NOPQRS"[i]+5,t,"ah"));
@@ -388,12 +388,12 @@ const HEAD=["Caso","Proyecto","Estado","Tipo de caso","Fecha de registro","Asunt
 const WID=[10.3,24.3,11.1,24.3,19.9,105,40.9,33.3,13.1,3.6,31.6,37.9,10.1,13.7,17.7,20.1,41.1,27.9,22.9,16,9.4,10.4,10.1,11.6,33.3,60];
 const fmtP=p=>String(Math.round(p*100)/100).replace(".",",");
 function stX(c,o){
- c.font={name:"Arial",size:o.sz||10,bold:!!o.b,italic:!!o.i,color:o.c?{argb:"FF"+o.c}:undefined};
+ c.font={name:"Calibri",size:o.sz||10,bold:!!o.b,italic:!!o.i,color:{argb:"FF"+(o.c||"1B1F27")}};
  if(o.fill)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF"+o.fill}};
- if(o.al||o.va||o.wrap)c.alignment={horizontal:o.al,vertical:o.va,wrapText:!!o.wrap};
+ if(o.al||o.va||o.wrap)c.alignment={horizontal:o.al,vertical:o.va==="center"?"middle":o.va,wrapText:!!o.wrap};
  if(o.fmt)c.numFmt=o.fmt;
- if(o.bd){const b={style:"thin",color:{argb:"FFBFBFBF"}};c.border={top:b,left:b,bottom:b,right:b}}
- if(o.bb)c.border={bottom:{style:"medium"}};
+ if(o.bd)c.border={bottom:{style:"thin",color:{argb:"FFE3E6EB"}}};
+ if(o.bb)c.border={bottom:{style:"medium",color:{argb:"FF2F5FD0"}}};
 }
 async function xlsxBuild(B){
  const wb=new ExcelJS.Workbook();
@@ -401,11 +401,46 @@ async function xlsxBuild(B){
   const h=ws.getRow(1);h.height=15.75;h.eachCell(c=>{c.font={name:"Calibri",size:12,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF808080"}};c.alignment={horizontal:"center"}});
   ws.autoFilter={from:{row:1,column:1},to:{row:Math.max(2,rowsA.length+1),column:26}};return ws};
  sheet("Datos",B.W.map(rowArr));sheet("Soporte",B.items.map(rowArr));
- const ws=wb.addWorksheet("Informe KPI");ws.views=[{showGridLines:false}];
+ const NV="FF1B2E6B",AC="FF2F5FD0",GRN="FF1B7F4B",RED="FFC62828",MU="FF667085",TL="FFF3F6FC",WH="FFFFFFFF",BDc="FFE3E6EB";
+ const ws=wb.addWorksheet("Informe KPI",{properties:{tabColor:{argb:AC}}});ws.views=[{showGridLines:false,zoomScale:90}];
  Object.entries({A:2,B:48,C:16,D:14,E:14,F:14,G:14,H:14,I:14,J:3,N:12,O:13,P:34,Q:30,R:13,S:12}).forEach(([k,w])=>{ws.getColumn(k).width=w});
  B.lay.C.forEach(x=>{const c=ws.getCell(x.a);c.value=x.f?{formula:x.f,result:x.v==null?undefined:x.v}:x.v;stX(c,ST[x.s])});
  Object.entries(B.lay.H).forEach(([r,h])=>{ws.getRow(+r).height=h});
- try{B.lay.CF.forEach(f=>ws.addConditionalFormatting({ref:f.col+f.a+":"+f.col+f.b,rules:[{type:"dataBar",gradient:true,cfvo:[{type:"num",value:0},{type:"max"}],color:{argb:"FF8FAADC"}}]}))}catch(e){}
+ const fl=a=>({type:"pattern",pattern:"solid",fgColor:{argb:a}});
+ /* espaciado y alineación de títulos y primera columna */
+ B.lay.C.forEach(x=>{if(x.a[0]!=="B")return;const c=ws.getCell(x.a);
+  if(x.s==="sec")ws.getRow(+x.a.slice(1)).height=28;
+  if(x.s==="th")c.alignment={horizontal:"left",vertical:"middle",wrapText:true,indent:1};
+  if(["tx","txz","tot","kl"].includes(x.s))c.alignment={horizontal:"left",vertical:"middle",wrapText:true,indent:1};
+  if(x.s==="hint")c.alignment={vertical:"middle",indent:1}});
+ ws.getRow(9).height=22;
+ /* banner superior */
+ for(let c=1;c<=10;c++){ws.getCell(1,c).fill=fl(NV);ws.getCell(2,c).fill=fl(NV);ws.getCell(3,c).fill=fl(AC)}
+ ws.getRow(1).height=38;ws.getRow(2).height=22;ws.getRow(3).height=5;ws.getRow(4).height=28;
+ ws.getCell("B1").alignment={vertical:"middle",indent:1};ws.getCell("B2").alignment={vertical:"top",indent:1};
+ /* tarjetas KPI (D5:I8) */
+ [5,6,7,8].forEach((r,i)=>{ws.getRow(r).height=[24,22,22,30][i]});
+ const KP=B.M.kpi,MT=META/100,DF=(KP-MT)*100,okK=KP>=MT;
+ const card=(c1,c2,lab,val,nf,cap,acc,f)=>{const w={style:"medium",color:{argb:WH}};
+  ws.mergeCells(5,c1,5,c2);ws.mergeCells(6,c1,7,c2);ws.mergeCells(8,c1,8,c2);
+  for(let r=5;r<=8;r++)for(let c=c1;c<=c2;c++){const x=ws.getCell(r,c);x.fill=fl(TL);const b={};if(r===5)b.top={style:"thick",color:{argb:acc}};if(r===8)b.bottom={style:"thin",color:{argb:BDc}};if(c===c1)b.left=w;if(c===c2)b.right=w;x.border=b}
+  const l=ws.getCell(5,c1);l.value=lab;l.font={name:"Calibri",size:8.5,bold:true,color:{argb:MU}};l.alignment={horizontal:"left",vertical:"bottom",indent:1};
+  const v=ws.getCell(6,c1);v.value=f?{formula:f,result:val}:val;v.numFmt=nf;v.font={name:"Calibri",size:24,bold:true,color:{argb:"FF1B1F27"}};v.alignment={horizontal:"left",vertical:"middle",indent:1};
+  const p=ws.getCell(8,c1);p.value=cap;p.font={name:"Calibri",size:9,color:{argb:MU}};p.alignment={horizontal:"left",vertical:"top",indent:1,wrapText:true}};
+ card(4,5,"KPI RESOLUCIÓN",KP,"0.0%","Dentro del 100 % ÷ atendidos",AC,"C8");
+ card(6,7,"META",MT,"0%","Objetivo de cumplimiento",AC);
+ card(8,9,"DIFERENCIA VS META",DF,'+0.0" pts";-0.0" pts";0.0" pts"',okK?"Meta alcanzada":"Por debajo de la meta",okK?GRN:RED,"(D6-F6)*100");
+ ws.getCell("H8").value={formula:'IF(D6>=F6,"Meta alcanzada","Por debajo de la meta")',result:okK?"Meta alcanzada":"Por debajo de la meta"};
+ const cfc=(ref,expr,col)=>ws.addConditionalFormatting({ref,rules:[{type:"expression",formulae:[expr],priority:1,style:{font:{color:{argb:col},bold:true}}}]});
+ try{
+  [["D6","$D$6>=$F$6","$D$6<$F$6"],["H6","$D$6>=$F$6","$D$6<$F$6"],["C8","$C$8>=$F$6","$C$8<$F$6"]].forEach(([ref,g,r])=>{cfc(ref,g,GRN);cfc(ref,r,RED)});
+  B.lay.CF.forEach(f=>{
+   ws.addConditionalFormatting({ref:f.col+f.a+":"+f.col+f.b,rules:[{type:"dataBar",minLength:0,maxLength:100,border:false,gradient:false,cfvo:[{type:"num",value:0},{type:"max"}],color:{argb:"FF9DB7EE"}}]});
+   const g="G"+f.a+":G"+(f.b+1);cfc(g,"AND(ISNUMBER(G"+f.a+"),G"+f.a+">=$F$6)",GRN);cfc(g,"AND(ISNUMBER(G"+f.a+"),G"+f.a+"<$F$6)",RED)});
+ }catch(e){}
+ /* impresión */
+ const last=Math.max(...B.lay.C.filter(x=>/^[A-J]\d+$/.test(x.a)).map(x=>+x.a.replace(/\D/g,"")));
+ ws.pageSetup={paperSize:9,orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:0,horizontalCentered:true,printArea:"A1:J"+last,margins:{left:.4,right:.4,top:.5,bottom:.5,header:.2,footer:.2}};
  wb.views=[{activeTab:2}];
  const buf=await wb.xlsx.writeBuffer();return buf instanceof ArrayBuffer?buf:buf.buffer.slice(buf.byteOffset,buf.byteOffset+buf.byteLength);
 }
@@ -446,9 +481,11 @@ const svI=()=>{try{localStorage.setItem(INFK,JSON.stringify(inf))}catch(e){}clou
 const n1=v=>v==null?"—":v.toFixed(1).replace(".",","),sg=v=>v==null||Math.abs(v)<.05?"±0":(v>0?"+":"−")+Math.abs(v).toFixed(1).replace(".",",");
 const wkL=w=>{const[y,m,d]=w.split("-").map(Number),a=new Date(y,m-1,d),b=new Date(y,m-1,d+6);return"Semana "+isoW(a)[1]+" ("+dmy(a)+" – "+dmy(b)+"/"+b.getFullYear()+")"};
 const mtL=(k,t)=>(MET[k].d==="<="?"≤ ":"≥ ")+String(t).replace(".",",")+" %";
+const infFl=r=>(!S.groups||S.groups.has(r.g))&&(!S.esp||S.esp.has(r.r));
+const infAlc=()=>{const gs=new Set(rows.map(r=>r.g).filter(Boolean)),p=[];p.push(!S.groups?"todos los grupos":"grupos: "+[...S.groups].map(g=>g.replace(/^Grupo /,"")).join(", ")+" ("+S.groups.size+" de "+gs.size+")");if(S.esp)p.push("especialistas: "+S.esp.size+" seleccionados");if(S.no)p.push("excluye tickets aún abiertos");return "Alcance del KPI (mismos filtros del aplicativo): "+p.join(" · ")};
 function infData(w){
-const B=groupBy(rows,r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),L=B[w]||[],pw=ks[ks.indexOf(w)-1],kp=l=>stat(l.filter(r=>r.e!=="Cancelado"&&r.p!=null)),K=kp(L),Kp=pw?kp(B[pw]):null,
-just=L.filter(r=>r.e!=="Cancelado"&&r.p>100&&okR(r)).length,prev=inf.filter(s=>s.w<w).pop()||null;
+const B=groupBy(rows,r=>ymd(mon(r.d))),BF=groupBy(rows.filter(infFl),r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),L=B[w]||[],LF=BF[w]||[],pw=ks[ks.indexOf(w)-1],kp=l=>stat(ev(l)),K=kp(LF),Kp=pw?kp(BF[pw]||[]):null,
+just=ev(LF).filter(r=>r.p>100&&okR(r)).length,prev=inf.filter(s=>s.w<w).pop()||null;
 const P=pa4.map(q=>{const k=q.m||"",t=+q.mt,has=!!k&&q.mt!==""&&q.mt!=null&&!isNaN(t);return{q,k,t,has,v:has?metVal(k,L,q.kw):null,pv:has&&pw?metVal(k,B[pw],q.kw):null,a:alerta(q.est,q.fecha)[0],old:prev?prev.P.find(x=>x.id===q.id):null}});
 const c=e=>P.filter(x=>(x.q.est||"Pendiente")===e).length,avg=P.length?P.reduce((a,x)=>a+clamp(x.q.av),0)/P.length:null;
 const cambios=[];
@@ -457,12 +494,13 @@ if(avg!=null&&prev.avg!=null)cambios.push("Avance promedio de los planes: "+n1(p
 P.forEach(x=>{const q=x.q,o=x.old;if(!o){cambios.push(q.id+": plan nuevo desde el último corte");return}const t=[];if(o.est!==(q.est||"Pendiente"))t.push("estado "+o.est+" → "+(q.est||"Pendiente"));if(Math.abs(clamp(q.av)-o.av)>=1)t.push("avance "+o.av+" % → "+clamp(q.av)+" %");if(x.v!=null&&o.v!=null&&Math.abs(x.v-o.v)>=.05)t.push("indicador "+n1(o.v)+" % → "+n1(x.v)+" %");if(t.length)cambios.push(q.id+": "+t.join("; "))});
 prev.P.forEach(o=>{if(!pa4.some(q=>q.id===o.id))cambios.push(o.id+": plan eliminado")})}
 const atn=[];P.forEach(x=>{const q=x.q;if(x.a==="Vencido")atn.push(q.id+": fecha compromiso vencida ("+iso2(q.fecha)+")");else if(x.a==="Por vencer")atn.push(q.id+": vence en 7 días o menos ("+iso2(q.fecha)+")");if(!(q.resp||"").trim())atn.push(q.id+": sin responsable asignado");if(!q.fecha)atn.push(q.id+": sin fecha compromiso")});
-return{w,lab:wkL(w),K,Kp,just,P,avg,prev,cambios,atn,cnt:{pe:c("Pendiente"),cu:c("En curso"),ok:c("Cumplido / validado")},nT:L.length}}
+const E=Object.entries(groupBy(ev(LF),r=>r.r||"(sin asignar)")).map(([k,v])=>[k,stat(v)]).sort((a,b)=>b[1].n-a[1].n||a[0].localeCompare(b[0]));
+return{w,lab:wkL(w),K,Kp,just,P,avg,E,prev,cambios,atn,cnt:{pe:c("Pendiente"),cu:c("En curso"),ok:c("Cumplido / validado")},nT:L.length}}
 function infText(d){const K=d.K,o=[];
 o.push("INFORME SEMANAL · CUMPLIMIENTO Y PLANES DE ACCIÓN",d.lab,"","1. CUMPLIMIENTO DEL SLA");
 o.push("• KPI original: "+n1(K.pO)+" % · KPI justificado: "+n1(K.pct)+" % · meta "+META+" %"+(K.pct==null?"":K.pct>=META?" · meta alcanzada":" · brecha de "+n1(META-K.pct)+" pts"));
 if(d.Kp&&d.Kp.pct!=null&&K.pct!=null)o.push("• Variación del KPI justificado vs semana anterior: "+sg(K.pct-d.Kp.pct)+" pts ("+n1(d.Kp.pct)+" % → "+n1(K.pct)+" %)");
-o.push("• "+K.n+" tickets evaluados · "+K.f+" fuera del 100 % tras justificaciones · "+d.just+" justificados aprobados","");
+o.push("• "+infAlc());o.push("• "+K.n+" tickets evaluados · "+K.f+" fuera del 100 % tras justificaciones · "+d.just+" justificados aprobados","");
 o.push("2. PLANES DE ACCIÓN");
 o.push("• "+d.P.length+" planes: "+d.cnt.ok+" cumplidos / validados, "+d.cnt.cu+" en curso, "+d.cnt.pe+" pendientes · avance promedio "+n1(d.avg)+" %","");
 o.push("3. DETALLE POR PLAN");
@@ -488,7 +526,9 @@ kcards("ik",[["KPI original",n1(K.pO)+" %","Atendidos dentro del SLA"],["KPI jus
 const tr=d.P.map(x=>{const q=x.q,da=x.old?clamp(q.av)-x.old.av:null,al=alerta(q.est,q.fecha);return`<tr><td><b>${esc(q.id)}</b></td><td>${esc(q.cause||"")}</td><td>${esc((q.resp||"").trim()||"—")}</td><td>${q.fecha?iso2(q.fecha):"—"}</td><td><span class="tg ${al[1]}">${al[0]}</span></td><td>${esc(q.est||"Pendiente")}</td><td>${clamp(q.av)} %${da!=null&&Math.abs(da)>=1?` <small>(${da>0?"+":"−"}${Math.abs(da)})</small>`:""}</td><td>${x.has?`${x.v==null?"<b>Sin datos</b>":`<b style="color:${mvColor(x.k,x.v,x.t)}">${n1(x.v)} %</b>`} <small>meta ${mtL(x.k,x.t)}${x.pv!=null?" · sem. ant. "+n1(x.pv)+" %":""}</small>`:'<small class="mu">Manual</small>'}</td></tr>`}).join("")||'<tr><td colspan="8" class="mu">No hay planes registrados.</td></tr>';
 const li=a=>a.length?"<ul style='margin:4px 0 0;padding-left:20px'>"+a.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>":'<p class="mu" style="margin:4px 0 0">Nada para mostrar.</p>';
 const hist=inf.slice().reverse().map(s=>`<tr><td>${esc(wkL(s.w))}</td><td>${n1(s.K.pO)} %</td><td>${n1(s.K.pct)} %</td><td>${s.P.filter(x=>x.est==="Cumplido / validado").length} de ${s.P.length}</td><td>${n1(s.avg)} %</td><td><button class="btn dli" data-w="${s.w}" title="Eliminar corte">✕</button></td></tr>`).join("")||'<tr><td colspan="6" class="mu">Aún no hay cortes guardados.</td></tr>';
-$("ib").innerHTML=`<div class="tw"><table style="min-width:900px"><thead><tr><th>Plan</th><th>Causa</th><th>Responsable</th><th>Compromiso</th><th>Alerta</th><th>Estado</th><th>Avance</th><th>Indicador de la semana</th></tr></thead><tbody>${tr}</tbody></table></div>
+const espRows=d.E.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td><td>${s.a}</td><td>${s.f}</td><td><b style="color:${col(s.pct)}">${fp(s.pct)}</b><div class="bar"><i style="width:${Math.min(s.pct||0,100)}%;background:${col(s.pct)}"></i></div></td></tr>`).join("")||'<tr><td colspan="5" class="mu">Sin datos.</td></tr>';
+const espCard=`<div class="card" style="margin-bottom:12px"><h2>Rendimiento por especialista</h2><div class="tw"><table><thead><tr><th>Especialista</th><th>Evaluados</th><th>Dentro 100 %</th><th>Fuera</th><th>Cumplimiento</th></tr></thead><tbody>${espRows}</tbody></table></div></div>`;
+$("ib").innerHTML=`<p class="mu" style="margin:0 0 8px;font-size:12px">${esc(infAlc())}</p>${espCard}<div class="tw"><table style="min-width:900px"><thead><tr><th>Plan</th><th>Causa</th><th>Responsable</th><th>Compromiso</th><th>Alerta</th><th>Estado</th><th>Avance</th><th>Indicador de la semana</th></tr></thead><tbody>${tr}</tbody></table></div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px"><div class="card"><h2>Cambios desde el último corte${d.prev?" <small>("+esc(wkL(d.prev.w))+")</small>":""}</h2>${d.prev?li(d.cambios.length?d.cambios:["Sin cambios."]):'<p class="mu" style="margin:4px 0 0">Aún no hay un corte anterior guardado. Usa «Guardar corte» para empezar a comparar.</p>'}</div><div class="card"><h2>Requiere atención</h2>${li(d.atn)}</div></div>
 <div class="card" style="margin-top:12px"><h2>Evolución de los cortes guardados</h2>${infChart()}<div class="tw" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>Corte</th><th>KPI original</th><th>KPI justificado</th><th>Planes cumplidos</th><th>Avance promedio</th><th></th></tr></thead><tbody>${hist}</tbody></table></div></div>
 <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Texto para correo o chat</summary><pre style="white-space:pre-wrap;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;font:13px/1.5 inherit">${esc(infText(d))}</pre></details>`}
@@ -497,8 +537,8 @@ $("isv").onclick=()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.
 $("icp").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}const t=infText(infData(iw));try{await navigator.clipboard.writeText(t);toast("Informe copiado al portapapeles.")}catch(e){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("Informe copiado al portapapeles.")}catch(x){toast("No se pudo copiar; ábrelo en «Texto para correo o chat».")}a.remove()}};
 /* ---------- Excel profesional del informe semanal (planes y cortes) ---------- */
 const wkS=w=>{const[y,m,d]=w.split("-").map(Number);return dmy(new Date(y,m-1,d))+" – "+dmy(new Date(y,m-1,d+6))};
-function infSerie(w){const B=groupBy(rows,r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),i=ks.indexOf(w);if(i<0)return[];
-return ks.slice(Math.max(0,i-4),i+1).map(k=>{const K=stat(B[k].filter(r=>r.e!=="Cancelado"&&r.p!=null));return{w:k,n:K.n,pO:K.pO,pct:K.pct}})}
+function infSerie(w){const B=groupBy(rows.filter(infFl),r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),i=ks.indexOf(w);if(i<0)return[];
+return ks.slice(Math.max(0,i-4),i+1).map(k=>{const K=stat(ev(B[k]));return{w:k,n:K.n,pO:K.pO,pct:K.pct}})}
 function infPng(S){
 const W=1500,H=720,cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d"),F="'Segoe UI',Calibri,Arial,sans-serif";
 const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
@@ -563,23 +603,30 @@ blk(3,C0+16,CL,"Generado el "+new Date().toLocaleString("es-PE",{day:"2-digit",m
 H(5,12);
 // ===== Tarjetas KPI =====
 const gap=K.pct==null?null:K.pct-META,dv=d.Kp&&d.Kp.pct!=null&&K.pct!=null?K.pct-d.Kp.pct:null;
-const T6=[["KPI ORIGINAL",n1(K.pO)+" %","Atendidos dentro del SLA",TX,AC],
-["KPI JUSTIFICADO",n1(K.pct)+" %",gap==null?"":gap>=0?"Meta alcanzada (+"+n1(gap)+" pts)":"Brecha de "+n1(-gap)+" pts",K.pct==null?TX:K.pct>=META?GR:RD,K.pct==null?AC:K.pct>=META?GR:RD],
-["VARIACIÓN SEMANAL",dv==null?"—":sg(dv)+" pts","KPI justificado vs semana anterior",dv==null||Math.abs(dv)<.05?TX:dv>0?GR:RD,dv==null||Math.abs(dv)<.05?AC:dv>0?GR:RD],
-["PLANES REGISTRADOS",String(d.P.length),d.cnt.ok+" cumplidos · "+d.cnt.cu+" en curso · "+d.cnt.pe+" pendientes",TX,AC],
-["AVANCE PROMEDIO",d.avg==null?"—":n1(d.avg)+" %","de los planes de acción",TX,AC],
-["REQUIEREN ATENCIÓN",String(d.atn.length),"vencidos, por vencer o incompletos",d.atn.length?RD:GR,d.atn.length?RD:GR]];
-H(6,22);H(7,44);H(8,30);
-T6.forEach((t,i)=>{const c1=C0+i*4,c2=c1+3,w=ln("medium",WH);
-blk(6,c1,c2,t[0],{sz:8.5,b:true,fc:MU,fill:TL,bt:ln("thick",t[4]),bl:w,br:w,ind:1,v:"bottom"});
-blk(7,c1,c2,t[1],{sz:27,b:true,fc:t[3],fill:TL,bl:w,br:w,ind:1});
-blk(8,c1,c2,t[2],{sz:9,fc:MU,fill:TL,bl:w,br:w,bb:ln("thin",BD),ind:1,v:"top"})});
-H(9,24);blk(9,C0,CL,K.n+" tickets evaluados  ·  "+K.f+" fuera del 100 % tras justificaciones  ·  "+d.just+" justificados aprobados  ·  Meta SLA "+META+" %",{sz:9,i:true,fc:MU,ind:1});
-H(10,12);
+const JC=K.pct==null?MU:K.pct>=META?GR:RD,dvC=dv==null||Math.abs(dv)<.05?TX:dv>0?GR:RD,act=d.cnt.cu+d.cnt.pe;
+const R1=[["META SLA",META+" %","Objetivo de cumplimiento",TX,AC,5],
+["★  KPI JUSTIFICADO",n1(K.pct)+" %",(gap==null?"":gap>=0?"Meta alcanzada (+"+n1(gap)+" pts)":"Brecha de "+n1(-gap)+" pts")+"  ·  el KPI que cuenta para la meta",WH,JC,9,1],
+["KPI ORIGINAL",n1(K.pO)+" %","Sin contar justificaciones",TX,AC,5],
+["VARIACIÓN SEMANAL",dv==null?"—":sg(dv)+" pts","KPI justificado vs semana anterior",dvC,dvC===TX?AC:dvC,5]];
+const R2=[["TICKETS EVALUADOS",String(K.n),"sin cancelados",TX,AC,6],
+["DENTRO DEL 100 % (SLA)",String(K.a),K.f+" fuera del 100 %"+(K.a-K.o?"  ·  incluye "+(K.a-K.o)+" justificados":""),GR,GR,6],
+["PLANES ACTIVOS",String(act),d.P.length+" registrados  ·  "+d.cnt.ok+" cumplidos",TX,AC,6],
+["AVANCE PROMEDIO",d.avg==null?"—":n1(d.avg)+" %","de los planes de acción",TX,AC,6]];
+const cardRow=(r0,arr)=>{let c1=C0;arr.forEach(t=>{const c2=c1+t[5]-1,w=ln("medium",WH),em=t[6];
+if(em){blk(r0,c1,c2,t[0],{sz:10,b:true,fc:"FFE8EEFC",fill:t[4],bt:ln("thick",NV),bl:w,br:w,ind:1,v:"bottom"});
+blk(r0+1,c1,c2,t[1],{sz:36,b:true,fc:WH,fill:t[4],bl:w,br:w,ind:1});
+blk(r0+2,c1,c2,t[2],{sz:10,b:true,fc:WH,fill:t[4],bl:w,br:w,bb:ln("thin",BD),ind:1,v:"top"})}
+else{blk(r0,c1,c2,t[0],{sz:8.5,b:true,fc:MU,fill:TL,bt:ln("thick",t[4]),bl:w,br:w,ind:1,v:"bottom"});
+blk(r0+1,c1,c2,t[1],{sz:27,b:true,fc:t[3],fill:TL,bl:w,br:w,ind:1});
+blk(r0+2,c1,c2,t[2],{sz:9,fc:MU,fill:TL,bl:w,br:w,bb:ln("thin",BD),ind:1,v:"top"})}
+c1=c2+1})};
+H(6,18);H(7,46);H(8,26);cardRow(6,R1);H(9,6);H(10,18);H(11,36);H(12,24);cardRow(10,R2);
+H(13,20);blk(13,C0,CL,K.n+"  tickets evaluados  ·  "+K.f+" fuera del 100 % tras justificaciones  ·  "+d.just+" justificados aprobados  ·  Meta SLA "+META+" %",{sz:9,i:true,fc:MU,ind:1});
+H(14,8);
 // ===== Secciones =====
 const sec=(r,t,s,c1,c2)=>{c1=c1||C0;c2=c2||CL;H(r,26);blk(r,c1,c2,t,{sz:13,b:true,fc:NV,bb:ln("medium",AC)});if(s){H(r+1,18);blk(r+1,c1,c2,s,{sz:9,fc:MU,v:"top"});return r+2}return r+1};
-let r=sec(11,"Evolución del cumplimiento","Semana seleccionada y las 4 semanas anteriores · por fecha de registro de los tickets");
-const r0=r;for(let i=0;i<17;i++)H(r0+i,20);
+let r=sec(15,"Evolución del cumplimiento","Semana seleccionada y las 4 semanas anteriores · por fecha de registro de los tickets");
+const r0=r;for(let i=0;i<14;i++)H(r0+i,20);
 try{const id=wb.addImage({base64:infPng(S),extension:"png"});ws.addImage(id,{tl:{col:C0-1,row:r0-1},ext:{width:660,height:317},editAs:"oneCell"})}catch(e){console.warn("Gráfica no incluida:",e)}
 const tc=C0+15;
 [["Semana",3,"left"],["Evaluados",2,"center"],["KPI orig.",2,"center"],["KPI just.",2,"center"]].reduce((c,h)=>{blk(r0+1,c,c+h[1]-1,h[0],{sz:9,b:true,fc:WH,fill:NV,h:h[2],ind:h[2]==="left"?1:0});return c+h[1]},tc);
@@ -590,7 +637,27 @@ blk(rr_,c,c+1,n1(s.pO)+" %",{sz:10,b:sel,fill:f,bb,h:"center",fc:MU});c+=2;
 blk(rr_,c,c+1,n1(s.pct)+" %",{sz:10,b:true,fill:f,bb,h:"center",fc:s.pct==null?MU:s.pct>=META?GR:RD})});
 const rm=r0+2+S.length;blk(rm,tc,tc+4,"Meta SLA",{sz:9,i:true,fc:AM,ind:1,bb:ln("thin",BD)});blk(rm,tc+5,tc+8,META+" %",{sz:10,b:true,fc:AM,h:"center",bb:ln("thin",BD)});
 blk(rm+2,tc,CL,{richText:[{text:"Cómo leer el gráfico\n",font:{name:FN,size:10,bold:true,color:{argb:NV}}},{text:"La línea azul es el KPI justificado (tickets dentro del 100 % más las justificaciones aprobadas); los puntos verdes alcanzan la meta y los rojos no. La línea gris punteada es el KPI original del Excel de Aranda y las barras muestran los tickets evaluados en cada semana.",font:{name:FN,size:9,color:{argb:MU}}}]},{fill:TL,v:"top",ind:1},r0+12);
-r=r0+17;H(r,12);ws.getRow(r).addPageBreak();r++;
+r=r0+14;H(r,12);ws.getRow(r).addPageBreak();r++;
+// ===== Rendimiento por especialista =====
+r=sec(r,"Rendimiento por especialista","Semana seleccionada  ·  "+infAlc().replace("Alcance del KPI (mismos filtros del aplicativo): ","")+"  ·  ordenado por tickets evaluados");
+{const EC=[["Especialista",8,"left"],["Evaluados",3,"center"],["Dentro del 100 %",3,"center"],["Fuera",3,"center"],["Cumplimiento",7,"center"]];
+H(r,26);let ce=C0;EC.forEach(h=>{blk(r,ce,ce+h[1]-1,h[0],{sz:9.5,b:true,fc:WH,fill:NV,h:h[2],ind:h[2]==="left"?1:0});ce+=h[1]});
+const er0=r+1,bb=ln("thin",BD);
+if(!d.E.length){H(er0,28);blk(er0,C0,CL,"Sin tickets evaluados con estos filtros.",{fc:MU,ind:1});r=er0+1}
+else{d.E.forEach(([nm,s],i)=>{const rw=er0+i,f=i%2?"FFF8FAFD":WH,ok=s.pct!=null&&s.pct>=META;H(rw,24);let c=C0;
+blk(rw,c,c+7,nm,{fill:f,bb,ind:1});c+=8;
+blk(rw,c,c+2,s.n,{fill:f,bb,h:"center"});c+=3;
+blk(rw,c,c+2,s.a,{fill:f,bb,h:"center"});c+=3;
+blk(rw,c,c+2,s.f,{b:s.f>0,fc:s.f>0?RD:TX,fill:f,bb,h:"center"});c+=3;
+blk(rw,c,c+6,s.pct==null?"—":s.pct,{sz:11,b:true,fc:s.pct==null?MU:ok?GR:RD,fill:f,bb,h:"center",nf:'0.0" %"'});
+if(s.pct!=null){try{const L2=ws.getColumn(c).letter;ws.addConditionalFormatting({ref:L2+rw,rules:[{type:"dataBar",minLength:0,maxLength:100,border:false,gradient:false,cfvo:[{type:"num",value:0},{type:"num",value:100}],color:{argb:ok?"FF9AD3B2":"FFF0A8A8"}}]})}catch(e){}}});
+r=er0+d.E.length;H(r,24);let ct=C0;const tb=ln("thin",AC),tf=AC2;
+blk(r,ct,ct+7,"Total",{b:true,fill:tf,bt:tb,ind:1});ct+=8;
+blk(r,ct,ct+2,K.n,{b:true,fill:tf,bt:tb,h:"center"});ct+=3;
+blk(r,ct,ct+2,K.a,{b:true,fill:tf,bt:tb,h:"center"});ct+=3;
+blk(r,ct,ct+2,K.f,{b:true,fill:tf,bt:tb,h:"center",fc:K.f>0?RD:TX});ct+=3;
+blk(r,ct,ct+6,K.pct==null?"—":K.pct,{sz:11,b:true,fill:tf,bt:tb,h:"center",nf:'0.0" %"',fc:K.pct==null?MU:K.pct>=META?GR:RD});r++}}
+H(r,12);r++;
 // ===== Resumen de planes =====
 r=sec(r,"Resumen de planes de acción",d.P.length+" planes  ·  "+d.cnt.ok+" cumplidos / validados  ·  "+d.cnt.cu+" en curso  ·  "+d.cnt.pe+" pendientes  ·  avance promedio "+(d.avg==null?"—":n1(d.avg)+" %"));
 const PC=[["Plan",2,"center"],["Causa detectada",5,"left"],["Responsable",3,"left"],["Compromiso",2,"center"],["Alerta",2,"center"],["Estado",3,"center"],["Avance",3,"center"],["Indicador de la semana",4,"left"]];
