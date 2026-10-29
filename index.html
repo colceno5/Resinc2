@@ -102,6 +102,19 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 const META=95,OPEN=["Nuevo","Asignado","En Proceso"],MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 let rows=[];
 const S={mode:"all",week:"",from:"",to:"",groups:null,esp:null,gran:"week",no:false,by:"p"},$=i=>document.getElementById(i),pad=n=>String(n).padStart(2,"0");
+/* filtros del encabezado: se guardan en este navegador y se restauran al recargar */
+const FILK="filtros_rend";
+(function(){try{const v=JSON.parse(localStorage.getItem(FILK)||"null");if(!v||typeof v!=="object")return;
+if(["all","week","range"].includes(v.mode))S.mode=v.mode;
+if(typeof v.week==="string")S.week=v.week;if(typeof v.from==="string")S.from=v.from;if(typeof v.to==="string")S.to=v.to;
+if(["day","week","month"].includes(v.gran))S.gran=v.gran;if(["p","g","r"].includes(v.by))S.by=v.by;S.no=v.no===true;
+if(Array.isArray(v.groups)&&v.groups.length)S.groups=new Set(v.groups.map(String));
+if(Array.isArray(v.esp)&&v.esp.length)S.esp=new Set(v.esp.map(String))}catch(e){}})();
+const saveF=()=>{if(!rows.length)return;try{localStorage.setItem(FILK,JSON.stringify({mode:S.mode,week:S.week,from:S.from,to:S.to,gran:S.gran,by:S.by,no:S.no,groups:S.groups?[...S.groups]:null,esp:S.esp?[...S.esp]:null}))}catch(e){}};
+/* al cambiar los datos, conserva la selección de grupos/especialistas que sigan existiendo */
+const pruneF=()=>{const gs=new Set(rows.map(r=>r.g)),es=new Set(rows.map(r=>r.r));
+if(S.groups){const n=new Set([...S.groups].filter(g=>gs.has(g)));S.groups=n.size&&n.size<gs.size?n:null}
+if(S.esp){const n=new Set([...S.esp].filter(g=>es.has(g)));S.esp=n.size?n:null}};
 const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()),dmy=d=>pad(d.getDate())+"/"+pad(d.getMonth()+1);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function isoW(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y=t.getUTCFullYear();return[y,Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7)]}
@@ -144,9 +157,9 @@ const gt0=$("gc").scrollTop;
 $("gc").innerHTML='<div class="bt"><button class="btn" data-gb="*">Todos</button><button class="btn" data-gb="-">Ninguno</button></div>'+gs.map(g=>`<label><input type="checkbox" data-gs="${esc(g)}" ${!S.groups||S.groups.has(g)?"checked":""}> ${esc(g.replace(/^Grupo /,""))}</label>`).join("");$("gc").scrollTop=gt0;
 $("gs").textContent=!S.groups?"Todos ("+gs.length+")":S.groups.size+" de "+gs.length;
 const wk=groupBy(rows.filter(r=>(!S.groups||S.groups.has(r.g))&&(!S.esp||S.esp.has(r.r))),r=>ymd(mon(r.d))),wks=Object.keys(wk).sort().reverse();
-if(!S.week||!wks.includes(S.week))S.week=wks[0]||"";
+if(rows.length&&(!S.week||!wks.includes(S.week)))S.week=wks[0]||"";
 $("pw").innerHTML=wks.map(k=>{const[y,m,d]=k.split("-").map(Number);return`<option value="${k}">Semana ${isoW(new Date(y,m-1,d))[1]} · ${dmy(new Date(y,m-1,d))} – ${dmy(new Date(y,m-1,d+6))} (${wk[k].length})</option>`}).join("");
-$("pm").value=S.mode;$("pw").value=S.week;$("pw").hidden=S.mode!=="week";$("pr").hidden=S.mode!=="range";$("pd").value=S.from;$("ph").value=S.to;$("no").checked=S.no;
+$("pm").value=S.mode;$("pw").value=S.week;$("pw").hidden=S.mode!=="week";$("pr").hidden=S.mode!=="range";$("pd").value=S.from;$("ph").value=S.to;$("no").checked=S.no;saveF();
 document.querySelectorAll("#gr button,#gr2 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));document.querySelectorAll("#by button").forEach(b=>b.classList.toggle("on",b.dataset.b===S.by));
 const L=sel(),E=ev(L),K=stat(E),canc=L.filter(r=>r.e==="Cancelado").length,sinp=L.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
 const gap=K.pct==null?null:K.pct-META;
@@ -526,9 +539,7 @@ kcards("ik",[["KPI original",n1(K.pO)+" %","Atendidos dentro del SLA"],["KPI jus
 const tr=d.P.map(x=>{const q=x.q,da=x.old?clamp(q.av)-x.old.av:null,al=alerta(q.est,q.fecha);return`<tr><td><b>${esc(q.id)}</b></td><td>${esc(q.cause||"")}</td><td>${esc((q.resp||"").trim()||"—")}</td><td>${q.fecha?iso2(q.fecha):"—"}</td><td><span class="tg ${al[1]}">${al[0]}</span></td><td>${esc(q.est||"Pendiente")}</td><td>${clamp(q.av)} %${da!=null&&Math.abs(da)>=1?` <small>(${da>0?"+":"−"}${Math.abs(da)})</small>`:""}</td><td>${x.has?`${x.v==null?"<b>Sin datos</b>":`<b style="color:${mvColor(x.k,x.v,x.t)}">${n1(x.v)} %</b>`} <small>meta ${mtL(x.k,x.t)}${x.pv!=null?" · sem. ant. "+n1(x.pv)+" %":""}</small>`:'<small class="mu">Manual</small>'}</td></tr>`}).join("")||'<tr><td colspan="8" class="mu">No hay planes registrados.</td></tr>';
 const li=a=>a.length?"<ul style='margin:4px 0 0;padding-left:20px'>"+a.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>":'<p class="mu" style="margin:4px 0 0">Nada para mostrar.</p>';
 const hist=inf.slice().reverse().map(s=>`<tr><td>${esc(wkL(s.w))}</td><td>${n1(s.K.pO)} %</td><td>${n1(s.K.pct)} %</td><td>${s.P.filter(x=>x.est==="Cumplido / validado").length} de ${s.P.length}</td><td>${n1(s.avg)} %</td><td><button class="btn dli" data-w="${s.w}" title="Eliminar corte">✕</button></td></tr>`).join("")||'<tr><td colspan="6" class="mu">Aún no hay cortes guardados.</td></tr>';
-const espRows=d.E.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td><td>${s.a}</td><td>${s.f}</td><td><b style="color:${col(s.pct)}">${fp(s.pct)}</b><div class="bar"><i style="width:${Math.min(s.pct||0,100)}%;background:${col(s.pct)}"></i></div></td></tr>`).join("")||'<tr><td colspan="5" class="mu">Sin datos.</td></tr>';
-const espCard=`<div class="card" style="margin-bottom:12px"><h2>Rendimiento por especialista</h2><div class="tw"><table><thead><tr><th>Especialista</th><th>Evaluados</th><th>Dentro 100 %</th><th>Fuera</th><th>Cumplimiento</th></tr></thead><tbody>${espRows}</tbody></table></div></div>`;
-$("ib").innerHTML=`<p class="mu" style="margin:0 0 8px;font-size:12px">${esc(infAlc())}</p>${espCard}<div class="tw"><table style="min-width:900px"><thead><tr><th>Plan</th><th>Causa</th><th>Responsable</th><th>Compromiso</th><th>Alerta</th><th>Estado</th><th>Avance</th><th>Indicador de la semana</th></tr></thead><tbody>${tr}</tbody></table></div>
+$("ib").innerHTML=`<p class="mu" style="margin:0 0 8px;font-size:12px">${esc(infAlc())}</p><div class="tw"><table style="min-width:900px"><thead><tr><th>Plan</th><th>Causa</th><th>Responsable</th><th>Compromiso</th><th>Alerta</th><th>Estado</th><th>Avance</th><th>Indicador de la semana</th></tr></thead><tbody>${tr}</tbody></table></div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px"><div class="card"><h2>Cambios desde el último corte${d.prev?" <small>("+esc(wkL(d.prev.w))+")</small>":""}</h2>${d.prev?li(d.cambios.length?d.cambios:["Sin cambios."]):'<p class="mu" style="margin:4px 0 0">Aún no hay un corte anterior guardado. Usa «Guardar corte» para empezar a comparar.</p>'}</div><div class="card"><h2>Requiere atención</h2>${li(d.atn)}</div></div>
 <div class="card" style="margin-top:12px"><h2>Evolución de los cortes guardados</h2>${infChart()}<div class="tw" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>Corte</th><th>KPI original</th><th>KPI justificado</th><th>Planes cumplidos</th><th>Avance promedio</th><th></th></tr></thead><tbody>${hist}</tbody></table></div></div>
 <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Texto para correo o chat</summary><pre style="white-space:pre-wrap;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;font:13px/1.5 inherit">${esc(infText(d))}</pre></details>`}
@@ -746,7 +757,7 @@ if(Object.keys(by.cortes).length){const n=Object.values(by.cortes).sort((a,b)=>a
 {const oldS=COLS.tickets.snap,loc=new Map(rows.map(r=>[r.c,r])),out=[];let tch=false;
 for(const k in by.tickets){const l=loc.get(k);if(l&&JSON.stringify(l.raw)!==oldS[k]){out.push(l);continue}const nr=mkRow(by.tickets[k]);if(!nr)continue;if(!l||JSON.stringify(l.raw)!==JSON.stringify(nr.raw))tch=true;out.push(nr)}
 loc.forEach((l,k)=>{if(!(k in by.tickets))out.push(l)});
-if(tch){rows=out;S.groups=null;S.esp=null;ch=true}COLS.tickets.snap=snapOf(by.tickets)}
+if(tch){rows=out;pruneF();ch=true}COLS.tickets.snap=snapOf(by.tickets)}
 cloudLast=Date.now();if(ch)render();await cloudFlush()}
 function cloudApply(s){const u=s&&s.user||null,id=u?u.id:null;if(id===lastUid)return;lastUid=id;cloudUser=u;
 $("lg").classList.toggle("on",!u);$("lo").hidden=!u;document.body.classList.toggle("nologin",!u);
