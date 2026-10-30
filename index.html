@@ -748,9 +748,10 @@ function pptData(){
  const K=stat(E),pts=buckets(E),gn={day:"día",week:"semana",month:"mes"}[S.gran]||"semana",pl_={day:"días",week:"semanas",month:"meses"}[S.gran]||"semanas";
  const rk=f=>Object.entries(groupBy(E,f)).map(([k,v])=>{const s=stat(v);return{k,n:s.n,a:s.a,f:s.f,pct:s.pct}}).sort((x,y)=>y.n-x.n||String(x.k).localeCompare(String(y.k),"es"));
  const grupos=rk(r=>(r.g||"—").replace(/^Grupo /,"")),esp=rk(r=>r.r),cat=E.some(r=>r.raw&&r.raw["Categoría"])?rk(r=>(r.raw&&r.raw["Categoría"])||"(sin categoría)"):[];
- const canc=L.filter(r=>r.e==="Cancelado").length,sinp=L.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
- const estados=Object.entries(groupBy(L,r=>r.e||"—")).map(([e,v])=>({e,n:v.length})).sort((x,y)=>y.n-x.n);
- const OP=L.filter(r=>OPEN.includes(r.e)),OPp=OP.filter(r=>r.p!=null),BK=[["0–25 %",v=>v<25],["25–50 %",v=>v>=25&&v<50],["50–75 %",v=>v>=50&&v<75],["75–100 %",v=>v>=75&&v<=100],["> 100 %",v=>v>100]];
+ const LF=S.no?L.filter(r=>!OPEN.includes(r.e)):L; /* mismo criterio que el KPI y los Excel: «excluir abiertos» quita esos tickets de todo el informe */
+ const canc=LF.filter(r=>r.e==="Cancelado").length,sinp=LF.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
+ const estados=Object.entries(groupBy(LF,r=>r.e||"—")).map(([e,v])=>({e,n:v.length})).sort((x,y)=>y.n-x.n);
+ const OP=LF.filter(r=>OPEN.includes(r.e)),OPp=OP.filter(r=>r.p!=null),BK=[["0–25 %",v=>v<25],["25–50 %",v=>v>=25&&v<50],["50–75 %",v=>v>=50&&v<75],["75–100 %",v=>v>=75&&v<=100],["> 100 %",v=>v>100]];
  const abiertos={total:OP.length,conP:OPp.length,B:BK.map(([l,f])=>({l,n:OPp.filter(r=>f(r.p)).length}))};
  const V=E.filter(r=>r.p>100&&isCl(r)),nn={Pendiente:0,Incompleto:0,Sustentado:0},apr=r=>(aud[r.c]||{}).ap;V.forEach(r=>nn[ast(r.c)]++);
  const au={venc:V.length,pend:nn.Pendiente+nn.Incompleto,sust:nn.Sustentado,aprob:V.filter(r=>apr(r)==="Aprobada").length,rech:V.filter(r=>apr(r)==="Rechazada").length,
@@ -774,7 +775,7 @@ function pptData(){
  if(planes.ve)aten.push(planes.ve+" plan"+(planes.ve===1?"":"es")+" de acción con fecha compromiso vencida.");
  if(pxv)aten.push(pxv+" plan"+(pxv===1?"":"es")+" de acción vence"+(pxv===1?"":"n")+" en 7 días o menos.");
  if(psr)aten.push(psr+" plan"+(psr===1?"":"es")+" de acción sin responsable asignado.");
- return{titulo:"KPI de Resolución de Incidencias",rango:dmyF(d1)+" – "+dmyF(d2),d1,d2,alcance:infAlc().replace(/^[^:]*:\s*/,""),meta:META,fechaGen:dmyF(new Date()),granTxt:gn,K,canc,sinp,total:L.length,
+ return{titulo:"KPI de Resolución de Incidencias",rango:dmyF(d1)+" – "+dmyF(d2),d1,d2,alcance:infAlc().replace(/^[^:]*:\s*/,""),meta:META,fechaGen:dmyF(new Date()),granTxt:gn,K,canc,sinp,total:LF.length,sinAbiertos:!!S.no,
   serie:pts.map(p=>({k:p.k,lab:lab(p.k),labFull:lab(p.k,1),n:p.n,a:p.a,o:p.o,f:p.f,pct:p.pct,pO:p.pO})),grupos,esp,cat,estados,abiertos,aud:au,planes,notas:{lectura:lect,atencion:aten}}}
 $("pptg").onclick=async()=>{
  if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}

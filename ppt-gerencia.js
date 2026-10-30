@@ -37,7 +37,7 @@
     });
     pres.defineSlideMaster({ title: "GRACIAS", background: { data: d64(BG.gracias) }, objects: [] });
 
-    const foot = "Rango: " + D.rango + "  ·  " + D.alcance + "  ·  Meta SLA " + meta + " %";
+    const foot = "Rango: " + D.rango + "  ·  Meta SLA " + meta + " %";
     function content(title, notes, section) {
       const s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: section });
       s.addText(title, { placeholder: "title" });
@@ -67,8 +67,8 @@
     pres.addSection({ title: "Portada" });
     let s = pres.addSlide({ masterName: "PORTADA", sectionTitle: "Portada" });
     s.addText(D.titulo.toUpperCase(), { placeholder: "title" });
-    s.addText([{ text: "Informe para gerencia", options: { bold: true, fontSize: 20, color: C.ora, breakLine: true } }, { text: D.rango, options: { fontSize: 15, color: "595959" } }], { placeholder: "sub" });
-    s.addNotes("Informe generado el " + D.fechaGen + " con los filtros del aplicativo. " + D.alcance + ".");
+    s.addText([{ text: "Informe para gerencia", options: { bold: true, fontSize: 20, color: C.ora, breakLine: true } }, { text: D.rango, options: { fontSize: 15, color: "595959" } }] , { placeholder: "sub" });
+    s.addNotes("Informe generado el " + D.fechaGen + " con los filtros del aplicativo.");
 
     /* ---------- 2. Resumen ejecutivo ---------- */
     pres.addSection({ title: "Resumen" });
@@ -180,7 +180,7 @@
       Object.assign({ x: 6.6, y: 1.25, w: 6.25, h: 3.7, barDir: "col", barGapWidthPct: 40, chartColors: ["1B7F4B", "7FB069", "E8B923", "E07026", "C62828"], showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 11, dataLabelFontFace: FB, dataLabelColor: C.tx, dataLabelFormatCode: "0;;;", showLegend: false, valAxisHidden: true, showTitle: true, title: "Tickets abiertos por % de progreso (" + AB.total + ")", titleFontFace: FB, titleFontSize: 13, titleColor: C.tx }, baseChart, { valAxisHidden: true, valGridLine: { style: "none" } }));
     const gt = AB.B[4] ? AB.B[4].n : 0;
     s.addShape(pres.shapes.RECTANGLE, { x: 6.6, y: 5.15, w: 6.25, h: 1.05, fill: { color: gt ? "FDEAEA" : "E3F5EA" }, line: { type: "none" }, objectName: "Aviso abiertos" });
-    s.addText(AB.total ? (gt ? gt + " ticket(s) abierto(s) ya superan el 100 % de progreso y afectarán el KPI si se cierran así." : "Ningún ticket abierto supera el 100 % de progreso.") + (AB.total - AB.conP > 0 ? " " + (AB.total - AB.conP) + " abierto(s) sin progreso registrado." : "") : "No hay tickets abiertos en el rango.", { x: 6.8, y: 5.2, w: 5.85, h: 0.95, fontFace: FB, fontSize: 12, bold: true, color: gt ? C.rd : C.gr, margin: 0, valign: "middle", isTextBox: true, objectName: "Texto aviso abiertos" });
+    s.addText(AB.total ? (gt ? gt + " ticket(s) abierto(s) ya superan el 100 % de progreso y afectarán el KPI si se cierran así." : "Ningún ticket abierto supera el 100 % de progreso.") + (AB.total - AB.conP > 0 ? " " + (AB.total - AB.conP) + " abierto(s) sin progreso registrado." : "") : (D.sinAbiertos ? "Filtro activo: se excluyen los tickets aún abiertos." : "No hay tickets abiertos en el rango."), { x: 6.8, y: 5.2, w: 5.85, h: 0.95, fontFace: FB, fontSize: 12, bold: true, color: gt ? C.rd : C.gr, margin: 0, valign: "middle", isTextBox: true, objectName: "Texto aviso abiertos" });
 
     /* ---------- 10. Planes de acción ---------- */
     const PL = D.planes;
