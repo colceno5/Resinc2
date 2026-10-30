@@ -4,6 +4,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
+<script src="ppt-plantilla.js"></script>
+<script src="ppt-gerencia.js"></script>
 <style>
 :root{--bg:#f6f7f9;--sf:#fff;--tx:#1b1f27;--mu:#667085;--bd:#e3e6eb;--ac:#2f5fd0;--ac2:#e8eefc;--rd:#c62828;--gr:#1b7f4b;--am:#b26a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151b;--sf:#1b2029;--tx:#e8eaf0;--mu:#97a0b1;--bd:#2c3340;--ac:#7ea2ff;--ac2:#1f2a47;--rd:#ff8a80;--gr:#6fd3a0;--am:#ffc266;color-scheme:dark}}
@@ -54,7 +57,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .nologin .w{visibility:hidden}.nologin #lg{visibility:visible}#lf label{display:block;font-weight:600;margin:10px 0 4px}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
-<div class="row"><small id="cs"></small><button class="btn" id="lo" hidden>Salir</button><label class="btn">Cargar Excel de Aranda<input type="file" id="fi" accept=".xlsx,.xls" multiple hidden></label></div></header>
+<div class="row"><small id="cs"></small><button class="btn" id="lo" hidden>Salir</button><button class="btn p" id="pptg" title="Genera una presentación PowerPoint (formato ValorA) con el KPI y las métricas del periodo y filtros elegidos">Presentación PPT</button><label class="btn">Cargar Excel de Aranda<input type="file" id="fi" accept=".xlsx,.xls" multiple hidden></label></div></header>
 <div class="card" id="fc"><div class="row"><b>Periodo</b>
 <select id="pm"><option value="all">Todo el periodo</option><option value="week">Semana del año</option><option value="range">Rango de fechas</option></select>
 <select id="pw" hidden></select><span id="pr" hidden><input type="date" id="pd"> a <input type="date" id="ph"></span>
@@ -225,7 +228,7 @@ $("fi").onchange=async e=>{try{const m=new Map(rows.map(r=>[r.c,r]));let n=0;for
 rows=[...m.values()];S.groups=null;S.esp=null;S.week="";render();renderP4();if(typeof cloudKick==="function")cloudKick()}catch(x){alert("No se pudo leer el archivo.")}e.target.value=""};
 /* ---------- Planes de acción (copiado de seguimiento_tickets10) ---------- */
 function toast(m){const e=$("ts");e.textContent=m;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",4000)}
-function dlLocal(name,data){const ext=(name.split(".").pop()||"").toLowerCase(),mt={xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",csv:"text/csv;charset=utf-8"}[ext]||"application/octet-stream";
+function dlLocal(name,data){const ext=(name.split(".").pop()||"").toLowerCase(),mt={xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",csv:"text/csv;charset=utf-8",pptx:"application/vnd.openxmlformats-officedocument.presentationml.presentation"}[ext]||"application/octet-stream";
 const b=new Blob([data],{type:mt}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},1500)}
 async function dl(name,data){try{dlLocal(name,data)}catch(x){toast("No se pudo descargar el archivo.")}}
 const PRI=["","Alta","Media","Baja"],ESTS=["Pendiente","En curso","Cumplido / validado"],SEG0="Diario; corte semanal";
@@ -736,6 +739,51 @@ dl("informe_semanal_"+iw+".xlsx",data)};
 $("ib").addEventListener("click",e=>{const b=e.target.closest(".dli");if(!b)return;if(!b.dataset.arm){b.dataset.arm="1";b.textContent="¿Eliminar?";setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent="✕"}},3000);return}inf=inf.filter(s=>s.w!==b.dataset.w);svI();renderInf()});
 window.APP_BUILD="2026-10-29-informe-pro";
 /* ---------- Nube compartida (Supabase) ---------- */
+/* ---------- Presentación PPT para gerencia (formato de la plantilla ValorA) ---------- */
+/* Usa el mismo periodo (todo / semana / rango de fechas) y los mismos filtros de grupos, especialistas y «excluir abiertos» del encabezado. */
+function pptData(){
+ const[a,b]=range(),L=sel(),E=ev(L);if(!E.length)return null;
+ let mn=null,mx=null;L.forEach(r=>{const t=+r.d;if(mn===null||t<mn)mn=t;if(mx===null||t>mx)mx=t});
+ const d1=a||new Date(mn),d2=b?new Date(b.getFullYear(),b.getMonth(),b.getDate()-1):new Date(mx);
+ const K=stat(E),pts=buckets(E),gn={day:"día",week:"semana",month:"mes"}[S.gran]||"semana",pl_={day:"días",week:"semanas",month:"meses"}[S.gran]||"semanas";
+ const rk=f=>Object.entries(groupBy(E,f)).map(([k,v])=>{const s=stat(v);return{k,n:s.n,a:s.a,f:s.f,pct:s.pct}}).sort((x,y)=>y.n-x.n||String(x.k).localeCompare(String(y.k),"es"));
+ const grupos=rk(r=>(r.g||"—").replace(/^Grupo /,"")),esp=rk(r=>r.r),cat=E.some(r=>r.raw&&r.raw["Categoría"])?rk(r=>(r.raw&&r.raw["Categoría"])||"(sin categoría)"):[];
+ const canc=L.filter(r=>r.e==="Cancelado").length,sinp=L.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
+ const estados=Object.entries(groupBy(L,r=>r.e||"—")).map(([e,v])=>({e,n:v.length})).sort((x,y)=>y.n-x.n);
+ const OP=L.filter(r=>OPEN.includes(r.e)),OPp=OP.filter(r=>r.p!=null),BK=[["0–25 %",v=>v<25],["25–50 %",v=>v>=25&&v<50],["50–75 %",v=>v>=50&&v<75],["75–100 %",v=>v>=75&&v<=100],["> 100 %",v=>v>100]];
+ const abiertos={total:OP.length,conP:OPp.length,B:BK.map(([l,f])=>({l,n:OPp.filter(r=>f(r.p)).length}))};
+ const V=E.filter(r=>r.p>100&&isCl(r)),nn={Pendiente:0,Incompleto:0,Sustentado:0},apr=r=>(aud[r.c]||{}).ap;V.forEach(r=>nn[ast(r.c)]++);
+ const au={venc:V.length,pend:nn.Pendiente+nn.Incompleto,sust:nn.Sustentado,aprob:V.filter(r=>apr(r)==="Aprobada").length,rech:V.filter(r=>apr(r)==="Rechazada").length,
+  top:V.filter(r=>apr(r)!=="Aprobada").sort((x,y)=>y.p-x.p).slice(0,5).map(r=>({c:r.c,s:r.s,r:r.r,p:r.p,est:ast(r.c)+(apr(r)==="Rechazada"?" · desaprobada":"")}))};
+ const pl=pa4.map(q=>({id:q.id,cause:q.cause||"",resp:(q.resp||"").trim(),fecha:iso2(q.fecha),est:q.est||"Pendiente",av:clamp(q.av),alerta:alerta(q.est,q.fecha)[0],ind:typeof mvTxt==="function"?mvTxt(q):""}));
+ const cn=e=>pl.filter(p=>p.est===e).length,planes={n:pl.length,ok:cn("Cumplido / validado"),cu:cn("En curso"),pe:cn("Pendiente"),avg:pl.length?pl.reduce((x,p)=>x+p.av,0)/pl.length:0,ve:pl.filter(p=>p.alerta==="Vencido").length,lista:pl};
+ /* conclusiones automáticas */
+ const gap=K.pct-META,lect=[],aten=[],sx=n=>n===1?"":"s";
+ lect.push("KPI justificado de "+n1(K.pct)+" % frente a la meta de "+META+" %: "+(gap>=0?"meta alcanzada"+(gap>=.05?" (+"+n1(gap)+" pts).":"."):"brecha de "+n1(-gap)+" pts."));
+ lect.push("Se evaluaron "+K.n+" tickets: "+K.a+" dentro del 100 % y "+K.f+" fuera.");
+ if(K.a>K.o)lect.push("Las justificaciones aprobadas aportan "+n1(K.pct-K.pO)+" pts al KPI (original: "+n1(K.pO)+" %).");
+ if(pts.length>1)lect.push(pts.filter(p=>p.pct>=META).length+" de "+pts.length+" "+pl_+" alcanzaron la meta.");
+ const gs=grupos.filter(x=>x.pct!=null).sort((x,y)=>y.pct-x.pct);
+ if(gs.length>1)lect.push("Grupo con mayor cumplimiento: "+gs[0].k+" ("+n1(gs[0].pct)+" %); con menor cumplimiento: "+gs[gs.length-1].k+" ("+n1(gs[gs.length-1].pct)+" %).");
+ const bajo=esp.filter(x=>x.pct<META).sort((x,y)=>x.pct-y.pct);
+ if(bajo.length)aten.push(bajo.length+" de "+esp.length+" especialista"+sx(esp.length)+" por debajo de la meta, entre ellos: "+bajo.slice(0,3).map(x=>x.k+" ("+n1(x.pct)+" %)").join(", ")+".");
+ if(au.pend)aten.push(au.pend+" ticket"+sx(au.pend)+" vencido"+sx(au.pend)+" sin justificación completa (falta fecha real o sustento).");
+ if(au.rech)aten.push(au.rech+" justificación"+(au.rech===1?"":"es")+" desaprobada"+sx(au.rech)+": esos tickets siguen fuera del KPI.");
+ const gt=abiertos.B[4].n;if(gt)aten.push(gt+" ticket"+sx(gt)+" abierto"+sx(gt)+" ya supera"+(gt===1?"":"n")+" el 100 % de progreso.");
+ const pxv=pl.filter(p=>p.alerta==="Por vencer").length,psr=pl.filter(p=>!p.resp).length;
+ if(planes.ve)aten.push(planes.ve+" plan"+(planes.ve===1?"":"es")+" de acción con fecha compromiso vencida.");
+ if(pxv)aten.push(pxv+" plan"+(pxv===1?"":"es")+" de acción vence"+(pxv===1?"":"n")+" en 7 días o menos.");
+ if(psr)aten.push(psr+" plan"+(psr===1?"":"es")+" de acción sin responsable asignado.");
+ return{titulo:"KPI de Resolución de Incidencias",rango:dmyF(d1)+" – "+dmyF(d2),d1,d2,alcance:infAlc().replace(/^[^:]*:\s*/,""),meta:META,fechaGen:dmyF(new Date()),granTxt:gn,K,canc,sinp,total:L.length,
+  serie:pts.map(p=>({k:p.k,lab:lab(p.k),labFull:lab(p.k,1),n:p.n,a:p.a,o:p.o,f:p.f,pct:p.pct,pO:p.pO})),grupos,esp,cat,estados,abiertos,aud:au,planes,notas:{lectura:lect,atencion:aten}}}
+$("pptg").onclick=async()=>{
+ if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
+ if(typeof PptxGenJS==="undefined"||!window.PPTG||!window.PPT_BG){toast("No se cargaron los componentes de PowerPoint. Revise la conexión y que ppt-gerencia.js y ppt-plantilla.js estén junto a index.html.");return}
+ const D=pptData();if(!D){toast("No hay tickets evaluables con el periodo y los filtros actuales.");return}
+ const bt=$("pptg");bt.disabled=true;toast("Generando la presentación…");
+ try{const pres=PPTG.build(PptxGenJS,D,window.PPT_BG),data=await pres.write({outputType:"arraybuffer"}),fn="KPI_Gerencia_"+ymd(D.d1)+"_a_"+ymd(D.d2)+".pptx";dl(fn,data);toast("Presentación generada: "+fn)}
+ catch(e){console.error(e);toast("No se pudo generar la presentación.")}
+ bt.disabled=false};
 const CFG=window.APP_CONFIG||{},CLOUD=!!(window.supabase&&CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/TU-PROYECTO|TU-ANON/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
 let sb=null,cloudUser=null,cloudT=null,cloudLast=0,cloudRun=false,cloudAgain=false,cloudErr="",lastUid;
 const TBL="app_datos",hm=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())};
