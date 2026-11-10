@@ -4,6 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
 <script src="ppt-plantilla.js"></script>
 <script src="ppt-gerencia.js"></script>
@@ -337,11 +338,7 @@ function layout(M,meta){
  put("B1",meta.title,"title");H[1]=20.25;
  const SRC=meta.cons?"Datos":"Soporte";
  put("B2",'Fuente: hoja "'+SRC+'"'+(meta.cons?' (solo los tickets marcados «Sí» en la columna «Incluido en el KPI»)':'')+'. Todas las cifras son fórmulas y se recalculan si cambian los datos.',"note");
- if(meta.cons){
-  sec(4,"1. Meta de referencia");
-  put("B5","Meta SLA del KPI (referencia para los colores de esta hoja)","tx");put("C5",META/100,"pc");H[5]=25.5;
-  put("B6","El KPI justificado, el KPI original, la variación semanal y la evolución de las últimas semanas están en la hoja «Informe».","hint");
- }else{
+ {
  sec(4,"1. KPI Resolución de incidencias");
  put("B5","Tickets evaluados (sin cancelados ni sin progreso) (denominador)","tx");put("C5",M.den,"c0",'COUNTIF('+TE+',"Sí")');H[5]=25.5;
  put("B6","Dentro del 100% de progreso, con justificaciones aprobadas (numerador)","tx");put("C6",M.num,"c0",'COUNTIF('+UD+',"Sí")');
@@ -425,7 +422,8 @@ async function xlsxBuild(B,wb0,cons){
  const sheet=(name,rowsA)=>{const ws=wb.addWorksheet(name);ws.addRow(HD);rowsA.forEach(a=>ws.addRow(a));WD.forEach((w,i)=>{ws.getColumn(i+1).width=w});
   const h=ws.getRow(1);h.height=15.75;h.eachCell(c=>{c.font={name:"Calibri",size:12,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF808080"}};c.alignment={horizontal:"center"}});
   ws.autoFilter={from:{row:1,column:1},to:{row:Math.max(2,rowsA.length+1),column:HD.length}};return ws};
- if(cons){const inc=new Set(B.items.map(i=>i.caso));sheet("Datos",B.W.map(x=>rowArr(x).concat([inc.has(x.caso)?"Sí":"No"])))}
+ if(cons){const inc=new Set(B.items.map(i=>i.caso)),wd=sheet("Datos",B.W.map(x=>rowArr(x).concat([inc.has(x.caso)?"Sí":"No"])));
+  B.W.forEach((x,i)=>{if(!inc.has(x.caso))wd.getRow(i+2).hidden=true})}
  else{sheet("Datos",B.W.map(rowArr));sheet("Soporte",B.items.map(rowArr))}
  const NV="FF1B2E6B",AC="FF2F5FD0",GRN="FF1B7F4B",RED="FFC62828",MU="FF667085",TL="FFF3F6FC",WH="FFFFFFFF",BDc="FFE3E6EB";
  const ws=wb.addWorksheet(cons?"Análisis":"Informe KPI",{properties:{tabColor:{argb:AC}}});ws.views=[{showGridLines:false,zoomScale:90}];
@@ -453,8 +451,8 @@ async function xlsxBuild(B,wb0,cons){
   const l=ws.getCell(5,c1);l.value=lab;l.font={name:"Calibri",size:8.5,bold:true,color:{argb:MU}};l.alignment={horizontal:"left",vertical:"bottom",indent:1};
   const v=ws.getCell(6,c1);v.value=f?{formula:f,result:val}:val;v.numFmt=nf;v.font={name:"Calibri",size:24,bold:true,color:{argb:"FF1B1F27"}};v.alignment={horizontal:"left",vertical:"middle",indent:1};
   const p=ws.getCell(8,c1);p.value=cap;p.font={name:"Calibri",size:9,color:{argb:MU}};p.alignment={horizontal:"left",vertical:"top",indent:1,wrapText:true}};
- const MR=cons?"$C$5":"$F$6";
- if(!cons){
+ const MR="$F$6";
+ {
  card(4,5,"KPI RESOLUCIÓN",KP,"0.0%","Dentro del 100 % ÷ evaluados",AC,"C8");
  card(6,7,"META",MT,"0%","Objetivo de cumplimiento",AC);
  card(8,9,"DIFERENCIA VS META",DF,'+0.0" pts";-0.0" pts";0.0" pts"',okK?"Meta alcanzada":"Por debajo de la meta",okK?GRN:RED,"(D6-F6)*100");
@@ -462,7 +460,7 @@ async function xlsxBuild(B,wb0,cons){
  }
  const cfc=(ref,expr,col)=>ws.addConditionalFormatting({ref,rules:[{type:"expression",formulae:[expr],priority:1,style:{font:{color:{argb:col},bold:true}}}]});
  try{
-  if(!cons)[["D6","$D$6>=$F$6","$D$6<$F$6"],["H6","$D$6>=$F$6","$D$6<$F$6"],["C8","$C$8>=$F$6","$C$8<$F$6"]].forEach(([ref,g,r])=>{cfc(ref,g,GRN);cfc(ref,r,RED)});
+  [["D6","$D$6>=$F$6","$D$6<$F$6"],["H6","$D$6>=$F$6","$D$6<$F$6"],["C8","$C$8>=$F$6","$C$8<$F$6"]].forEach(([ref,g,r])=>{cfc(ref,g,GRN);cfc(ref,r,RED)});
   B.lay.CF.forEach(f=>{
    ws.addConditionalFormatting({ref:f.col+f.a+":"+f.col+f.b,rules:[{type:"dataBar",minLength:0,maxLength:100,border:false,gradient:false,cfvo:[{type:"num",value:0},{type:"max"}],color:{argb:"FF9DB7EE"}}]});
    const g="G"+f.a+":G"+(f.b+1);cfc(g,"AND(ISNUMBER(G"+f.a+"),G"+f.a+">="+MR+")",GRN);cfc(g,"AND(ISNUMBER(G"+f.a+"),G"+f.a+"<"+MR+")",RED)});
@@ -668,7 +666,7 @@ const rm=r0+2+S.length;blk(rm,tc,tc+4,"Meta SLA",{sz:9,i:true,fc:AM,ind:1,bb:ln(
 blk(rm+2,tc,CL,{richText:[{text:"Cómo leer el gráfico\n",font:{name:FN,size:10,bold:true,color:{argb:NV}}},{text:"La línea azul es el KPI justificado (tickets dentro del 100 % más las justificaciones aprobadas); los puntos verdes alcanzan la meta y los rojos no. La línea gris punteada es el KPI original del Excel de Aranda y las barras muestran los tickets evaluados en cada semana.",font:{name:FN,size:9,color:{argb:MU}}}]},{fill:TL,v:"top",ind:1},r0+12);
 r=r0+14;H(r,12);ws.getRow(r).addPageBreak();r++;
 // ===== Rendimiento por especialista =====
-if(!cons){
+{
 r=sec(r,"Rendimiento por especialista","Semana seleccionada  ·  "+infAlc().replace("Alcance del KPI (mismos filtros del aplicativo): ","")+"  ·  ordenado por tickets evaluados");
 {const EC=[["Especialista",8,"left"],["Evaluados",3,"center"],["Dentro del 100 %",3,"center"],["Fuera",3,"center"],["Cumplimiento",7,"center"]];
 H(r,26);let ce=C0;EC.forEach(h=>{blk(r,ce,ce+h[1]-1,h[0],{sz:9.5,b:true,fc:WH,fill:NV,h:h[2],ind:h[2]==="left"?1:0});ce+=h[1]});
@@ -692,8 +690,7 @@ H(r,12);r++;
 // ===== Resumen de planes =====
 r=sec(r,"Resumen de planes de acción",d.P.length+" planes  ·  "+d.cnt.ok+" cumplidos / validados  ·  "+d.cnt.cu+" en curso  ·  "+d.cnt.pe+" pendientes  ·  avance promedio "+(d.avg==null?"—":n1(d.avg)+" %"));
 const AL={"Vencido":["FFFDE8E8",RD],"Por vencer":["FFFFF1D6",AM],"En plazo":["FFE3F4EA",GR],"Cumplido":["FFE3F4EA",GR],"Sin fecha":["FFEEF0F4",MU]},ES={"Cumplido / validado":["FFE3F4EA",GR],"En curso":[AC2,AC],"Pendiente":["FFFFF1D6",AM]};
-if(cons){H(r,24);blk(r,C0,CL,"El detalle de cada plan (causa, responsable, compromiso, alerta, estado, avance e indicador) está en la hoja «Planes».",{sz:10,i:true,fc:MU,ind:1});r++;H(r,12);r++}
-else{
+{
 const PC=[["Plan",2,"center"],["Causa detectada",5,"left"],["Responsable",3,"left"],["Compromiso",2,"center"],["Alerta",2,"center"],["Estado",3,"center"],["Avance",3,"center"],["Indicador de la semana",4,"left"]];
 H(r,26);let cc=C0;const colAv=[];PC.forEach(h=>{if(h[0]==="Avance")colAv.push(cc);blk(r,cc,cc+h[1]-1,h[0],{sz:9.5,b:true,fc:WH,fill:NV,h:h[2],ind:h[2]==="left"?1:0});cc+=h[1]});
 const pr0=r+1;
@@ -759,7 +756,11 @@ $("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Ar
   await infXlsxPro(infData(iw),infSerie(iw),wb,true);await xlsxBuild(B,wb,true);
   [["Informe",1],["Análisis",2],["Planes",3],["Historial",4],["Datos",5]].forEach(([n,o])=>{const w=wb.getWorksheet(n);if(w)w.orderNo=o});
   wb.views=[{activeTab:0}];
-  const buf=await wb.xlsx.writeBuffer();data=buf instanceof ArrayBuffer?buf:buf.buffer.slice(buf.byteOffset,buf.byteOffset+buf.byteLength)}
+  const buf=await wb.xlsx.writeBuffer();data=buf instanceof ArrayBuffer?buf:buf.buffer.slice(buf.byteOffset,buf.byteOffset+buf.byteLength);
+  /* hoja Datos: filtro activo «Incluido en el KPI» = Sí */
+  if(typeof JSZip!=="undefined"){try{const z=await JSZip.loadAsync(data),f="xl/worksheets/sheet"+wb.getWorksheet("Datos").id+".xml";let x=await z.file(f).async("string");
+   x=x.replace(/<autoFilter ref="([^"]+)"\s*\/>/,(m,ref)=>'<autoFilter ref="'+ref+'"><filterColumn colId="26"><filters><filter val="Sí"/></filters></filterColumn></autoFilter>');
+   z.file(f,x);data=await z.generateAsync({type:"arraybuffer"})}catch(e){console.warn("Filtro de Datos no aplicado:",e)}}}
  catch(e){console.error(e);toast("No se pudo generar el Excel consolidado.");return}
  const fn="Consolidado_Semana"+B.wn+".xlsx";dl(fn,data);toast("Consolidado generado: "+fn)};
 $("ixp").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}const d=infData(iw);let data;
