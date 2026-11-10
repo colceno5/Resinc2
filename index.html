@@ -41,6 +41,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .in{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font:inherit;min-width:220px}
 
 /* Planes de acción */
+:root{--or:#e07026}
+.jp{color:var(--or);font-weight:700;cursor:help;border-bottom:1px dotted var(--or)}
+.tk{cursor:help}
+#tkp{position:fixed;z-index:9999;display:none;max-width:460px;background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:8px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.2);font-size:12px;line-height:1.5;pointer-events:none}
+#tkp b{font-size:13px}#tkp .m{color:var(--mu);font-size:11px;margin-top:6px}#tkp .d{margin-top:6px;white-space:pre-wrap;word-break:break-word}
 :root{--gl:36%;--rd2:#fdeaea;--am2:#fff3dc;--gr2:#e3f5ea;--gy2:#eceff3}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gl:64%;--rd2:#3a1f20;--am2:#3a2e14;--gr2:#17301f;--gy2:#262c37}}
 :root[data-theme="dark"]{--gl:64%;--rd2:#3a1f20;--am2:#3a2e14;--gr2:#17301f;--gy2:#262c37}
@@ -183,11 +188,11 @@ $("nv").textContent=V.length?"("+V.length+")":"";
 $("ak").innerHTML=[["Vencidos",V.length,"var(--tx)","fuera del 100 %"],["Pendientes",n.Pendiente,"var(--am)","sin justificar"],["Sustentados",n.Sustentado,"var(--gr)","con fecha y sustento"],["Aprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Aprobada").length,"var(--gr)","cuentan como cumplidas"],["Desaprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Rechazada").length,"var(--rd)","siguen fuera"],["KPI ajustado",fp(KA.pct),col(KA.pct),"con las aprobadas"]].map(c=>`<div class="k"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
 const es=$("as").value,q=$("aq").value.toLowerCase();
 const A=V.filter(r=>{const a=aud[r.c]||{};return(!es||ast(r.c)===es||a.ap===es)&&(!q||[r.c,r.s,r.r,a.sus,a.acc].join(" ").toLowerCase().includes(q))}).sort((a,b)=>b.p-a.p);
-$("ab").innerHTML=A.map(r=>{const a=aud[r.c]||{},s=ast(r.c);return`<tr><td><b>${esc(r.c)}</b><br><small>${esc(r.s)}</small></td><td>${esc(r.r)}</td><td>${fr(r.d)}</td><td><b style="color:var(--rd)">${r.p.toFixed(0)} %</b></td><td>${fdt(a.real)}</td><td>${esc(a.sus||"—")}</td><td>${esc(a.acc||"—")}</td><td><span class="tg" style="color:${s==="Sustentado"?"var(--gr)":s==="Incompleto"?"var(--rd)":"var(--am)"}">${s}</span></td><td>${rev(r.c)}</td><td>${jbtn(r.c)}</td></tr>`}).join("")||'<tr><td colspan="10" class="mu">No hay tickets vencidos con estos filtros.</td></tr>'}
+$("ab").innerHTML=A.map(r=>{const a=aud[r.c]||{},s=ast(r.c);return`<tr><td>${tkb(r.c)}<br><small>${esc(r.s)}</small></td><td>${esc(r.r)}</td><td>${fr(r.d)}</td><td><b style="color:var(--rd)">${r.p.toFixed(0)} %</b></td><td>${fdt(a.real)}</td><td>${esc(a.sus||"—")}</td><td>${esc(a.acc||"—")}</td><td><span class="tg" style="color:${s==="Sustentado"?"var(--gr)":s==="Incompleto"?"var(--rd)":"var(--am)"}">${s}</span></td><td>${rev(r.c)}</td><td>${jbtn(r.c)}</td></tr>`}).join("")||'<tr><td colspan="10" class="mu">No hay tickets vencidos con estos filtros.</td></tr>'}
 const rev=c=>{if(ast(c)!=="Sustentado")return'<small>Requiere fecha y sustento</small>';const p=(aud[c]||{}).ap;return`<button class="btn${p==="Aprobada"?" p":""}" data-rv="${esc(c)}" data-v="Aprobada">✓ Aprobar</button> <button class="btn${p==="Rechazada"?" p":""}" data-rv="${esc(c)}" data-v="Rechazada">✕ Desaprobar</button>`};
 const closeJ=()=>$("ov").classList.remove("on");
 function openJ(c){const r=rows.find(x=>x.c===c);if(!r)return;const a=aud[c]||{};
-$("md").innerHTML=`<h2>Justificar ${esc(c)}</h2><div>${esc(r.s)}</div><small>${esc(r.g)} · ${esc(r.r)} · registrado ${fr(r.d)} · progreso ${r.p==null?"—":r.p.toFixed(1)+" %"}</small>
+$("md").innerHTML=`<h2>Justificar ${tkb(c,"h")}</h2><div>${esc(r.s)}</div><small>${esc(r.g)} · ${esc(r.r)} · registrado ${fr(r.d)} · progreso ${r.p==null?"—":r.p.toFixed(1)+" %"}</small>
 <label for="jr">Fecha y hora real de atención *</label><input type="datetime-local" id="jr" value="${esc(a.real||"")}">
 <label for="js">Sustento de atención *</label><textarea id="js" placeholder="Explique por qué el ticket superó el 100 % de progreso…">${esc(a.sus||"")}</textarea>
 <label for="ja">Acción inmediata</label><textarea id="ja" placeholder="Qué se hizo o se hará para corregir el caso">${esc(a.acc||"")}</textarea>
@@ -210,12 +215,12 @@ $("as").onchange=$("aq").oninput=()=>renderA(CUR);
 function setTH(){document.documentElement.style.setProperty("--th",$("top").offsetHeight+"px")}
 try{new ResizeObserver(setTH).observe($("top"))}catch(e){}setTH();
 let tq="",tf="",ts={k:"d",d:-1};
-const sv={c:r=>r.c,s:r=>r.s,e:r=>r.e,g:r=>r.g,r:r=>r.r,d:r=>+r.d,p:r=>r.p,t:r=>tag(r)[0],j:r=>ast(r.c)};
+const sv={c:r=>r.c,s:r=>r.s,e:r=>r.e,g:r=>r.g,r:r=>r.r,d:r=>+r.d,p:r=>{const j=jprog(r);return j?j.pc:r.p},t:r=>tag(r)[0],j:r=>ast(r.c)};
 const cmpT=(a,b)=>{const f=sv[ts.k],x=f(a),y=f(b);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return(typeof x==="number"?x-y:String(x).localeCompare(String(y),"es",{numeric:true}))*ts.d};
 const tag=r=>r.e==="Cancelado"?["Cancelado","var(--mu)"]:r.p==null?["Sin progreso","var(--mu)"]:r.p<=100?["Dentro","var(--gr)"]:isCl(r)&&(aud[r.c]||{}).ap==="Aprobada"?["Justificado","var(--gr)"]:["Fuera","var(--rd)"];
 function renderT(L){const q=tq.toLowerCase(),A=L.filter(r=>(!tf||tag(r)[0]===tf)&&(!q||[r.c,r.s,r.r,r.g,r.e].join(" ").toLowerCase().includes(q))).sort(cmpT);document.querySelectorAll("#tth th").forEach(h=>h.querySelector("i").textContent=h.dataset.k===ts.k?(ts.d>0?" ▲":" ▼"):"");
 $("tc").textContent="· "+A.length+" tickets"+(A.length>500?" (se muestran 500)":"");
-$("tt").innerHTML=A.slice(0,500).map(r=>{const t=tag(r);return`<tr><td><b>${esc(r.c)}</b></td><td>${esc(r.s)}</td><td>${esc(r.e)}</td><td>${esc((r.g||"").replace(/^Grupo /,""))}</td><td>${esc(r.r)}</td><td>${dmy(r.d)}/${r.d.getFullYear()} ${pad(r.d.getHours())}:${pad(r.d.getMinutes())}</td><td>${r.p==null?"—":r.p.toFixed(1)+" %"}</td><td><b style="color:${t[1]}">${t[0]}</b></td><td>${(t[0]==="Fuera"||t[0]==="Justificado")&&isCl(r)?jbtn(r.c):"—"}</td></tr>`}).join("")||'<tr><td colspan="9" class="mu">No hay tickets con estos filtros.</td></tr>'}
+$("tt").innerHTML=A.slice(0,500).map(r=>{const t=tag(r);const jp=jprog(r);return`<tr><td>${tkb(r.c)}</td><td>${esc(r.s)}</td><td>${esc(r.e)}</td><td>${esc((r.g||"").replace(/^Grupo /,""))}</td><td>${esc(r.r)}</td><td>${dmy(r.d)}/${r.d.getFullYear()} ${pad(r.d.getHours())}:${pad(r.d.getMinutes())}</td><td>${jp?`<span class="jp" title="Progreso antes de la justificación: ${r.p.toFixed(1)} %">${jp.pc.toFixed(1)} %</span>`:r.p==null?"—":r.p.toFixed(1)+" %"}</td><td><b style="color:${t[1]}">${t[0]}</b></td><td>${(t[0]==="Fuera"||t[0]==="Justificado")&&isCl(r)?jbtn(r.c):"—"}</td></tr>`}).join("")||'<tr><td colspan="9" class="mu">No hay tickets con estos filtros.</td></tr>'}
 $("tq").oninput=e=>{tq=e.target.value;renderT(sel())};
 $("tth").onclick=e=>{const h=e.target.closest("th");if(!h)return;const k=h.dataset.k;ts=ts.k===k?{k,d:-ts.d}:{k,d:k==="d"||k==="p"?-1:1};renderT(sel())};$("tf").onchange=e=>{tf=e.target.value;renderT(sel())};
 $("gc").onclick=e=>{const b=e.target.closest("[data-gb]");if(b){S.groups=b.dataset.gb==="*"?null:new Set();render()}};
@@ -769,7 +774,22 @@ $("ixp").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Ar
 try{if(typeof ExcelJS==="undefined")throw 0;data=await infXlsxPro(d,infSerie(iw))}catch(e){console.warn(e);if(typeof XLSX==="undefined"){toast("No se pudo generar el Excel.");return}data=infXlsxOld(d)}
 dl("informe_semanal_"+iw+".xlsx",data)};
 $("ib").addEventListener("click",e=>{const b=e.target.closest(".dli");if(!b)return;if(!b.dataset.arm){b.dataset.arm="1";b.textContent="¿Eliminar?";setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent="✕"}},3000);return}inf=inf.filter(s=>s.w!==b.dataset.w);svI();renderInf()});
-window.APP_BUILD="2026-10-29-informe-pro";
+/* ---------- Progreso justificado y descripción del ticket al pasar el mouse ---------- */
+function jprog(r){const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r)||r.p==null||r.p<=100)return null;const j=new Date(a.real);if(isNaN(j)||j<r.d)return null;return{pc:Math.round(wminW(r.d,j)/4.8*100)/100,jd:j}}
+function tkb(c,h){return`<b class="tk" data-tk="${esc(c)}">${esc(c)}</b>`}
+(function(){let idx=null,idxFor=null;const tip=document.createElement("div");tip.id="tkp";document.body.appendChild(tip);
+ const find=c=>{if(idxFor!==rows){idx=new Map(rows.map(r=>[r.c,r]));idxFor=rows}return idx.get(c)};
+ const clip=(t,n)=>{t=String(t==null?"":t).replace(/<[^>]*>/g," ").replace(/[ \t]+/g," ").trim();return t.length>n?t.slice(0,n)+"…":t};
+ const dkey=raw=>Object.keys(raw||{}).find(k=>/^descripci[oó]n/i.test(k)&&String(raw[k]).trim());
+ function html(r){const raw=r.raw||{},k=dkey(raw),desc=k?clip(raw[k],700):"",jp=jprog(r);
+  const m=[r.e,(r.g||"").replace(/^Grupo /,""),r.r,raw["Categoría"],fr(r.d)].filter(Boolean).map(esc).join(" · ");
+  return`<b>${esc(r.c)}</b> — ${esc(r.s||"(sin asunto)")}<div class="d">${desc?esc(desc):`<span style="color:var(--mu)">${raw["Razón"]?esc(clip(raw["Razón"],400)):"Este ticket no tiene descripción en el Excel cargado."}</span>`}</div><div class="m">${m}${jp?"<br>Progreso original "+r.p.toFixed(1)+" % → justificado "+jp.pc.toFixed(1)+" %":""}</div>`}
+ function pos(e){const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+16,y=e.clientY+18;if(x+w>innerWidth-8)x=Math.max(8,e.clientX-w-16);if(y+h>innerHeight-8)y=Math.max(8,e.clientY-h-12);tip.style.left=x+"px";tip.style.top=y+"px"}
+ document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest("[data-tk]");if(!t){return}const r=find(t.dataset.tk);if(!r)return;tip.innerHTML=html(r);tip.style.display="block";pos(e)});
+ document.addEventListener("mousemove",e=>{if(tip.style.display==="block")pos(e)});
+ document.addEventListener("mouseout",e=>{const t=e.target.closest&&e.target.closest("[data-tk]");if(t&&!(e.relatedTarget&&t.contains(e.relatedTarget)))tip.style.display="none"});
+ document.addEventListener("scroll",()=>{tip.style.display="none"},true)})();
+window.APP_BUILD="2026-11-10-tooltip-ticket";
 /* ---------- Nube compartida (Supabase) ---------- */
 /* ---------- Presentación PPT para gerencia (formato de la plantilla ValorA) ---------- */
 /* Usa el mismo periodo (todo / semana / rango de fechas) y los mismos filtros de grupos, especialistas y «excluir abiertos» del encabezado. */
