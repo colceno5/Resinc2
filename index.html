@@ -108,6 +108,25 @@ th,td{padding:9px 12px}tbody tr:last-child td{border-bottom:0}tbody tr:hover>td{
 /* planes: columnas clave (botón «Ver todas las columnas») */
 .pc .at table{min-width:0!important}.pc th{min-width:80px!important}.pc th:nth-child(3){min-width:170px!important}.pc th:nth-child(15){min-width:130px!important}.pc th:nth-child(8),.pc th:nth-child(17){min-width:130px!important}.pc th:nth-child(9){min-width:125px!important}.pc th:nth-child(18),.pc th:nth-child(19){min-width:70px!important}.pc th:nth-child(21){min-width:0!important}.pc th:nth-child(1){min-width:70px!important}
 .pc th:nth-child(2),.pc td:nth-child(2),.pc th:nth-child(4),.pc td:nth-child(4),.pc th:nth-child(5),.pc td:nth-child(5),.pc th:nth-child(6),.pc td:nth-child(6),.pc th:nth-child(7),.pc td:nth-child(7),.pc th:nth-child(10),.pc td:nth-child(10),.pc th:nth-child(11),.pc td:nth-child(11),.pc th:nth-child(12),.pc td:nth-child(12),.pc th:nth-child(13),.pc td:nth-child(13),.pc th:nth-child(14),.pc td:nth-child(14),.pc th:nth-child(16),.pc td:nth-child(16),.pc th:nth-child(20),.pc td:nth-child(20){display:none}
+
+/* Revisión con íconos + candado */
+:root{--or2:#fff1e6;--okbg:#eaf7d6;--okbd:#bfe38a;--okfg:#4f9a00;--okon:#7ccf0c;--nobg:#ffe3e8;--nobd:#ffb3c0;--nofg:#e0213f;--noon:#ff3355}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--or2:#3a2616;--okbg:#22331a;--okbd:#3f5f23;--okfg:#98dc55;--nobg:#3b1f26;--nobd:#6b2c3a;--nofg:#ff8fa3}}
+:root[data-theme="dark"]{--or2:#3a2616;--okbg:#22331a;--okbd:#3f5f23;--okfg:#98dc55;--nobg:#3b1f26;--nobd:#6b2c3a;--nofg:#ff8fa3}
+.rv{display:flex;flex-direction:column;gap:4px;align-items:flex-start}.rvb{display:inline-flex;align-items:center;gap:6px}.rvb .sp{width:1px;height:22px;background:var(--bd);margin:0 3px}
+.ib{width:34px;height:34px;border-radius:50%;border:2px solid transparent;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;background:var(--gy2);color:var(--mu);transition:transform .12s,box-shadow .12s,background .12s}
+.ib svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.ib.ok{background:var(--okbg);border-color:var(--okbd);color:var(--okfg)}.ib.bad{background:var(--nobg);border-color:var(--nobd);color:var(--nofg)}
+.ib.ok.on{background:var(--okon);border-color:var(--okon);color:#fff;box-shadow:0 2px 8px rgba(124,207,12,.45)}.ib.bad.on{background:var(--noon);border-color:var(--noon);color:#fff;box-shadow:0 2px 8px rgba(255,51,85,.4)}
+.ib.lk{background:var(--sf);border-color:var(--bd);color:var(--mu)}.ib.lk.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(224,112,38,.4)}
+.ib:hover:not(:disabled){transform:scale(1.1)}.ib:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.ib:disabled{opacity:.4;cursor:not-allowed}.ib.on:disabled{opacity:.85}
+.rc{font-size:11px;color:var(--mu);white-space:nowrap}
+tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 var(--or)}
+.lkn{background:var(--or2);border:1px solid var(--or);border-radius:8px;padding:8px 10px;margin:8px 0;font-size:13px}
+.btn.lkb{border-color:var(--or);color:var(--or)}
+.an ul{margin:6px 0 0;padding-left:18px}.an li{margin:3px 0}.an .wc{display:flex;flex-wrap:wrap;gap:6px}
+.an td.tx{max-width:380px;white-space:pre-wrap;word-break:break-word}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
 <div class="row"><small id="cs"></small>
@@ -124,7 +143,7 @@ th,td{padding:9px 12px}tbody tr:last-child td{border-bottom:0}tbody tr:hover>td{
 <b style="margin-left:8px">Grupos</b><details id="gd" class="dd"><summary class="btn" id="gs">Todos</summary><div class="ddm" id="gc"></div></details>
 <button class="btn" id="cf" hidden style="margin-left:auto" title="Restablece periodo, grupos y todos los filtros de las tablas">✕ Limpiar filtros</button>
 </div></div>
-<div class="tabs" id="tabs"><button class="on" data-t="p1">Rendimiento</button><button data-t="p2">Auditoría de vencidos <span id="nv"></span></button><button data-t="p5">Auditoría de usuarios</button><button data-t="p3">Planes de acción</button><button data-t="p4">Informe semanal</button></div></div>
+<div class="tabs" id="tabs"><button class="on" data-t="p1">Rendimiento</button><button data-t="p2">Auditoría de vencidos <span id="nv"></span></button><button data-t="p6">Análisis de sustentos <span id="n6"></span></button><button data-t="p7">Análisis de acciones <span id="n7"></span></button><button data-t="p5">Auditoría de usuarios</button><button data-t="p3">Planes de acción</button><button data-t="p4">Informe semanal</button></div></div>
 <div id="p1"><div class="kp" id="kp"></div>
 <div class="card" id="sc"><div class="row" style="justify-content:space-between"><h2>Evolución del cumplimiento <i class="ii" title="Línea: % de tickets dentro del 100 % de progreso, por fecha de registro. Barras: tickets evaluados. Línea punteada: meta 95 %.">ⓘ</i></h2>
 <div class="seg" id="gr"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div>
@@ -138,8 +157,26 @@ th,td{padding:9px 12px}tbody tr:last-child td{border-bottom:0}tbody tr:hover>td{
 <div id="p2" hidden><div class="card"><h2>Auditoría de vencidos <i class="ii" title="Tickets cerrados o resueltos fuera del 100 % de progreso según el periodo y los grupos elegidos arriba. Cada justificación registrada con el botón «Justificar» llega aquí y también se puede editar desde esta pestaña. Se guarda en este navegador. Al aprobar una justificación completa, el ticket cuenta como cumplido y el KPI de la pestaña Rendimiento se recalcula; al desaprobar sigue fuera. Si edita una justificación aprobada, la revisión se reinicia.">ⓘ</i></h2>
 <div class="kp" id="ak"></div>
 <div class="card"><div class="row" style="justify-content:space-between"><h2>Evolución: sin sustentar vs. sustentado <i class="ii" title="Cumplimiento de todos los tickets evaluados, por fecha de registro. Rojo: tal como viene en el Excel, sin justificaciones. Verde: sumando los tickets cuya justificación fue aprobada.">ⓘ</i></h2><div class="seg" id="gr2"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div><div class="tw"><div id="ac"></div></div></div>
-<div class="row" style="margin-bottom:10px"><select id="as"><option value="">Todos los estados</option><option>Pendiente</option><option>Incompleto</option><option>Sustentado</option><option value="Aprobada">Aprobadas</option><option value="Rechazada">Desaprobadas</option></select><input class="in" id="aq" placeholder="Buscar ticket, especialista, sustento…"></div>
+<div class="row" style="margin-bottom:10px"><select id="as"><option value="">Todos los estados</option><option>Pendiente</option><option>Incompleto</option><option>Sustentado</option><option value="Aprobada">Aprobadas</option><option value="Rechazada">Desaprobadas</option><option value="Candado">Con candado</option></select><input class="in" id="aq" placeholder="Buscar ticket, especialista, sustento…"></div>
 <div class="tw"><table style="min-width:1100px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Registro</th><th>Progreso</th><th>Fecha real de atención</th><th>Sustento</th><th>Acción inmediata</th><th>Estado</th><th>Revisión</th><th></th></tr></thead><tbody id="ab"></tbody></table></div></div></div>
+<div id="p6" class="pn an" hidden>
+<h2 style="margin:0 0 4px">Análisis de sustentos <i class="ii" title="Solo entran los tickets vencidos y sustentados a los que se les aplicó el candado en «Auditoría de vencidos», dentro del periodo y los grupos elegidos arriba. Los temas se detectan por palabras clave en el texto del sustento; un sustento puede pertenecer a más de un tema.">ⓘ</i></h2>
+<div class="kp" id="k6"></div>
+<div class="card" id="l6"></div>
+<div class="card"><h2>Temas del sustento</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Tema</th><th>Tickets</th><th>% de candados</th><th>Aprobadas</th><th>Desaprobadas</th><th>Progreso original prom.</th></tr></thead><tbody id="t6"></tbody></table></div></div>
+<div class="card"><h2>Palabras más repetidas</h2><div class="wc" id="w6"></div></div>
+<div class="card"><h2>Por especialista</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Especialista</th><th>Con candado</th><th>Aprobadas</th><th>Desaprobadas</th><th>Sustentos breves</th><th>Tema más frecuente</th></tr></thead><tbody id="e6"></tbody></table></div></div>
+<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Detalle de sustentos</h2><input class="in" id="q6" placeholder="Buscar ticket, especialista, sustento…"></div><div class="tw" style="margin-top:8px"><table style="min-width:980px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Progreso</th><th>Temas</th><th>Sustento</th><th>Revisión</th><th>Candado</th></tr></thead><tbody id="d6"></tbody></table></div></div>
+</div>
+<div id="p7" class="pn an" hidden>
+<h2 style="margin:0 0 4px">Análisis de acciones inmediatas <i class="ii" title="Solo entran los tickets vencidos y sustentados con candado, dentro del periodo y los grupos elegidos arriba. La acción inmediata es opcional: los tickets con candado sin acción registrada se listan primero para darles seguimiento.">ⓘ</i></h2>
+<div class="kp" id="k7"></div>
+<div class="card" id="l7"></div>
+<div class="card"><h2>Tipos de acción</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Tipo de acción</th><th>Tickets</th><th>% de acciones</th><th>Aprobadas</th><th>Desaprobadas</th><th>Progreso original prom.</th></tr></thead><tbody id="t7"></tbody></table></div></div>
+<div class="card"><h2>Palabras más repetidas</h2><div class="wc" id="w7"></div></div>
+<div class="card"><h2>Por especialista</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Especialista</th><th>Con candado</th><th>Con acción</th><th>Sin acción</th><th>% con acción</th><th>Tipo más frecuente</th></tr></thead><tbody id="e7"></tbody></table></div></div>
+<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Detalle de acciones inmediatas</h2><div class="row"><select id="f7"><option value="">Todas</option><option value="sin">Solo sin acción</option><option value="con">Solo con acción</option></select><input class="in" id="q7" placeholder="Buscar ticket, especialista, acción…"></div></div><div class="tw" style="margin-top:8px"><table style="min-width:980px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Acción inmediata</th><th>Tipo de acción</th><th>Sustento</th><th>Revisión</th></tr></thead><tbody id="d7"></tbody></table></div></div>
+</div>
 <div id="p3" class="pn pc" hidden>
 <h2 style="margin:0 0 4px">Planes de acción por causa raíz</h2>
 <div class="kp" id="k4"></div>
@@ -238,34 +275,95 @@ $("tb").innerHTML=Rw.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td><td>${s.
 let aud={};try{aud=JSON.parse(localStorage.getItem("aud_rend")||"{}")}catch(e){aud={}}
 const saveA=()=>{try{localStorage.setItem("aud_rend",JSON.stringify(aud))}catch(e){}cloudKick()};
 const ast=c=>{const a=aud[c]||{},s=(a.sus||"").trim();return a.real&&s?"Sustentado":(a.real||s||(a.acc||"").trim())?"Incompleto":"Pendiente"};
-const jbtn=c=>{const s=ast(c);return`<button class="btn" data-j="${esc(c)}">${s==="Sustentado"?"✓ Ver":s==="Incompleto"?"Completar":"Justificar"}</button>`};
+const RVI={up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>',dn:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>',lk:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',ul:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg>'};
+const jbtn=c=>{const s=ast(c),L=(aud[c]||{}).lk;return`<button class="btn${L?" lkb":""}" data-j="${esc(c)}">${L?"🔒 Ver":s==="Sustentado"?"✓ Ver":s==="Incompleto"?"Completar":"Justificar"}</button>`};
 const fr=d=>dmy(d)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinutes());
 const fdt=v=>{if(!v)return"—";const d=new Date(v);return isNaN(d)?"—":fr(d)};
 function renderA(E){const KA=stat(E),V=E.filter(r=>r.p>100&&isCl(r)),n={Pendiente:0,Incompleto:0,Sustentado:0};V.forEach(r=>n[ast(r.c)]++);
-$("nv").textContent=V.length?"("+V.length+")":"";
-$("ak").innerHTML=[["Vencidos",V.length,"var(--tx)","fuera del 100 %"],["Pendientes",n.Pendiente,"var(--am)","sin justificar"],["Sustentados",n.Sustentado,"var(--gr)","con fecha y sustento"],["Aprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Aprobada").length,"var(--gr)","cuentan como cumplidas"],["Desaprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Rechazada").length,"var(--rd)","siguen fuera"],["KPI ajustado",fp(KA.pct),col(KA.pct),"con las aprobadas"]].map(c=>`<div class="${kcl(c[0])}"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
+$("nv").textContent=V.length?"("+V.length+")":"";const LK=V.filter(r=>(aud[r.c]||{}).lk);$("n6").textContent=$("n7").textContent=LK.length?"("+LK.length+")":"";renderAn(LK);
+$("ak").innerHTML=[["Vencidos",V.length,"var(--tx)","fuera del 100 %"],["Pendientes",n.Pendiente,"var(--am)","sin justificar"],["Sustentados",n.Sustentado,"var(--gr)","con fecha y sustento"],["Aprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Aprobada").length,"var(--gr)","cuentan como cumplidas"],["Desaprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Rechazada").length,"var(--rd)","siguen fuera"],["Con candado",LK.length,"var(--or)","bloqueados · pasan a análisis"],["KPI ajustado",fp(KA.pct),col(KA.pct),"con las aprobadas"]].map(c=>`<div class="${kcl(c[0])}"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
 const es=$("as").value,q=$("aq").value.toLowerCase();
-const A=V.filter(r=>{const a=aud[r.c]||{};return(!es||ast(r.c)===es||a.ap===es)&&(!q||[r.c,r.s,r.r,a.sus,a.acc].join(" ").toLowerCase().includes(q))}).sort((a,b)=>b.p-a.p);
-$("ab").innerHTML=A.map(r=>{const a=aud[r.c]||{},s=ast(r.c);return`<tr><td>${tkb(r.c)}<br><small>${esc(r.s)}</small></td><td>${esc(r.r)}</td><td>${fr(r.d)}</td><td><b style="color:var(--rd)">${r.p.toFixed(0)} %</b></td><td>${fdt(a.real)}</td><td>${esc(a.sus||"—")}</td><td>${esc(a.acc||"—")}</td><td><span class="tg" style="color:${s==="Sustentado"?"var(--gr)":s==="Incompleto"?"var(--rd)":"var(--am)"}">${s}</span></td><td>${rev(r.c)}</td><td>${jbtn(r.c)}</td></tr>`}).join("")||'<tr><td colspan="10" class="mu">No hay tickets vencidos con estos filtros.</td></tr>'}
-const rev=c=>{if(ast(c)!=="Sustentado")return'<small>Requiere fecha y sustento</small>';const p=(aud[c]||{}).ap;return`<button class="btn${p==="Aprobada"?" p":""}" data-rv="${esc(c)}" data-v="Aprobada">✓ Aprobar</button> <button class="btn${p==="Rechazada"?" p":""}" data-rv="${esc(c)}" data-v="Rechazada">✕ Desaprobar</button>`};
+const A=V.filter(r=>{const a=aud[r.c]||{};return(!es||ast(r.c)===es||a.ap===es||(es==="Candado"&&a.lk))&&(!q||[r.c,r.s,r.r,a.sus,a.acc].join(" ").toLowerCase().includes(q))}).sort((a,b)=>b.p-a.p);
+$("ab").innerHTML=A.map(r=>{const a=aud[r.c]||{},s=ast(r.c);return`<tr${a.lk?' class="lkd"':""}><td>${tkb(r.c)}<br><small>${esc(r.s)}</small></td><td>${esc(r.r)}</td><td>${fr(r.d)}</td><td><b style="color:var(--rd)">${r.p.toFixed(0)} %</b></td><td>${fdt(a.real)}</td><td>${esc(a.sus||"—")}</td><td>${esc(a.acc||"—")}</td><td><span class="tg" style="color:${s==="Sustentado"?"var(--gr)":s==="Incompleto"?"var(--rd)":"var(--am)"}">${s}</span></td><td>${rev(r.c)}</td><td>${jbtn(r.c)}</td></tr>`}).join("")||'<tr><td colspan="10" class="mu">No hay tickets vencidos con estos filtros.</td></tr>'}
+/* ---------- Análisis de sustentos y de acciones inmediatas (tickets con candado) ---------- */
+var LKC=[];
+const TM_S=[["Usuario no disponible o sin respuesta",["no respond","no contest","no estaba","no se encontr","ausente","no disponible","no estuvo","vacacion","no se comunic","no podia","no podian","no pudo","no pudieron","no quiso","no atendi","sin respuesta"]],
+["Reprogramación o coordinación de fecha",["reprogram","agend","coordin","acordad","acordo","programad","posterg","pospus","nueva fecha","cambio de fecha"]],
+["Falta de información o requerimiento incompleto",["no indico","no preciso","no especific","informacion","detalle","incomplet","faltaba","falta de","no adjunt","aclar","no envio","no remiti"]],
+["Aprobación o autorización pendiente",["aprobacion","autoriz","visto bueno","aprobo","jefe","gerente","validacion"]],
+["Proveedor, compra o stock",["proveedor","tercero","externo","garantia","compra","logistic","courier","importacion","stock","repuesto","cotizacion","adquisicion"]],
+["Accesos, permisos o credenciales",["acceso","permiso","credencial","clave","contrasena","vpn","cuenta"]],
+["Falla de sistema o herramienta",["sistema","aplicativo","aplicacion","caida","caido","falla","error","aranda","servidor","lentitud","plataforma","intermiten","no funcion"]],
+["Atención previa o cierre/registro tardío",["cierre","cerro","cerrar","registr","olvid","regulariz","actualiz","se atendio","atendido el","resuelto el","whatsapp","por correo","por telefono","llamada"]],
+["Equipo o configuración técnica",["equipo","laptop","impresora","mouse","monitor","configur","instal","formate","reemplaz"]]];
+const TM_A=[["Coordinación o comunicación con el usuario",["coordin","comunic","contact","llam","correo","whatsapp","inform","notific","avis","confirm"]],
+["Reprogramación o agenda",["reprogram","agend","program","cita","nueva fecha"]],
+["Escalamiento o derivación",["escal","deriv","traslad","apoyo"]],
+["Corrección técnica o solución",["correg","repar","soluci","configur","instal","reemplaz","restablec","actualiz"]],
+["Cierre o regularización del ticket",["cerr","cierre","regulariz"]],
+["Seguimiento o monitoreo",["segu","monitor","revis","verific","validar","control"]],
+["Capacitación u orientación",["capacit","orient","recordar","reforz","sensibiliz","charla","retroaliment"]],
+["Prevención o mejora de proceso",["prevent","proceso","procedimiento","plantilla","checklist","automatiz","alerta","mejora","evitar"]],
+["Compra, reposición o entrega",["compra","reposic","entreg","stock","repuesto"]]];
+const STOPW=new Set("para como pero porque cuando donde desde hasta entre sobre esta este esto estos estas esos esas fueron tiene tienen tenia habia tambien luego ademas segun cada tras ante bajo solo sido ticket caso tarea tareas fecha realizo realizaron quedo quedando debido cual cuales algun alguna ellos ellas ellos sino aunque mismo misma mientras durante despues antes ahora todo todos todas otra otro otros".split(" "));
+const anOtros="Otros / sin clasificar";
+const anTemas=(txt,T)=>{const s=nrm(txt),o=T.filter(t=>t[1].some(w=>s.includes(w))).map(t=>t[0]);return o.length?o:[anOtros]};
+const anPct=(a,b)=>b?Math.round(a/b*100)+" %":"—",anF=v=>v==null||isNaN(v)?"—":v.toFixed(1).replace(".",","),anAvg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const anItems=L=>L.map(r=>{const a=aud[r.c]||{},j=new Date(a.real),pr=!a.real||isNaN(j)||j<r.d?null:wminW(r.d,j)/4.8;return{r,a,sus:(a.sus||"").trim(),acc:(a.acc||"").trim(),pr}});
+const anRev=a=>a.ap==="Aprobada"?'<span class="tg g">Aprobada</span>':a.ap==="Rechazada"?'<span class="tg rd">Desaprobada</span>':'<span class="tg">Sin revisar</span>';
+const anChips=a=>a.map(t=>`<span class="tg">${esc(t)}</span>`).join(" ");
+const anVacio=n=>`<tr><td colspan="${n}" class="mu">Aún no hay tickets con candado. Aplique el candado (🔒) a un ticket sustentado en «Auditoría de vencidos» y aparecerá aquí.</td></tr>`;
+function anTabla(items,T,f){const m={};items.forEach(it=>anTemas(it[f],T).forEach(t=>(m[t]=m[t]||[]).push(it)));
+return Object.entries(m).sort((x,y)=>y[1].length-x[1].length).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.length}</td><td style="min-width:150px"><b>${anPct(v.length,items.length)}</b><div class="bar"><i style="width:${Math.round(v.length/items.length*100)}%;background:var(--ac)"></i></div></td><td>${v.filter(i=>i.a.ap==="Aprobada").length}</td><td>${v.filter(i=>i.a.ap==="Rechazada").length}</td><td>${anF(anAvg(v.map(i=>i.r.p)))} %</td></tr>`).join("")}
+function anPal(items,f){const c={};items.forEach(it=>{new Set(nrm(it[f]).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(w=>w.length>=4&&!STOPW.has(w))).forEach(w=>c[w]=(c[w]||0)+1)});
+const t=Object.entries(c).filter(x=>x[1]>=2).sort((x,y)=>y[1]-x[1]||(x[0]<y[0]?-1:1)).slice(0,18);return t.length?t.map(([w,n])=>`<span class="tg">${esc(w)} · ${n}</span>`).join(""):'<span class="mu">Aún no hay palabras repetidas en al menos 2 tickets.</span>'}
+const anTop=(items,T,f)=>{const m={};items.forEach(it=>anTemas(it[f],T).forEach(t=>m[t]=(m[t]||0)+1));const e=Object.entries(m).sort((x,y)=>y[1]-x[1])[0];return e?e[0]:"—"};
+const anK=(l,v,c,s)=>`<div class="k"><small>${l}</small><b style="color:${c}">${v}</b><small>${s}</small></div>`;
+function renderAn(LK){LKC=anItems(LK);renderS6();renderS7()}
+function renderS6(){const I=LKC,n=I.length,ap=I.filter(i=>i.a.ap==="Aprobada").length,rc=I.filter(i=>i.a.ap==="Rechazada").length,br=I.filter(i=>i.sus.length<40).length;
+const cnt={};I.forEach(i=>{const k=nrm(i.sus).replace(/\s+/g," ").trim();if(k)cnt[k]=(cnt[k]||0)+1});const rp=I.filter(i=>cnt[nrm(i.sus).replace(/\s+/g," ").trim()]>1).length;
+const po=anAvg(I.map(i=>i.r.p)),pr=anAvg(I.filter(i=>i.pr!=null).map(i=>i.pr));
+$("k6").innerHTML=n?[anK("Con candado",n,"var(--or)","sustentados bloqueados"),anK("Aprobadas",ap,"var(--gr)","cuentan como cumplidas"),anK("Desaprobadas",rc,"var(--rd)","siguen fuera"),anK("Sin revisar",n-ap-rc,"var(--am)","aún sin decisión"),anK("Progreso original",anF(po)+" %","var(--rd)","promedio del Excel"),anK("Con fecha real",anF(pr)+" %","var(--gr)","promedio sustentado"),anK("Sustentos breves",br,"var(--am)","menos de 40 caracteres"),anK("Sustentos repetidos",rp,"var(--am)","mismo texto en 2+ tickets")].join(""):"";
+const top=n?anTop(I,TM_S,"sus"):"",L=[];if(n){L.push("Tema más frecuente: <b>"+esc(top)+"</b>.");L.push("Longitud promedio del sustento: "+Math.round(anAvg(I.map(i=>i.sus.length)))+" caracteres.");if(br)L.push(br+" sustento"+(br===1?"":"s")+" muy breve"+(br===1?"":"s")+" (menos de 40 caracteres): conviene pedir más evidencia.");if(rp)L.push(rp+" ticket"+(rp===1?"":"s")+" comparte"+(rp===1?"":"n")+" exactamente el mismo texto de sustento con otro: revisar si es copia.");if(n-ap-rc)L.push((n-ap-rc)+" ticket"+(n-ap-rc===1?"":"s")+" con candado sin aprobar ni desaprobar.")}
+$("l6").innerHTML=n?"<h2>Lectura automática</h2><ul>"+L.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"";$("l6").hidden=!n;
+$("t6").innerHTML=n?anTabla(I,TM_S,"sus"):anVacio(6);$("w6").innerHTML=n?anPal(I,"sus"):'<span class="mu">—</span>';
+const g={};I.forEach(i=>(g[i.r.r]=g[i.r.r]||[]).push(i));
+$("e6").innerHTML=Object.entries(g).sort((x,y)=>y[1].length-x[1].length).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.length}</td><td>${v.filter(i=>i.a.ap==="Aprobada").length}</td><td>${v.filter(i=>i.a.ap==="Rechazada").length}</td><td>${v.filter(i=>i.sus.length<40).length}</td><td>${esc(anTop(v,TM_S,"sus"))}</td></tr>`).join("")||anVacio(6);
+const q=nrm($("q6").value);
+$("d6").innerHTML=I.map(i=>({i,t:anTemas(i.sus,TM_S)})).filter(x=>!q||nrm([x.i.r.c,x.i.r.r,x.i.sus,x.t.join(" ")].join(" ")).includes(q)).sort((x,y)=>y.i.r.p-x.i.r.p).map(({i,t})=>`<tr class="lkd"><td>${tkb(i.r.c)}<br><small>${esc(i.r.s)}</small></td><td>${esc(i.r.r)}</td><td><b style="color:var(--rd)">${i.r.p.toFixed(0)} %</b>${i.pr!=null?'<br><small>real: <b style="color:var(--gr)">'+i.pr.toFixed(0)+" %</b></small>":""}</td><td>${anChips(t)}</td><td class="tx">${esc(i.sus||"—")}</td><td>${anRev(i.a)}</td><td><small>${i.a.lkAt?fdt(i.a.lkAt):"—"}</small></td></tr>`).join("")||anVacio(7)}
+function renderS7(){const I=LKC,n=I.length,C=I.filter(i=>i.acc),S=I.filter(i=>!i.acc),br=C.filter(i=>i.acc.length<25).length;
+const cnt={};C.forEach(i=>{const k=nrm(i.acc).replace(/\s+/g," ").trim();cnt[k]=(cnt[k]||0)+1});const rp=C.filter(i=>cnt[nrm(i.acc).replace(/\s+/g," ").trim()]>1).length;
+$("k7").innerHTML=n?[anK("Con candado",n,"var(--or)","sustentados bloqueados"),anK("Con acción inmediata",C.length,"var(--gr)","registrada"),anK("Sin acción",S.length,S.length?"var(--am)":"var(--tx)","para dar seguimiento"),anK("% con acción",anPct(C.length,n),"var(--tx)","de los candados"),anK("Acciones breves",br,"var(--am)","menos de 25 caracteres"),anK("Acciones repetidas",rp,"var(--am)","mismo texto en 2+ tickets")].join(""):"";
+const L=[];if(n){if(C.length)L.push("Tipo de acción más frecuente: <b>"+esc(anTop(C,TM_A,"acc"))+"</b>.");if(S.length)L.push(S.length+" ticket"+(S.length===1?"":"s")+" con candado sin acción inmediata registrada ("+anPct(S.length,n)+"): se listan primero en el detalle.");if(br)L.push(br+" acción"+(br===1?"":"es")+" muy breve"+(br===1?"":"s")+" (menos de 25 caracteres, p. ej. una sola palabra): pedir más detalle.");if(rp)L.push(rp+" ticket"+(rp===1?"":"s")+" repite"+(rp===1?"":"n")+" el mismo texto de acción.")}
+$("l7").innerHTML=n?"<h2>Lectura automática</h2><ul>"+L.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"";$("l7").hidden=!n||!L.length;
+$("t7").innerHTML=C.length?anTabla(C,TM_A,"acc"):'<tr><td colspan="6" class="mu">'+(n?"Ningún ticket con candado tiene acción inmediata registrada.":"Aún no hay tickets con candado.")+"</td></tr>";$("w7").innerHTML=C.length?anPal(C,"acc"):'<span class="mu">—</span>';
+const g={};I.forEach(i=>(g[i.r.r]=g[i.r.r]||[]).push(i));
+$("e7").innerHTML=Object.entries(g).sort((x,y)=>y[1].length-x[1].length).map(([k,v])=>{const c=v.filter(i=>i.acc);return`<tr><td>${esc(k)}</td><td>${v.length}</td><td>${c.length}</td><td>${v.length-c.length}</td><td>${anPct(c.length,v.length)}</td><td>${esc(c.length?anTop(c,TM_A,"acc"):"—")}</td></tr>`}).join("")||anVacio(6);
+const q=nrm($("q7").value),f=$("f7").value;
+$("d7").innerHTML=I.filter(i=>(!f||(f==="sin"?!i.acc:!!i.acc))&&(!q||nrm([i.r.c,i.r.r,i.acc,i.sus].join(" ")).includes(q))).sort((x,y)=>(!x.acc-!y.acc)||y.r.p-x.r.p).map(i=>`<tr class="lkd"><td>${tkb(i.r.c)}<br><small>${esc(i.r.s)}</small></td><td>${esc(i.r.r)}</td><td class="tx">${i.acc?esc(i.acc):'<span class="tg am">Sin acción registrada</span>'}</td><td>${i.acc?anChips(anTemas(i.acc,TM_A)):"—"}</td><td class="tx"><small>${esc(i.sus||"—")}</small></td><td>${anRev(i.a)}</td></tr>`).join("")||anVacio(6)}
+$("q6").oninput=renderS6;$("q7").oninput=renderS7;$("f7").onchange=renderS7;
+const rev=c=>{if(ast(c)!=="Sustentado")return'<small>Requiere fecha y sustento</small>';const a=aud[c]||{},p=a.ap,L=!!a.lk,d=L?" disabled":"";
+const cap=p==="Aprobada"?'<span style="color:var(--gr)">Aprobada</span>':p==="Rechazada"?'<span style="color:var(--rd)">Desaprobada</span>':"Sin revisar";
+return`<div class="rv"><div class="rvb"><button type="button" class="ib ok${p==="Aprobada"?" on":""}" data-rv="${esc(c)}" data-v="Aprobada" title="Aprobar sustento" aria-label="Aprobar"${d}>${RVI.up}</button><button type="button" class="ib bad${p==="Rechazada"?" on":""}" data-rv="${esc(c)}" data-v="Rechazada" title="Desaprobar sustento" aria-label="Desaprobar"${d}>${RVI.dn}</button><i class="sp"></i><button type="button" class="ib lk${L?" on":""}" data-lk="${esc(c)}" title="${L?"Quitar candado (permite volver a editar)":"Aplicar candado: ya no se podrá editar y pasa a los análisis"}" aria-label="Candado" aria-pressed="${L}">${L?RVI.lk:RVI.ul}</button></div><small class="rc">${cap}${L?" · con candado":""}</small></div>`};
 const closeJ=()=>$("ov").classList.remove("on");
-function openJ(c){const r=rows.find(x=>x.c===c);if(!r)return;const a=aud[c]||{};
-$("md").innerHTML=`<h2>Justificar ${tkb(c,"h")}</h2><div>${esc(r.s)}</div><small>${esc(r.g)} · ${esc(r.r)} · registrado ${fr(r.d)} · progreso ${r.p==null?"—":r.p.toFixed(1)+" %"}</small>
-<label for="jr">Fecha y hora real de atención *</label><input type="datetime-local" id="jr" value="${esc(a.real||"")}">
-<label for="js">Sustento de atención *</label><textarea id="js" placeholder="Explique por qué el ticket superó el 100 % de progreso…">${esc(a.sus||"")}</textarea>
-<label for="ja">Acción inmediata</label><textarea id="ja" placeholder="Qué se hizo o se hará para corregir el caso">${esc(a.acc||"")}</textarea>
-<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" id="jd">Quitar</button><button class="btn" id="jx">Cancelar</button><button class="btn p" id="jg">Guardar y enviar a auditoría</button></div>`;
+function openJ(c){const r=rows.find(x=>x.c===c);if(!r)return;const a=aud[c]||{},L=!!a.lk,dis=L?" disabled":"";
+$("md").innerHTML=`<h2>${L?"Sustento de":"Justificar"} ${tkb(c,"h")}</h2>${L?'<div class="lkn">🔒 Registro con candado: no se puede editar. Quite el candado en «Auditoría de vencidos» para modificarlo.</div>':""}<div>${esc(r.s)}</div><small>${esc(r.g)} · ${esc(r.r)} · registrado ${fr(r.d)} · progreso ${r.p==null?"—":r.p.toFixed(1)+" %"}</small>
+<label for="jr">Fecha y hora real de atención *</label><input type="datetime-local" id="jr"${dis} value="${esc(a.real||"")}">
+<label for="js">Sustento de atención *</label><textarea id="js"${dis} placeholder="Explique por qué el ticket superó el 100 % de progreso…">${esc(a.sus||"")}</textarea>
+<label for="ja">Acción inmediata</label><textarea id="ja"${dis} placeholder="Qué se hizo o se hará para corregir el caso">${esc(a.acc||"")}</textarea>
+<div class="row" style="margin-top:14px;justify-content:flex-end">${L?'<button class="btn" id="jx">Cerrar</button>':'<button class="btn" id="jd">Quitar</button><button class="btn" id="jx">Cancelar</button><button class="btn p" id="jg">Guardar y enviar a auditoría</button>'}</div>`;
 $("ov").classList.add("on");$("jx").onclick=closeJ;
-$("jd").onclick=()=>{delete aud[c];saveA();closeJ();render()};
-$("jg").onclick=()=>{const v=$("jr").value;if(v&&new Date(v)<r.d){alert("La fecha real no puede ser anterior al registro del ticket.");return}const nj={real:v,sus:$("js").value.trim(),acc:$("ja").value.trim()};nj.ap=a.real===nj.real&&(a.sus||"")===nj.sus&&(a.acc||"")===nj.acc?a.ap||"":"";aud[c]=nj;saveA();closeJ();render()}}
+if($("jd"))$("jd").onclick=()=>{delete aud[c];saveA();closeJ();render()};
+if($("jg"))$("jg").onclick=()=>{const v=$("jr").value;if(v&&new Date(v)<r.d){alert("La fecha real no puede ser anterior al registro del ticket.");return}const nj={real:v,sus:$("js").value.trim(),acc:$("ja").value.trim()};nj.ap=a.real===nj.real&&(a.sus||"")===nj.sus&&(a.acc||"")===nj.acc?a.ap||"":"";aud[c]=nj;saveA();closeJ();render()}}
 document.addEventListener("click",e=>{const t=e.target;
 if(!t.closest("#gd"))$("gd").open=false;if(!t.closest("#am"))$("am").open=false;else if(t.closest(".mi"))setTimeout(()=>{$("am").open=false},200);
 if(t.id==="ov")return closeJ();
 const j=t.closest("[data-j]");if(j)return openJ(j.dataset.j);
-const v=t.closest("[data-rv]");if(v){const a=aud[v.dataset.rv];if(a){a.ap=a.ap===v.dataset.v?"":v.dataset.v;saveA();render()}return}
+const lk=t.closest("[data-lk]");if(lk){const c=lk.dataset.lk,a=aud[c];if(a&&ast(c)==="Sustentado"){if(a.lk){if(!confirm("¿Quitar el candado? El ticket saldrá de los análisis de sustentos y de acciones inmediatas y volverá a ser editable."))return;delete a.lk;delete a.lkAt}else{a.lk=true;a.lkAt=new Date().toISOString()}saveA();render();toast(a.lk?"Candado aplicado: el ticket ya no se puede editar y pasó a los análisis de sustentos y de acciones inmediatas.":"Candado quitado: el ticket vuelve a ser editable.")}return}
+const v=t.closest("[data-rv]");if(v){const a=aud[v.dataset.rv];if(a&&!a.lk){a.ap=a.ap===v.dataset.v?"":v.dataset.v;saveA();render()}return}
 if(t.closest("#cf"))return resetAll()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeJ()});
-$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));$("p1").hidden=b.dataset.t!=="p1";$("p2").hidden=b.dataset.t!=="p2";$("p3").hidden=b.dataset.t!=="p3";$("p4").hidden=b.dataset.t!=="p4";$("p5").hidden=b.dataset.t!=="p5";if(b.dataset.t==="p3")renderP4();if(b.dataset.t==="p4")renderInf();if(b.dataset.t==="p5")renderU()};
+$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));$("p1").hidden=b.dataset.t!=="p1";$("p2").hidden=b.dataset.t!=="p2";$("p3").hidden=b.dataset.t!=="p3";$("p4").hidden=b.dataset.t!=="p4";$("p5").hidden=b.dataset.t!=="p5";$("p6").hidden=b.dataset.t!=="p6";$("p7").hidden=b.dataset.t!=="p7";if(b.dataset.t==="p3")renderP4();if(b.dataset.t==="p4")renderInf();if(b.dataset.t==="p5")renderU()};
 $("as").onchange=$("aq").oninput=()=>renderA(CUR);
 function setTH(){document.documentElement.style.setProperty("--th",$("top").offsetHeight+"px")}
 try{new ResizeObserver(setTH).observe($("top"))}catch(e){}setTH();
