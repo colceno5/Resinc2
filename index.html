@@ -47,7 +47,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .jp{color:var(--or);font-weight:700;cursor:help;border-bottom:1px dotted var(--or)}
 .tk{cursor:help}
 #tkp{position:fixed;z-index:9999;display:none;max-width:460px;background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:8px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.2);font-size:12px;line-height:1.5;pointer-events:none}
-#tkp b{font-size:13px}#tkp .m{color:var(--mu);font-size:11px;margin-top:6px}#tkp .d{margin-top:6px;white-space:pre-wrap;word-break:break-word}
+#tkp b{font-size:13px}#tkp .m{color:var(--mu);font-size:11px;margin-top:6px}#tkp .d{margin-top:6px;white-space:pre-wrap;word-break:break-word}#tkp .g{margin-top:8px;border-top:1px solid var(--bd);padding-top:6px}#tkp .r{display:flex;gap:12px;justify-content:space-between}#tkp .r span:first-child{color:var(--mu);white-space:nowrap}#tkp .r span:last-child{text-align:right}
 :root{--gl:36%;--rd2:#fdeaea;--am2:#fff3dc;--gr2:#e3f5ea;--gy2:#eceff3}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gl:64%;--rd2:#3a1f20;--am2:#3a2e14;--gr2:#17301f;--gy2:#262c37}}
 :root[data-theme="dark"]{--gl:64%;--rd2:#3a1f20;--am2:#3a2e14;--gr2:#17301f;--gy2:#262c37}
@@ -927,9 +927,14 @@ function tkb(c,h){return`<b class="tk" data-tk="${esc(c)}">${esc(c)}</b>`}
  const nk=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
  const DK=[/^descripcion/,/^detalle/,/^descripc/,/^comentario/,/^observacion/,/^notas?$/,/^resumen/,/^contenido/,/^texto/];
  const dkey=raw=>{const ks=Object.keys(raw||{}).filter(k=>String(raw[k]).trim());for(const re of DK){const k=ks.find(x=>re.test(nk(x)));if(k)return k}return null};
- function html(r){const raw=r.raw||{},k=dkey(raw),desc=k?clip(raw[k],700):"",jp=jprog(r);
-  const m=[r.e,(r.g||"").replace(/^Grupo /,""),r.r,raw["Categoría"],fr(r.d)].filter(Boolean).map(esc).join(" · ");
-  return`<b>${esc(r.c)}</b><div class="d">${desc?esc(desc):`<span style="color:var(--mu)">Este ticket no tiene descripción en el Excel cargado.${raw["Razón"]?"<br>Razón de cierre: "+esc(clip(raw["Razón"],400)):""}</span>`}</div><div class="m">${m}${jp?"<br>Progreso original "+r.p.toFixed(1)+" % → justificado "+jp.pc.toFixed(1)+" %":""}</div>`}
+ function html(r){const raw=r.raw||{},jp=jprog(r);
+  const m=[r.e,(r.g||"").replace(/^Grupo /,""),r.r,raw["Categoría"]].filter(Boolean).map(esc).join(" · ");
+  const dt=v=>{const d=pdate(v);return d&&!isNaN(d)?fr(d):String(v==null?"":v).trim()};
+  const pc=r.p==null?"":`<b style="color:${r.e==="Cancelado"?"var(--mu)":r.p<=100?"var(--gr)":"var(--rd)"}">${r.p.toFixed(1)} %</b>${r.e!=="Cancelado"?(r.p<=100?" · dentro del SLA":" · fuera del SLA"):""}`;
+  const L=[["Progreso",pc],["Justificado",jp?`<b style="color:var(--gr)">${jp.pc.toFixed(1)} %</b> (aprobado)`:""],["Servicio",esc(raw.Servicio||"")],["ANS",esc(raw.ANS||"")],["Tiempo",esc(raw.Tiempo||"")],
+   ["Registro",esc(dt(raw["Fecha de registro"]||r.d))],["Atención estimada",esc(dt(raw["Fecha de atención estimada"]))],["Atención real",esc(dt(raw["Fecha de atención real"]))],["Cierre",esc(dt(raw["Fecha de cierre"]))]]
+   .filter(x=>x[1]).map(x=>`<div class="r"><span>${x[0]}</span><span>${x[1]}</span></div>`).join("");
+  return`<b>${esc(r.c)}</b><div class="m">${m}</div><div class="g">${L}</div>`}
  function pos(e){const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+16,y=e.clientY+18;if(x+w>innerWidth-8)x=Math.max(8,e.clientX-w-16);if(y+h>innerHeight-8)y=Math.max(8,e.clientY-h-12);tip.style.left=x+"px";tip.style.top=y+"px"}
  document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest("[data-tk]");if(!t){return}const r=find(t.dataset.tk);if(!r)return;tip.innerHTML=html(r);tip.style.display="block";pos(e)});
  document.addEventListener("mousemove",e=>{if(tip.style.display==="block")pos(e)});
