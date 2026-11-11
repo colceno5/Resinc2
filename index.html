@@ -577,8 +577,8 @@ $("icp").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Ar
 const wkS=w=>{const[y,m,d]=w.split("-").map(Number);return dmy(new Date(y,m-1,d))+" – "+dmy(new Date(y,m-1,d+6))};
 function infSerie(w){const B=groupBy(rows.filter(infFl),r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),i=ks.indexOf(w);if(i<0)return[];
 return ks.slice(Math.max(0,i-4),i+1).map(k=>{const K=stat(ev(B[k]));return{w:k,n:K.n,pO:K.pO,pct:K.pct}})}
-function infPng(S){
-const W=1500,H=720,cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d"),F="'Segoe UI',Calibri,Arial,sans-serif";
+function infPng(S,H0){
+const W=1500,H=H0||720,cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d"),F="'Segoe UI',Calibri,Arial,sans-serif";
 const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
 g.fillStyle="#ffffff";g.fillRect(0,0,W,H);
 const L=100,R=40,T=104,Bm=186,pw=W-L-R,ph=H-T-Bm,n=S.length,GR="#1b7f4b",RD="#c62828",AC="#2f5fd0",AM="#b26a00";
@@ -861,7 +861,7 @@ function pptData(){
  /* láminas de la presentación: últimas 5 semanas (gráfico y tabla) y seguimiento diario */
  const _B=groupBy(rows.filter(infFl),r=>ymd(mon(r.d))),_ks=Object.keys(_B).sort(),_k=ymd(mon(d2)),_w=_ks.filter(x=>x<=_k).pop()||_ks[_ks.length-1];
  const _s=_w?infSerie(_w):[],sem=_s.map(s=>({w:s.w,lab:"S"+wkn(s.w),rg:wkS(s.w),n:s.n,pO:s.pO,pct:s.pct}));
- let evoPng=null;try{if(_s.length)evoPng=infPng(_s)}catch(e){console.warn(e)}
+ let evoPng=null;try{if(_s.length)evoPng=infPng(_s,860)}catch(e){console.warn(e)}
  const dias=Object.entries(groupBy(E,r=>ymd(r.d))).sort((x,y)=>x[0]<y[0]?-1:1).map(([k,v])=>{const[yy,mm,dd]=k.split("-").map(Number),st=stat(v);return{k,lab:pad(dd)+"/"+pad(mm),dd,dow:new Date(yy,mm-1,dd).getDay(),n:st.n,pct:st.pct}});
  const semNum=+ymd(mon(d1))===+ymd(mon(d2))?isoW(d1)[1]:null;
  return{titulo:"KPI de Resolución de Incidencias",rango:dmyF(d1)+" – "+dmyF(d2),d1,d2,alcance:infAlc().replace(/^[^:]*:\s*/,""),meta:META,fechaGen:dmyF(new Date()),granTxt:gn,plTxt:pl_,sem,evoPng,dias,semNum,K,canc,sinp,total:LF.length,sinAbiertos:!!S.no,
