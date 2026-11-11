@@ -65,7 +65,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .nologin .w{visibility:hidden}.nologin #lg{visibility:visible}#lf label{display:block;font-weight:600;margin:10px 0 4px}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
-<div class="row"><small id="cs"></small><button class="btn" id="lo" hidden>Salir</button><button class="btn p" id="pptg" title="Genera una presentación PowerPoint (formato ValorA) con el KPI y las métricas del periodo y filtros elegidos">Presentación PPT</button><label class="btn">Cargar Excel de Aranda<input type="file" id="fi" accept=".xlsx,.xls" multiple hidden></label></div></header>
+<div class="row"><small id="cs"></small><button class="btn" id="lo" hidden>Salir</button><button class="btn p" id="pptg" title="Genera una presentación PowerPoint (formato ValorA) con el KPI y las métricas del periodo y filtros elegidos">Presentación PPT</button><button class="btn" id="isv" title="Guarda el estado de la semana del periodo elegido para compararlo en el siguiente informe">Guardar corte</button><button class="btn" id="ixc" title="Un solo Excel con el KPI, la evolución, los especialistas, categorías, estados, planes, cortes y los datos de la semana del periodo elegido, sin información repetida">Excel consolidado</button><label class="btn">Cargar Excel de Aranda<input type="file" id="fi" accept=".xlsx,.xls" multiple hidden></label></div></header>
 <div class="card" id="fc"><div class="row"><b>Periodo</b>
 <select id="pm"><option value="all">Todo el periodo</option><option value="week">Semana del año</option><option value="range">Rango de fechas</option></select>
 <select id="pw" hidden></select><span id="pr" hidden><input type="date" id="pd"> a <input type="date" id="ph"></span>
@@ -96,8 +96,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <div class="tw at"><table style="min-width:3000px"><thead id="h4"></thead><tbody id="b4"></tbody></table></div>
 </div>
 <div id="p4" class="pn" hidden>
-<h2 style="margin:0 0 4px">Informe semanal de cumplimiento y planes</h2>
-<div class="fl"><span id="iw" hidden></span><button class="btn p" id="isv">Guardar corte</button><button class="btn" id="icp">Copiar texto</button><button class="btn" id="ixl" title="Hojas Datos, Soporte e Informe KPI de la semana elegida">Descargar Excel</button><button class="btn" id="ixp" title="Informe ejecutivo: KPI, gráfica de las últimas 5 semanas, resumen de planes y cortes">Excel de planes y cortes</button><button class="btn p" id="ixc" title="Un solo Excel con el KPI, la evolución, los especialistas, categorías, estados, planes, cortes y los datos de la semana elegida, sin información repetida">Excel consolidado</button></div>
 <div class="kp" id="ik"></div>
 <div id="ib"></div>
 </div>
@@ -506,11 +504,6 @@ function repBuildX(w,cons){
  const W=inW.map(mk),items=inS.map(mk),wn=isoW(mon0)[1],nj=W.filter(x=>x.jd).length,M=repModel(items),title="Informe de Resolución de Incidencias – Semana "+wn,rowIdx=new Map(W.map((x,i)=>[x.caso,i]));
  const nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · "+(cons?"Hoja Datos: todos los tickets del periodo (la columna «Incluido en el KPI» marca los que pasan los filtros) · Hoja Análisis: solo tickets incluidos en el KPI. ":"Hoja Datos: todos los tickets del periodo · Hoja Soporte e Informe KPI: solo tickets que pasan los filtros. ")+infAlc()+" · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de "+(cons?"Datos":"Datos y Soporte")+").":"");
  return{wn,fn:"CasosSemana"+wn+"-Reporte.xlsx",nj,items,W,M,lay:layout(M,{title,items,nota,cons:!!cons,rowOf:cons?(it=>2+rowIdx.get(it.caso)):null}),title,n:inW.length}}
-$("ixl").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
- const B=repBuildX(iw);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
- let data;try{if(typeof ExcelJS==="undefined")throw 0;data=await xlsxBuild(B)}catch(e){if(typeof XLSX==="undefined"){toast("No se pudo generar el Excel.");return}data=xlsxFallback(B)}
- dl(B.fn,data);toast("Reporte generado: "+B.fn)};
-
 /* ---------- Informe semanal ---------- */
 const INFK="inf_aranda";let inf=[],iw="";
 try{inf=JSON.parse(localStorage.getItem(INFK)||"[]")}catch(e){inf=[]}
@@ -555,13 +548,12 @@ g+=`<line x1="${Lm}" x2="${w-R}" y1="${Y(META)}" y2="${Y(META)}" stroke="var(--a
 S.forEach((s,j)=>{const pts=inf.map((x,i)=>[i,s[1](x)]).filter(p=>p[1]!=null);g+=`<text x="${Lm+j*170}" y="12" style="fill:${s[2]}">● ${s[0]}</text><polyline fill="none" stroke="${s[2]}" stroke-width="2" points="${pts.map(p=>X(p[0])+","+Y(p[1])).join(" ")}"/>`+pts.map(p=>`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4" fill="${s[2]}"><title>${esc(wkL(inf[p[0]].w))} · ${s[0]}: ${n1(p[1])} %</title></circle>`).join("")});
 g+=inf.map((x,i)=>`<text x="${X(i)}" y="${h-8}" text-anchor="middle">S${wkn(x.w)}</text>`).join("");
 return`<div class="tw" style="padding:8px"><svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:640px;max-width:900px;height:auto" role="img" aria-label="Evolución de KPI y avance">${g}</svg></div><small>Línea punteada: meta ${META} %. Un punto por cada corte guardado.</small>`}
-function renderInf(){const W=rows.length?Object.keys(groupBy(rows,r=>ymd(mon(r.d)))).sort():[];
-if(!W.length){$("iw").innerHTML="";$("ik").innerHTML="";$("ib").innerHTML='<p class="mu">Cargue el Excel de Aranda para generar el informe.</p>';return}
 /* la semana del informe sale del periodo general: «Semana del año» = esa semana; «Rango» = la semana de la fecha final; «Todo» = la última con datos */
+function syncIw(){const W=rows.length?Object.keys(groupBy(rows,r=>ymd(mon(r.d)))).sort():[];if(!W.length)return W;
 const pw=S.mode==="week"&&S.week?S.week:S.mode==="range"&&(S.to||S.from)?ymd(mon(new Date((S.to||S.from)+"T00:00:00"))):null;
-iw=pw?(W.filter(x=>x<=pw).pop()||W[0]):W[W.length-1];
-const rg_=range(),multi=S.mode==="range"&&rg_[0]&&rg_[1]&&ymd(mon(rg_[0]))!==ymd(mon(new Date(rg_[1].getTime()-864e5)));
-$("iw").textContent=wkL(iw)+(S.mode==="all"?" · última semana con datos":multi?" · última semana del periodo":"");
+iw=pw?(W.filter(x=>x<=pw).pop()||W[0]):W[W.length-1];return W}
+function renderInf(){const W=syncIw();
+if(!W.length){$("ik").innerHTML="";$("ib").innerHTML='<p class="mu">Cargue el Excel de Aranda para generar el informe.</p>';return}
 const d=infData(iw),K=d.K,gap=K.pct==null?null:K.pct-META;
 kcards("ik",[["KPI original",n1(K.pO)+" %","Atendidos dentro del SLA"],["KPI justificado",n1(K.pct)+" %",gap==null?"":gap>=0?"Meta alcanzada (+"+n1(gap)+" pts)":"Brecha de "+n1(-gap)+" pts",K.pct==null?"":K.pct>=META?"var(--gr)":"var(--rd)"],["Variación semanal",d.Kp&&d.Kp.pct!=null&&K.pct!=null?sg(K.pct-d.Kp.pct)+" pts":"—","KPI justificado vs semana anterior"],["Planes registrados",d.P.length,d.cnt.ok+" cumplidos · "+d.cnt.cu+" en curso · "+d.cnt.pe+" pendientes"],["Avance promedio",n1(d.avg)+" %","de los planes de acción"],["Requieren atención",d.atn.length,"vencidos, por vencer o incompletos",d.atn.length?"var(--rd)":""]]);
 const tr=d.P.map(x=>{const q=x.q,da=x.old?clamp(q.av)-x.old.av:null,al=alerta(q.est,q.fecha);return`<tr><td><b>${esc(q.id)}</b></td><td>${esc(q.cause||"")}</td><td>${esc((q.resp||"").trim()||"—")}</td><td>${q.fecha?iso2(q.fecha):"—"}</td><td><span class="tg ${al[1]}">${al[0]}</span></td><td>${esc(q.est||"Pendiente")}</td><td>${clamp(q.av)} %${da!=null&&Math.abs(da)>=1?` <small>(${da>0?"+":"−"}${Math.abs(da)})</small>`:""}</td><td>${x.has?`${x.v==null?"<b>Sin datos</b>":`<b style="color:${mvColor(x.k,x.v,x.t)}">${n1(x.v)} %</b>`} <small>meta ${mtL(x.k,x.t)}${x.pv!=null?" · sem. ant. "+n1(x.pv)+" %":""}</small>`:'<small class="mu">Manual</small>'}</td></tr>`}).join("")||'<tr><td colspan="8" class="mu">No hay planes registrados.</td></tr>';
@@ -571,8 +563,7 @@ $("ib").innerHTML=`<p class="mu" style="margin:0 0 8px;font-size:12px">${esc(inf
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px"><div class="card"><h2>Cambios desde el último corte${d.prev?" <small>("+esc(wkL(d.prev.w))+")</small>":""}</h2>${d.prev?li(d.cambios.length?d.cambios:["Sin cambios."]):'<p class="mu" style="margin:4px 0 0">Aún no hay un corte anterior guardado. Usa «Guardar corte» para empezar a comparar.</p>'}</div><div class="card"><h2>Requiere atención</h2>${li(d.atn)}</div></div>
 <div class="card" style="margin-top:12px"><h2>Evolución de los cortes guardados</h2>${infChart()}<div class="tw" style="margin-top:10px"><table style="min-width:600px"><thead><tr><th>Corte</th><th>KPI original</th><th>KPI justificado</th><th>Planes cumplidos</th><th>Avance promedio</th><th></th></tr></thead><tbody>${hist}</tbody></table></div></div>
 <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Texto para correo o chat</summary><pre style="white-space:pre-wrap;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;font:13px/1.5 inherit">${esc(infText(d))}</pre></details>`}
-$("isv").onclick=()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}const d=infData(iw);inf=inf.filter(s=>s.w!==iw).concat([{w:iw,at:new Date().toISOString(),K:{pO:d.K.pO,pct:d.K.pct,n:d.K.n,f:d.K.f},avg:d.avg,P:d.P.map(x=>({id:x.q.id,est:x.q.est||"Pendiente",av:clamp(x.q.av),v:x.v}))}]).sort((a,b)=>a.w>b.w?1:-1);svI();renderInf();toast("Corte guardado: "+wkL(iw))};
-$("icp").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}const t=infText(infData(iw));try{await navigator.clipboard.writeText(t);toast("Informe copiado al portapapeles.")}catch(e){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("Informe copiado al portapapeles.")}catch(x){toast("No se pudo copiar; ábrelo en «Texto para correo o chat».")}a.remove()}};
+$("isv").onclick=()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}syncIw();const d=infData(iw);inf=inf.filter(s=>s.w!==iw).concat([{w:iw,at:new Date().toISOString(),K:{pO:d.K.pO,pct:d.K.pct,n:d.K.n,f:d.K.f},avg:d.avg,P:d.P.map(x=>({id:x.q.id,est:x.q.est||"Pendiente",av:clamp(x.q.av),v:x.v}))}]).sort((a,b)=>a.w>b.w?1:-1);svI();renderInf();toast("Corte guardado: "+wkL(iw))};
 /* ---------- Excel profesional del informe semanal (planes y cortes) ---------- */
 const wkS=w=>{const[y,m,d]=w.split("-").map(Number);return dmy(new Date(y,m-1,d))+" – "+dmy(new Date(y,m-1,d+6))};
 function infSerie(w){const B=groupBy(rows.filter(infFl),r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),i=ks.indexOf(w);if(i<0)return[];
@@ -760,7 +751,7 @@ add("Resumen",[["Informe semanal de cumplimiento y planes de acción"],[d.lab],[
 add("Planes",[["N.º plan","Causa detectada","Responsable","Fecha compromiso","Alerta","Estado","Avance (%)","Medición","Meta","Indicador de la semana (%)","Semana anterior (%)"]].concat(d.P.map(x=>[x.q.id,x.q.cause,x.q.resp,iso2(x.q.fecha),x.a,x.q.est||"Pendiente",clamp(x.q.av),MET[x.k||""].n,x.has?mtL(x.k,x.t):"",x.v==null?"":+x.v.toFixed(1),x.pv==null?"":+x.pv.toFixed(1)])));
 add("Historial",[["Corte","KPI original (%)","KPI justificado (%)","Planes cumplidos","Planes","Avance promedio (%)"]].concat(inf.map(s=>[wkL(s.w),s.K.pO==null?"":+s.K.pO.toFixed(1),s.K.pct==null?"":+s.K.pct.toFixed(1),s.P.filter(x=>x.est==="Cumplido / validado").length,s.P.length,s.avg==null?"":+s.avg.toFixed(1)])));
 return XLSX.write(wb,{type:"array",bookType:"xlsx"})}
-$("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
+$("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}syncIw();
  if(typeof ExcelJS==="undefined"){toast("No se pudo generar el Excel consolidado: falta cargar ExcelJS (revise la conexión).");return}
  const B=repBuildX(iw,true);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
  let data;try{const wb=new ExcelJS.Workbook();wb.creator="Rendimiento de atenciones · Aranda";wb.created=new Date();
@@ -774,9 +765,6 @@ $("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Ar
    z.file(f,x);data=await z.generateAsync({type:"arraybuffer"})}catch(e){console.warn("Filtro de Datos no aplicado:",e)}}}
  catch(e){console.error(e);toast("No se pudo generar el Excel consolidado.");return}
  const fn="Consolidado_Semana"+B.wn+".xlsx";dl(fn,data);toast("Consolidado generado: "+fn)};
-$("ixp").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}const d=infData(iw);let data;
-try{if(typeof ExcelJS==="undefined")throw 0;data=await infXlsxPro(d,infSerie(iw))}catch(e){console.warn(e);if(typeof XLSX==="undefined"){toast("No se pudo generar el Excel.");return}data=infXlsxOld(d)}
-dl("informe_semanal_"+iw+".xlsx",data)};
 $("ib").addEventListener("click",e=>{const b=e.target.closest(".dli");if(!b)return;if(!b.dataset.arm){b.dataset.arm="1";b.textContent="¿Eliminar?";setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent="✕"}},3000);return}inf=inf.filter(s=>s.w!==b.dataset.w);svI();renderInf()});
 /* ---------- Progreso justificado y descripción del ticket al pasar el mouse ---------- */
 function jprog(r){const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r)||r.p==null||r.p<=100)return null;const j=new Date(a.real);if(isNaN(j)||j<r.d)return null;return{pc:Math.round(wminW(r.d,j)/4.8*100)/100,jd:j}}
