@@ -63,36 +63,87 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .at textarea{min-height:64px;font-size:13px;margin:0}.at td .ar{min-width:90px}.at input[type=date].ar{min-width:130px}
 .ts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:8px;display:none;z-index:60;max-width:90%}
 .nologin .w{visibility:hidden}.nologin #lg{visibility:visible}#lf label{display:block;font-weight:600;margin:10px 0 4px}
+
+/* ===== Interfaz limpia y minimalista ===== */
+:root{--bd:#eaecf0}
+[hidden]{display:none!important}
+h1{font-size:18px;font-weight:600}h2{font-size:14px;font-weight:600}
+.card{border:0;border-radius:12px;padding:16px;box-shadow:0 1px 2px rgba(16,24,40,.06),0 0 0 1px var(--bd)}
+.btn,select,input[type=date]{border-color:var(--bd)}
+/* cabecera */
+#top{box-shadow:none;padding:12px 16px 0;margin-bottom:16px}#top header{margin-bottom:10px}
+#cs{font-size:12px}
+.am .ddm{left:auto;right:0;min-width:230px;padding:6px}.am summary{list-style:none}
+.mi{display:flex;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:8px 10px;font:inherit;color:var(--tx);cursor:pointer}.mi:hover{background:var(--ac2)}
+.ddm .mi{padding:8px 10px;gap:0}.card .tw{border:0;box-shadow:none}
+.am hr{border:0;border-top:1px solid var(--bd);margin:6px 0}.am hr:has(+ #lo[hidden]){display:none}
+/* filtros */
+#top #fc{background:none;box-shadow:none;padding:0;margin:0 0 6px}#top #fc>.row{gap:8px}
+#fc b{font-weight:500;color:var(--mu);font-size:12px}#fc label{color:var(--mu)}
+#top select,#top input[type=date],#top #gs{padding:4px 8px;font-size:13px}
+#cf{border:0;background:none;color:var(--ac);padding:4px 8px}
+/* pestañas */
+.tabs,#top .tabs{gap:2px;margin-bottom:0;border-bottom:1px solid var(--bd)}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:8px 12px;color:var(--mu);margin-bottom:-1px}
+.tabs button:hover{color:var(--tx)}.tabs button.on{background:none;color:var(--tx);font-weight:600;border-bottom-color:var(--ac)}
+/* tarjetas KPI: una sola banda con divisores */
+.kp{display:flex;flex-wrap:wrap;gap:0;background:var(--sf);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,40,.06),0 0 0 1px var(--bd)}
+.k{flex:1 1 150px;background:none;border:0;border-radius:0;padding:14px 18px;box-shadow:1px 1px 0 0 var(--bd)}
+.k b{font-size:22px;font-weight:600;letter-spacing:-.01em;margin:2px 0}
+.k.kx{flex-grow:1.6}.k.kx b{font-size:30px}
+.k small{font-size:12px}.k small:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* tablas */
+table{font-variant-numeric:tabular-nums}
+th{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+th,td{padding:9px 12px}tbody tr:last-child td{border-bottom:0}tbody tr:hover>td{background:var(--ac2)}
+.pn .tw{box-shadow:none}td>b:only-child{white-space:nowrap}
+#p2>.card{background:none;box-shadow:none;padding:0}#p2>.card>h2{margin-bottom:12px}
+/* selector de granularidad */
+.seg{border:0;background:var(--gy2);padding:2px;border-radius:8px}.seg button{background:none;color:var(--mu);border-radius:6px;padding:4px 12px}
+.seg button.on{background:var(--sf);color:var(--tx);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.14)}
+/* notas como ⓘ */
+.ii{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--bd);color:var(--mu);font:normal 10px/1 system-ui;margin-left:6px;vertical-align:middle;cursor:help}
+/* gráficos */
+#ch svg,#ac svg{max-width:820px;display:block}svg line[stroke="var(--bd)"]{opacity:.5}
+/* planes: columnas clave (botón «Ver todas las columnas») */
+.pc .at table{min-width:0!important}.pc th{min-width:80px!important}.pc th:nth-child(3){min-width:170px!important}.pc th:nth-child(15){min-width:130px!important}.pc th:nth-child(8),.pc th:nth-child(17){min-width:130px!important}.pc th:nth-child(9){min-width:125px!important}.pc th:nth-child(18),.pc th:nth-child(19){min-width:70px!important}.pc th:nth-child(21){min-width:0!important}.pc th:nth-child(1){min-width:70px!important}
+.pc th:nth-child(2),.pc td:nth-child(2),.pc th:nth-child(4),.pc td:nth-child(4),.pc th:nth-child(5),.pc td:nth-child(5),.pc th:nth-child(6),.pc td:nth-child(6),.pc th:nth-child(7),.pc td:nth-child(7),.pc th:nth-child(10),.pc td:nth-child(10),.pc th:nth-child(11),.pc td:nth-child(11),.pc th:nth-child(12),.pc td:nth-child(12),.pc th:nth-child(13),.pc td:nth-child(13),.pc th:nth-child(14),.pc td:nth-child(14),.pc th:nth-child(16),.pc td:nth-child(16),.pc th:nth-child(20),.pc td:nth-child(20){display:none}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
-<div class="row"><small id="cs"></small><button class="btn" id="lo" hidden>Salir</button><button class="btn p" id="pptg" title="Genera una presentación PowerPoint (formato ValorA) con el KPI y las métricas del periodo y filtros elegidos">Presentación PPT</button><button class="btn" id="isv" title="Guarda el estado de la semana del periodo elegido para compararlo en el siguiente informe">Guardar corte</button><button class="btn" id="ixc" title="Un solo Excel con el KPI, la evolución, los especialistas, categorías, estados, planes, cortes y los datos de la semana del periodo elegido, sin información repetida">Excel consolidado</button><label class="btn">Cargar Excel de Aranda<input type="file" id="fi" accept=".xlsx,.xls" multiple hidden></label></div></header>
+<div class="row"><small id="cs"></small>
+<details id="am" class="dd am"><summary class="btn p">Acciones ▾</summary><div class="ddm">
+<button class="mi" id="pptg" title="Genera una presentación PowerPoint (formato ValorA) con el KPI y las métricas del periodo y filtros elegidos">Presentación PPT</button>
+<button class="mi" id="isv" title="Guarda el estado de la semana del periodo elegido para compararlo en el siguiente informe">Guardar corte</button>
+<button class="mi" id="ixc" title="Un solo Excel con el KPI, la evolución, los especialistas, categorías, estados, planes, cortes y los datos de la semana del periodo elegido, sin información repetida">Excel consolidado</button>
+<label class="mi">Cargar Excel de Aranda<input type="file" id="fi" accept=".xlsx,.xls" multiple hidden></label>
+<hr><button class="mi" id="lo" hidden>Salir</button></div></details></div></header>
 <div class="card" id="fc"><div class="row"><b>Periodo</b>
 <select id="pm"><option value="all">Todo el periodo</option><option value="week">Semana del año</option><option value="range">Rango de fechas</option></select>
 <select id="pw" hidden></select><span id="pr" hidden><input type="date" id="pd"> a <input type="date" id="ph"></span>
 <label><input type="checkbox" id="no"> Excluir tickets aún abiertos</label>
 <b style="margin-left:8px">Grupos</b><details id="gd" class="dd"><summary class="btn" id="gs">Todos</summary><div class="ddm" id="gc"></div></details>
-<button class="btn" id="cf" style="margin-left:auto" title="Restablece periodo, grupos y todos los filtros de las tablas">✕ Limpiar filtros</button>
+<button class="btn" id="cf" hidden style="margin-left:auto" title="Restablece periodo, grupos y todos los filtros de las tablas">✕ Limpiar filtros</button>
 </div></div>
 <div class="tabs" id="tabs"><button class="on" data-t="p1">Rendimiento</button><button data-t="p2">Auditoría de vencidos <span id="nv"></span></button><button data-t="p5">Auditoría de usuarios</button><button data-t="p3">Planes de acción</button><button data-t="p4">Informe semanal</button></div></div>
 <div id="p1"><div class="kp" id="kp"></div>
-<div class="card" id="sc"><div class="row" style="justify-content:space-between"><h2>Evolución del cumplimiento</h2>
+<div class="card" id="sc"><div class="row" style="justify-content:space-between"><h2>Evolución del cumplimiento <i class="ii" title="Línea: % de tickets dentro del 100 % de progreso, por fecha de registro. Barras: tickets evaluados. Línea punteada: meta 95 %.">ⓘ</i></h2>
 <div class="seg" id="gr"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div>
-<div class="tw"><div id="ch"></div></div><small>Línea: % de tickets dentro del 100 % de progreso, por fecha de registro. Barras: tickets evaluados. Línea punteada: meta 95 %.</small></div>
+<div class="tw"><div id="ch"></div></div></div>
 <div class="card" id="sd"><div class="row" style="justify-content:space-between"><h2>Detalle</h2><div class="seg" id="by"><button data-b="p">Por periodo</button><button data-b="g">Por grupo</button><button data-b="r">Por especialista</button></div></div><div class="tw"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div></div>
 <div class="card" id="st"><div class="row" style="justify-content:space-between"><h2>Tickets del periodo <small id="tc"></small></h2>
 <div class="row"><input class="in" id="tq" placeholder="Buscar caso, asunto, especialista…">
 <select id="tf"><option value="">Todos</option><option value="Fuera">Fuera del 100 %</option><option value="Dentro">Dentro del 100 %</option><option value="Justificado">Justificados (aprobados)</option><option value="Cancelado">Cancelados</option><option value="Sin progreso">Sin progreso</option></select></div></div>
 <div class="tw"><table style="min-width:900px"><thead id="tth"><tr><th data-k="c">Caso<i></i></th><th data-k="s">Asunto<i></i></th><th data-k="e">Estado<i></i></th><th data-k="g">Grupo<i></i></th><th data-k="r">Especialista<i></i></th><th data-k="d">Registro<i></i></th><th data-k="p">Progreso<i></i></th><th data-k="t">Resultado<i></i></th><th data-k="j">Justificación<i></i></th></tr></thead><tbody id="tt"></tbody></table></div></div>
 </div>
-<div id="p2" hidden><div class="card"><h2>Auditoría de vencidos</h2><p class="mu" style="margin:0 0 10px;font-size:12px">Tickets cerrados o resueltos fuera del 100 % de progreso según el periodo y los grupos elegidos arriba. Cada justificación registrada con el botón «Justificar» llega aquí y también se puede editar desde esta pestaña. Se guarda en este navegador. Al <b>aprobar</b> una justificación completa, el ticket cuenta como cumplido y el KPI de la pestaña Rendimiento se recalcula; al <b>desaprobar</b> sigue fuera. Si edita una justificación aprobada, la revisión se reinicia.</p>
+<div id="p2" hidden><div class="card"><h2>Auditoría de vencidos <i class="ii" title="Tickets cerrados o resueltos fuera del 100 % de progreso según el periodo y los grupos elegidos arriba. Cada justificación registrada con el botón «Justificar» llega aquí y también se puede editar desde esta pestaña. Se guarda en este navegador. Al aprobar una justificación completa, el ticket cuenta como cumplido y el KPI de la pestaña Rendimiento se recalcula; al desaprobar sigue fuera. Si edita una justificación aprobada, la revisión se reinicia.">ⓘ</i></h2>
 <div class="kp" id="ak"></div>
-<div class="card"><div class="row" style="justify-content:space-between"><h2>Evolución: sin sustentar vs. sustentado</h2><div class="seg" id="gr2"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div><div class="tw"><div id="ac"></div></div><small>Cumplimiento de todos los tickets evaluados, por fecha de registro. Rojo: tal como viene en el Excel, sin justificaciones. Verde: sumando los tickets cuya justificación fue aprobada.</small></div>
+<div class="card"><div class="row" style="justify-content:space-between"><h2>Evolución: sin sustentar vs. sustentado <i class="ii" title="Cumplimiento de todos los tickets evaluados, por fecha de registro. Rojo: tal como viene en el Excel, sin justificaciones. Verde: sumando los tickets cuya justificación fue aprobada.">ⓘ</i></h2><div class="seg" id="gr2"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div><div class="tw"><div id="ac"></div></div></div>
 <div class="row" style="margin-bottom:10px"><select id="as"><option value="">Todos los estados</option><option>Pendiente</option><option>Incompleto</option><option>Sustentado</option><option value="Aprobada">Aprobadas</option><option value="Rechazada">Desaprobadas</option></select><input class="in" id="aq" placeholder="Buscar ticket, especialista, sustento…"></div>
 <div class="tw"><table style="min-width:1100px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Registro</th><th>Progreso</th><th>Fecha real de atención</th><th>Sustento</th><th>Acción inmediata</th><th>Estado</th><th>Revisión</th><th></th></tr></thead><tbody id="ab"></tbody></table></div></div></div>
-<div id="p3" class="pn" hidden>
+<div id="p3" class="pn pc" hidden>
 <h2 style="margin:0 0 4px">Planes de acción por causa raíz</h2>
 <div class="kp" id="k4"></div>
-<div class="fl"><button class="btn p" id="add4">Agregar plan</button><button class="btn" id="x4">Descargar Excel</button></div>
+<div class="fl"><button class="btn p" id="add4">Agregar plan</button><button class="btn" id="x4">Descargar Excel</button><button class="btn" id="t4c">Ver todas las columnas</button></div>
 <div class="tw at"><table style="min-width:3000px"><thead id="h4"></thead><tbody id="b4"></tbody></table></div>
 </div>
 <div id="p4" class="pn" hidden>
@@ -177,11 +228,11 @@ $("pm").value=S.mode;$("pw").value=S.week;$("pw").hidden=S.mode!=="week";$("pr")
 document.querySelectorAll("#gr button,#gr2 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));document.querySelectorAll("#by button").forEach(b=>b.classList.toggle("on",b.dataset.b===S.by));
 const L=sel(),E=ev(L),K=stat(E),canc=L.filter(r=>r.e==="Cancelado").length,sinp=L.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
 const gap=K.pct==null?null:K.pct-META;
-$("kp").innerHTML=[["Evaluados",K.n,"var(--tx)","sin cancelados"],["Dentro del 100 %",K.a,"var(--gr)",K.a-K.o?"incluye "+(K.a-K.o)+" aprobados":"atendidos a tiempo"],["Fuera del 100 %",K.f,K.f?"var(--rd)":"var(--tx)","excedidos"],["Meta",META+" %","var(--tx)","tickets dentro del 100 %"],["KPI original",fp(K.pO),"var(--tx)","Atendidos dentro del SLA"],["KPI justificado",fp(K.pct),col(K.pct),gap==null?"":(gap>=0?"Meta alcanzada (+":"Brecha de ")+Math.abs(gap).toFixed(1)+" pts"+(gap>=0?")":"")]].map(c=>`<div class="k"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
+$("kp").innerHTML=[["Evaluados",K.n,"var(--tx)","sin cancelados"],["Dentro del 100 %",K.a,"var(--gr)",K.a-K.o?"incluye "+(K.a-K.o)+" aprobados":"atendidos a tiempo"],["Fuera del 100 %",K.f,K.f?"var(--rd)":"var(--tx)","excedidos"],["Meta",META+" %","var(--tx)","tickets dentro del 100 %"],["KPI original",fp(K.pO),"var(--tx)","Atendidos dentro del SLA"],["KPI justificado",fp(K.pct),col(K.pct),gap==null?"":(gap>=0?"Meta alcanzada (+":"Brecha de ")+Math.abs(gap).toFixed(1)+" pts"+(gap>=0?")":"")]].map(c=>`<div class="${kcl(c[0])}"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
 const pts=buckets(E);lineChart($("ch"),pts,SER1,1);lineChart($("ac"),pts,SER2);CUR=E;
 let H,Rw;if(S.by==="p"){H=["Periodo"];Rw=pts.map(p=>[lab(p.k,1),p]).reverse()}else{const f=S.by==="g"?r=>r.g||"—":r=>r.r;H=[S.by==="g"?"Grupo":"Especialista"];Rw=Object.entries(groupBy(E,f)).map(([k,v])=>[k,stat(v)]).sort((a,b)=>b[1].n-a[1].n)}
 $("th").innerHTML="<tr><th>"+H[0]+"</th><th>Evaluados</th><th>Dentro 100 %</th><th>Fuera</th><th>Cumplimiento</th></tr>";
-$("tb").innerHTML=Rw.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td><td>${s.a}</td><td>${s.f}</td><td><b style="color:${col(s.pct)}">${fp(s.pct)}</b><div class="bar"><i style="width:${Math.min(s.pct,100)}%;background:${col(s.pct)}"></i></div></td></tr>`).join("")||'<tr><td colspan="5" class="mu">Sin datos.</td></tr>';renderT(L);renderA(E);renderP4();if(!$("p4").hidden)renderInf();if(!$("p5").hidden)renderU()}
+$("tb").innerHTML=Rw.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td><td>${s.a}</td><td>${s.f}</td><td><b style="color:${col(s.pct)}">${fp(s.pct)}</b><div class="bar"><i style="width:${Math.min(s.pct,100)}%;background:${col(s.pct)}"></i></div></td></tr>`).join("")||'<tr><td colspan="5" class="mu">Sin datos.</td></tr>';renderT(L);renderA(E);renderP4();if(!$("p4").hidden)renderInf();if(!$("p5").hidden)renderU();$("cf").hidden=!(S.mode!=="all"||S.groups||S.esp||S.no||tq||tf)}
 let aud={};try{aud=JSON.parse(localStorage.getItem("aud_rend")||"{}")}catch(e){aud={}}
 const saveA=()=>{try{localStorage.setItem("aud_rend",JSON.stringify(aud))}catch(e){}cloudKick()};
 const ast=c=>{const a=aud[c]||{},s=(a.sus||"").trim();return a.real&&s?"Sustentado":(a.real||s||(a.acc||"").trim())?"Incompleto":"Pendiente"};
@@ -190,7 +241,7 @@ const fr=d=>dmy(d)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinute
 const fdt=v=>{if(!v)return"—";const d=new Date(v);return isNaN(d)?"—":fr(d)};
 function renderA(E){const KA=stat(E),V=E.filter(r=>r.p>100&&isCl(r)),n={Pendiente:0,Incompleto:0,Sustentado:0};V.forEach(r=>n[ast(r.c)]++);
 $("nv").textContent=V.length?"("+V.length+")":"";
-$("ak").innerHTML=[["Vencidos",V.length,"var(--tx)","fuera del 100 %"],["Pendientes",n.Pendiente,"var(--am)","sin justificar"],["Sustentados",n.Sustentado,"var(--gr)","con fecha y sustento"],["Aprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Aprobada").length,"var(--gr)","cuentan como cumplidas"],["Desaprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Rechazada").length,"var(--rd)","siguen fuera"],["KPI ajustado",fp(KA.pct),col(KA.pct),"con las aprobadas"]].map(c=>`<div class="k"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
+$("ak").innerHTML=[["Vencidos",V.length,"var(--tx)","fuera del 100 %"],["Pendientes",n.Pendiente,"var(--am)","sin justificar"],["Sustentados",n.Sustentado,"var(--gr)","con fecha y sustento"],["Aprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Aprobada").length,"var(--gr)","cuentan como cumplidas"],["Desaprobadas",V.filter(r=>(aud[r.c]||{}).ap==="Rechazada").length,"var(--rd)","siguen fuera"],["KPI ajustado",fp(KA.pct),col(KA.pct),"con las aprobadas"]].map(c=>`<div class="${kcl(c[0])}"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
 const es=$("as").value,q=$("aq").value.toLowerCase();
 const A=V.filter(r=>{const a=aud[r.c]||{};return(!es||ast(r.c)===es||a.ap===es)&&(!q||[r.c,r.s,r.r,a.sus,a.acc].join(" ").toLowerCase().includes(q))}).sort((a,b)=>b.p-a.p);
 $("ab").innerHTML=A.map(r=>{const a=aud[r.c]||{},s=ast(r.c);return`<tr><td>${tkb(r.c)}<br><small>${esc(r.s)}</small></td><td>${esc(r.r)}</td><td>${fr(r.d)}</td><td><b style="color:var(--rd)">${r.p.toFixed(0)} %</b></td><td>${fdt(a.real)}</td><td>${esc(a.sus||"—")}</td><td>${esc(a.acc||"—")}</td><td><span class="tg" style="color:${s==="Sustentado"?"var(--gr)":s==="Incompleto"?"var(--rd)":"var(--am)"}">${s}</span></td><td>${rev(r.c)}</td><td>${jbtn(r.c)}</td></tr>`}).join("")||'<tr><td colspan="10" class="mu">No hay tickets vencidos con estos filtros.</td></tr>'}
@@ -206,7 +257,7 @@ $("ov").classList.add("on");$("jx").onclick=closeJ;
 $("jd").onclick=()=>{delete aud[c];saveA();closeJ();render()};
 $("jg").onclick=()=>{const v=$("jr").value;if(v&&new Date(v)<r.d){alert("La fecha real no puede ser anterior al registro del ticket.");return}const nj={real:v,sus:$("js").value.trim(),acc:$("ja").value.trim()};nj.ap=a.real===nj.real&&(a.sus||"")===nj.sus&&(a.acc||"")===nj.acc?a.ap||"":"";aud[c]=nj;saveA();closeJ();render()}}
 document.addEventListener("click",e=>{const t=e.target;
-if(!t.closest("#gd"))$("gd").open=false;
+if(!t.closest("#gd"))$("gd").open=false;if(!t.closest("#am"))$("am").open=false;else if(t.closest(".mi"))setTimeout(()=>{$("am").open=false},200);
 if(t.id==="ov")return closeJ();
 const j=t.closest("[data-j]");if(j)return openJ(j.dataset.j);
 const v=t.closest("[data-rv]");if(v){const a=aud[v.dataset.rv];if(a){a.ap=a.ap===v.dataset.v?"":v.dataset.v;saveA();render()}return}
@@ -250,7 +301,8 @@ const ta4=(v,k,c)=>`<textarea class="ar ${c||""}" data-k="${k}">${esc(v)}</texta
 const in4=(v,k,t,c)=>`<input type="${t}" class="ar ${c||""}" data-k="${k}" value="${esc(v)}"${t==="number"?' min="0" max="100"':""}>`;
 const se4=(o,v,k,c)=>`<select class="ar ${c||""}" data-k="${k}">${o.map(x=>`<option${x===v?" selected":""}>${esc(x)}</option>`).join("")}</select>`;
 const alTag=(e,f)=>{const a=alerta(e,f);return `<span class="tg ${a[1]}">${a[0]}</span>`};
-const kcards=(id,K)=>{$(id).innerHTML=K.map(c=>`<div class="k" style="cursor:default"><small>${c[0]}</small><b style="color:${c[3]||"inherit"}">${c[1]}</b><small>${c[2]}</small></div>`).join("")};
+const kcl=l=>/^KPI (justificado|ajustado)/.test(l)?"k kx":"k";
+const kcards=(id,K)=>{$(id).innerHTML=K.map(c=>`<div class="${kcl(c[0])}" style="cursor:default"><small>${c[0]}</small><b style="color:${c[3]||"inherit"}">${c[1]}</b><small>${c[2]}</small></div>`).join("")};
 function dbSet(){cloudKick()}
 function dbDel(){cloudKick()}
 const xl=(name,sheet,aoa)=>{if(typeof XLSX==="undefined"){toast("No se cargó el exportador de Excel.");return}const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aoa),sheet);dl(name,XLSX.write(wb,{type:"array",bookType:"xlsx"}))};
@@ -808,7 +860,8 @@ function renderU(){const el=$("uk"),L=sel();
  el.innerHTML=h;
  const C=groupBy(V.filter(x=>x.nm),x=>x.nm),T=Object.entries(C).map(([n,a])=>({n,c:a.length,e:a[0].e})).sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"es")).slice(0,20);
  $("ut").innerHTML=T.map(x=>`<tr><td>${esc(x.n)}</td><td><span class="tg" style="color:${x.e?"var(--gr)":"var(--ac)"}">${x.e?"Especialista":"Usuario"}</span></td><td>${x.c}</td><td>${pc(x.c)} %</td></tr>`).join("")}
-window.APP_BUILD="2026-11-10-auditoria-usuarios";
+$("t4c").onclick=()=>{const c=$("p3").classList.toggle("pc");$("t4c").textContent=c?"Ver todas las columnas":"Ver menos columnas"};
+window.APP_BUILD="2026-11-10-ui-minimalista";
 /* ---------- Nube compartida (Supabase) ---------- */
 /* ---------- Presentación PPT para gerencia (formato de la plantilla ValorA) ---------- */
 /* Usa el mismo periodo (todo / semana / rango de fechas) y los mismos filtros de grupos, especialistas y «excluir abiertos» del encabezado. */
