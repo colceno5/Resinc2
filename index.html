@@ -924,10 +924,12 @@ function tkb(c,h){return`<b class="tk" data-tk="${esc(c)}">${esc(c)}</b>`}
 (function(){let idx=null,idxFor=null;const tip=document.createElement("div");tip.id="tkp";document.body.appendChild(tip);
  const find=c=>{if(idxFor!==rows){idx=new Map(rows.map(r=>[r.c,r]));idxFor=rows}return idx.get(c)};
  const clip=(t,n)=>{t=String(t==null?"":t).replace(/<[^>]*>/g," ").replace(/[ \t]+/g," ").trim();return t.length>n?t.slice(0,n)+"…":t};
- const dkey=raw=>Object.keys(raw||{}).find(k=>/^descripci[oó]n/i.test(k)&&String(raw[k]).trim());
+ const nk=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+ const DK=[/^descripcion/,/^detalle/,/^descripc/,/^comentario/,/^observacion/,/^notas?$/,/^resumen/,/^contenido/,/^texto/];
+ const dkey=raw=>{const ks=Object.keys(raw||{}).filter(k=>String(raw[k]).trim());for(const re of DK){const k=ks.find(x=>re.test(nk(x)));if(k)return k}return null};
  function html(r){const raw=r.raw||{},k=dkey(raw),desc=k?clip(raw[k],700):"",jp=jprog(r);
   const m=[r.e,(r.g||"").replace(/^Grupo /,""),r.r,raw["Categoría"],fr(r.d)].filter(Boolean).map(esc).join(" · ");
-  return`<b>${esc(r.c)}</b> — ${esc(r.s||"(sin asunto)")}<div class="d">${desc?esc(desc):`<span style="color:var(--mu)">${raw["Razón"]?esc(clip(raw["Razón"],400)):"Este ticket no tiene descripción en el Excel cargado."}</span>`}</div><div class="m">${m}${jp?"<br>Progreso original "+r.p.toFixed(1)+" % → justificado "+jp.pc.toFixed(1)+" %":""}</div>`}
+  return`<b>${esc(r.c)}</b><div class="d">${desc?esc(desc):`<span style="color:var(--mu)">Este ticket no tiene descripción en el Excel cargado.${raw["Razón"]?"<br>Razón de cierre: "+esc(clip(raw["Razón"],400)):""}</span>`}</div><div class="m">${m}${jp?"<br>Progreso original "+r.p.toFixed(1)+" % → justificado "+jp.pc.toFixed(1)+" %":""}</div>`}
  function pos(e){const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+16,y=e.clientY+18;if(x+w>innerWidth-8)x=Math.max(8,e.clientX-w-16);if(y+h>innerHeight-8)y=Math.max(8,e.clientY-h-12);tip.style.left=x+"px";tip.style.top=y+"px"}
  document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest("[data-tk]");if(!t){return}const r=find(t.dataset.tk);if(!r)return;tip.innerHTML=html(r);tip.style.display="block";pos(e)});
  document.addEventListener("mousemove",e=>{if(tip.style.display==="block")pos(e)});
