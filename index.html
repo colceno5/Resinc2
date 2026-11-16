@@ -274,7 +274,7 @@ $("gc").innerHTML='<div class="bt"><button class="btn" data-gb="*">Todos</button
 $("gs").textContent=!S.groups?"Todos ("+gs.length+")":S.groups.size+" de "+gs.length;
 const wk=groupBy(rows.filter(r=>(!S.groups||S.groups.has(r.g))&&(!S.esp||S.esp.has(r.r))),r=>ymd(mon(r.d))),wks=Object.keys(wk).sort().reverse();
 if(rows.length&&(!S.week||!wks.includes(S.week)))S.week=wks[0]||"";
-$("pw").innerHTML=wks.map(k=>{const[y,m,d]=k.split("-").map(Number);return`<option value="${k}">Semana ${isoW(new Date(y,m-1,d))[1]} · ${dmy(new Date(y,m-1,d))} – ${dmy(new Date(y,m-1,d+6))} (${wk[k].length})</option>`}).join("");
+$("pw").innerHTML=wks.map(k=>{const[y,m,d]=k.split("-").map(Number);return`<option value="${k}">Semana ${isoW(new Date(y,m-1,d))[1]} · ${dmy(new Date(y,m-1,d))} – ${dmy(new Date(y,m-1,d+6))}/${new Date(y,m-1,d+6).getFullYear()} (${wk[k].length})</option>`}).join("");
 $("pm").value=S.mode;$("pw").value=S.week;$("pw").hidden=S.mode!=="week";$("pr").hidden=S.mode!=="range";$("pd").value=S.from;$("ph").value=S.to;$("no").checked=S.no;saveF();
 document.querySelectorAll("#gr button,#gr2 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));document.querySelectorAll("#by button").forEach(b=>b.classList.toggle("on",b.dataset.b===S.by));
 const L=sel(),E=ev(L),K=stat(E),canc=L.filter(r=>r.e==="Cancelado").length,sinp=L.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
@@ -599,7 +599,7 @@ async function xlsxBuild(B,wb0,cons){
   [...usr].sort((a,b)=>(a.o||0)-(b.o||0)).forEach(u=>{const k=ukey(u.n);if(!look.has(k))look.set(k,u)}); /* BUSCARV devuelve la primera coincidencia */
   const wd=wb.addWorksheet("Datos");wd.addRow(HEADC);
   B.W.forEach((x,i)=>{const a=rowArr(x),cl=a[7]==null?null:(String(a[7]).trim()||null),u=cl?look.get(ukey(cl)):null,r=i+2,fm="+VLOOKUP($G"+r+",Hoja1!$A$1:$F$"+LM+",",
-   row=wd.addRow([a[0],a[2],a[3],a[4],a[5],a[6],cl,null,null,a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],inc.has(x.caso)?"Sí":"No",autorDe(x)]);
+   row=wd.addRow([a[0],a[2],a[3],a[4],a[5],a[6],cl,null,null,a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],inc.has(x.caso)?"Sí":"No",(x.raw&&String(x.raw.Autor==null?"":x.raw.Autor).trim())||null]);
    row.getCell(8).value={formula:fm+"6,FALSE)",result:u?(u.e||0):{error:"#N/A"}};
    row.getCell(9).value={formula:fm+"2,FALSE)",result:u?(u.a||0):{error:"#N/A"}};
    if(!inc.has(x.caso))row.hidden=true});
@@ -669,7 +669,6 @@ function xlsxFallback(B){
 /* ---------- Reporte Excel de la semana (Datos · Soporte · Informe KPI) ---------- */
 const GDEV="Grupo Soporte de desarrollo",dmyF=d=>dmy(d)+"/"+d.getFullYear();
 const fx=d=>dmyF(d)+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0");
-function autorDe(it){const r=it.raw||{};let v=r.Autor;if(v==null){const k=Object.keys(r).find(x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim()==="autor");v=k?r[k]:null}v=v==null?"":String(v).trim();return v||null}
 function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],it.np?null:fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":it.ap?"✔ Justificado · aprobado en auditoría":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
 function repBuildX(w,cons){
  const[y,m,d0]=w.split("-").map(Number),mon0=new Date(y,m-1,d0),sun=new Date(y,m-1,d0+6),fin=new Date(y,m-1,d0+7);
@@ -787,6 +786,34 @@ else if(t==="b"){g.fillStyle="#dce5f8";g.fillRect(lx+4,ly-12,36,24)}
 else{g.setLineDash([10,7]);g.strokeStyle=AM;g.lineWidth=3;g.beginPath();g.moveTo(lx,ly);g.lineTo(lx+44,ly);g.stroke();g.setLineDash([])}
 g.fillStyle="#1b1f27";g.textAlign="left";g.fillText(tx,lx+56,ly);lx+=56+g.measureText(tx).width+40});
 return cv.toDataURL("image/png")}
+/* ---------- ¿Quién crea los tickets? para la hoja «Informe» del consolidado ---------- */
+function crEsp(){const team=rows.map(r=>r.r).filter(x=>x&&x!=="(sin responsable)"),TS=[...new Set(team.map(x=>nmU(x).sort().join(" ")))].map(x=>new Set(x.split(" "))),cache=new Map();
+ return name=>{if(cache.has(name))return cache.get(name);const t=new Set(nmU(name));let ok=false;if(t.size)for(const m of TS){let c=0;t.forEach(x=>{if(m.has(x))c++});if(c>=2&&c===Math.min(t.size,m.size)){ok=true;break}if(t.size===1&&m.size===1&&c===1){ok=true;break}}cache.set(name,ok);return ok}}
+/* misma regla del aplicativo: el creador sale de la columna «Autor»; es especialista si coincide con un responsable de los tickets cargados */
+function crData(w){const isE=crEsp(),B=groupBy(rows,r=>ymd(mon(r.d))),ks=Object.keys(B).sort(),i=ks.indexOf(w);if(i<0)return null;
+ const cl=l=>{let u=0,e=0,s=0;l.forEach(r=>{const k=creadorKey(r.raw),nm=k?String(r.raw[k]).trim():"";if(!nm){s++;return}isE(nm)?e++:u++});return{u,e,s,n:u+e}};
+ const S=ks.slice(Math.max(0,i-4),i+1).map(k=>({w:k,...cl(B[k])})),
+  D=Object.entries(groupBy(B[w],r=>ymd(r.d))).sort((a,b)=>a[0]<b[0]?-1:1).map(([k,l])=>({k,...cl(l)}));
+ return{S,D,sel:S[S.length-1]}}
+function crPng(P){
+ const W=1500,H=720,cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d"),F="'Segoe UI',Calibri,Arial,sans-serif",BU="#4a5fc8",GE="#437f50",AC="#2f5fd0";
+ const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
+ g.fillStyle="#ffffff";g.fillRect(0,0,W,H);
+ const L=90,R=40,T=104,Bm=170,pw=W-L-R,ph=H-T-Bm,n=P.length,mx=Math.max(1,...P.map(p=>p.n)),stp=[1,2,5,10,20,25,50,100,200,250,500,1000].find(x=>mx/x<=5)||Math.ceil(mx/5),top=Math.ceil(mx/stp)*stp,Y=v=>T+(top-v)/top*ph,step=pw/Math.max(1,n),X=i=>L+step*(i+.5),bw=Math.min(150,step*.5);
+ P.forEach((p,i)=>{if(p.sel){rr(L+step*i+10,T-30,step-20,ph+30+Bm-34,20);g.fillStyle="#eef3fd";g.fill()}});
+ g.font="500 24px "+F;g.textAlign="right";g.textBaseline="middle";g.lineWidth=2;
+ for(let v=0;v<=top;v+=stp){g.strokeStyle=v?"#e8ebf0":"#cfd5df";g.beginPath();g.moveTo(L,Y(v));g.lineTo(W-R,Y(v));g.stroke();g.fillStyle="#667085";g.fillText(String(v),L-14,Y(v))}
+ P.forEach((p,i)=>{const x=X(i)-bw/2,hu=p.u/top*ph,he=p.e/top*ph,yb=Y(0);
+  if(p.u){g.fillStyle=BU;g.fillRect(x,yb-hu,bw,hu);if(hu>=34){g.font="700 28px "+F;g.fillStyle="#fff";g.textAlign="center";g.textBaseline="middle";g.fillText(String(p.u),X(i),yb-hu/2)}}
+  if(p.e){g.fillStyle=GE;g.fillRect(x,yb-hu-he,bw,he);if(he>=34){g.font="700 28px "+F;g.fillStyle="#fff";g.textAlign="center";g.textBaseline="middle";g.fillText(String(p.e),X(i),yb-hu-he/2)}}
+  g.font="700 30px "+F;g.fillStyle="#1b1f27";g.textAlign="center";g.textBaseline="bottom";g.fillText(String(p.n),X(i),yb-hu-he-8);
+  g.textBaseline="middle";g.font="700 32px "+F;g.fillStyle=p.sel?AC:"#1b1f27";g.fillText(p.lab,X(i),yb+40);
+  g.font="500 22px "+F;g.fillStyle="#667085";g.fillText(p.sub,X(i),yb+78);
+  g.font="500 21px "+F;g.fillStyle="#98a2b3";g.fillText(p.n?Math.round(p.e/p.n*100)+" % especialistas":"sin tickets",X(i),yb+108);
+  if(p.sel){rr(X(i)-112,yb+128,224,38,19);g.fillStyle=AC;g.fill();g.font="700 20px "+F;g.fillStyle="#fff";g.fillText("Semana seleccionada",X(i),yb+148)}});
+ g.font="500 24px "+F;g.textBaseline="middle";g.textAlign="left";let lx=L;const ly=46;
+ [["Usuarios",BU],["Especialistas",GE]].forEach(([t,c])=>{g.fillStyle=c;g.fillRect(lx,ly-12,36,24);g.fillStyle="#1b1f27";g.fillText(t,lx+48,ly);lx+=48+g.measureText(t).width+44});
+ return cv.toDataURL("image/png")}
 async function infXlsxPro(d,S,wb0,cons){
 const K=d.K,wb=wb0||new ExcelJS.Workbook();if(!wb0){wb.creator="Rendimiento de atenciones · Aranda";wb.created=new Date()}
 const NV="FF1B2E6B",AC="FF2F5FD0",AC2="FFE8EEFC",GR="FF1B7F4B",RD="FFC62828",AM="FFB26A00",MU="FF667085",TX="FF1B1F27",BD="FFE3E6EB",TL="FFF3F6FC",WH="FFFFFFFF",FN="Calibri";
@@ -843,6 +870,33 @@ blk(rr_,c,c+1,n1(s.pct)+" %",{sz:10,b:true,fill:f,bb,h:"center",fc:s.pct==null?M
 const rm=r0+2+S.length;blk(rm,tc,tc+4,"Meta SLA",{sz:9,i:true,fc:AM,ind:1,bb:ln("thin",BD)});blk(rm,tc+5,tc+8,META+" %",{sz:10,b:true,fc:AM,h:"center",bb:ln("thin",BD)});
 blk(rm+2,tc,CL,{richText:[{text:"Cómo leer el gráfico\n",font:{name:FN,size:10,bold:true,color:{argb:NV}}},{text:"La línea azul es el KPI justificado (tickets dentro del 100 % más las justificaciones aprobadas); los puntos verdes alcanzan la meta y los rojos no. La línea gris punteada es el KPI original del Excel de Aranda y las barras muestran los tickets evaluados en cada semana.",font:{name:FN,size:9,color:{argb:MU}}}]},{fill:TL,v:"top",ind:1},r0+12);
 r=r0+14;H(r,12);ws.getRow(r).addPageBreak();r++;
+// ===== ¿Quién crea los tickets? (solo en el consolidado) =====
+if(cons){const CR=crData(d.w),BLU="FF4A5FC8",GRE="FF437F50",pc=(a,t)=>t?Math.round(a/t*100):0,DN=["dom","lun","mar","mié","jue","vie","sáb"],tcc=C0+15;
+ r=sec(r,"¿Quién crea los tickets?","Tickets registrados en la semana según la columna «Autor» del reporte de Aranda  ·  usuarios = fuera del equipo  ·  especialistas = del equipo");
+ if(!CR||!CR.sel.n){H(r,28);blk(r,C0,CL,"El reporte cargado no trae la columna «Autor» o la semana no tiene tickets con autor.",{fc:MU,ind:1});r++}
+ else{const sl=CR.sel;
+  H(r,18);H(r+1,36);H(r+2,24);
+  cardRow(r,[["CREADOS POR USUARIOS",String(sl.u),"fuera del equipo  ·  "+pc(sl.u,sl.n)+" % de los tickets",BLU,BLU,8],["CREADOS POR ESPECIALISTAS",String(sl.e),"del equipo  ·  "+pc(sl.e,sl.n)+" % de los tickets",GRE,GRE,8],["TOTAL DE LA SEMANA",String(sl.n),"tickets con autor identificado"+(sl.s?"  ·  "+sl.s+" sin autor":""),TX,AC,8]]);
+  r+=3;H(r,6);r++;
+  H(r,14);{const cu=Math.round(NC*sl.u/sl.n);if(cu>0)blk(r,C0,C0+cu-1,"",{fill:BLU});if(cu<NC)blk(r,C0+cu,CL,"",{fill:GRE})}r++;H(r,10);r++;
+  const tabla=(r1,cab,filas)=>{let c=tcc;cab.reduce((c,h)=>{blk(r1,c,c+h[1]-1,h[0],{sz:9,b:true,fc:WH,fill:NV,h:h[2],ind:h[2]==="left"?1:0});return c+h[1]},tcc);
+   filas.forEach((f,i)=>{const rw=r1+1+i,sel=!!f.sel,fl=sel?AC2:i%2?"FFF8FAFD":WH,bb=ln("thin",BD);let c=tcc;
+    blk(rw,c,c+2,f.t,{sz:9,b:sel,fill:fl,bb,ind:1});c+=3;
+    blk(rw,c,c+1,f.u,{sz:10,b:sel,fill:fl,bb,h:"center",fc:BLU,nf:"#,##0"});c+=2;
+    blk(rw,c,c+1,f.e,{sz:10,b:sel,fill:fl,bb,h:"center",fc:GRE,nf:"#,##0"});c+=2;
+    blk(rw,c,c+1,f.x,{sz:10,b:true,fill:fl,bb,h:"center",nf:f.nf})})};
+  const q0=r;for(let i=0;i<14;i++)H(q0+i,20);
+  try{const id=wb.addImage({base64:crPng(CR.S.map(s=>({lab:"S"+wkn(s.w),sub:wkS(s.w),u:s.u,e:s.e,n:s.n,sel:s.w===d.w}))),extension:"png"});ws.addImage(id,{tl:{col:C0-1,row:q0-1},ext:{width:660,height:317},editAs:"oneCell"})}catch(e){console.warn("Gráfica no incluida:",e)}
+  tabla(q0+1,[["Semana",3,"left"],["Usuarios",2,"center"],["Especial.",2,"center"],["% esp.",2,"center"]],CR.S.map(s=>({t:"S"+wkn(s.w)+" · "+wkS(s.w),u:s.u,e:s.e,x:s.n?s.e/s.n:null,nf:"0 %",sel:s.w===d.w})));
+  blk(q0+2+CR.S.length+1,tcc,CL,{richText:[{text:"Cómo leer el gráfico\n",font:{name:FN,size:10,bold:true,color:{argb:NV}}},{text:"Cada barra es el total de tickets registrados en la semana: la parte azul los creó un usuario de las empresas y la verde un especialista del equipo. Debajo de cada semana se indica el porcentaje creado por especialistas, para ver la tendencia.",font:{name:FN,size:9,color:{argb:MU}}}]},{fill:TL,v:"top",ind:1},q0+12);
+  r=q0+14;
+  H(r,22);blk(r,C0,CL,"Detalle por día de la semana seleccionada",{sz:11,b:true,fc:NV,bb:ln("thin",BD)});r++;
+  const z0=r;for(let i=0;i<14;i++)H(z0+i,20);
+  const DD=CR.D.map(x=>{const[y,m,dd]=x.k.split("-").map(Number),dt=new Date(y,m-1,dd);return{...x,lab:DN[dt.getDay()],sub:dmy(dt)}});
+  try{const id=wb.addImage({base64:crPng(DD.map(x=>({lab:x.lab,sub:x.sub,u:x.u,e:x.e,n:x.n,sel:false}))),extension:"png"});ws.addImage(id,{tl:{col:C0-1,row:z0-1},ext:{width:660,height:317},editAs:"oneCell"})}catch(e){console.warn("Gráfica no incluida:",e)}
+  tabla(z0+1,[["Día",3,"left"],["Usuarios",2,"center"],["Especial.",2,"center"],["Total",2,"center"]],DD.slice(0,10).map(x=>({t:x.lab+" "+x.sub,u:x.u,e:x.e,x:x.n,nf:"#,##0"})));
+  r=z0+14}
+ H(r,12);ws.getRow(r).addPageBreak();r++}
 // ===== Rendimiento por especialista =====
 {
 r=sec(r,"Rendimiento por especialista","Semana seleccionada  ·  "+infAlc().replace("Alcance del KPI (mismos filtros del aplicativo): ","")+"  ·  ordenado por tickets evaluados");
@@ -930,6 +984,10 @@ return XLSX.write(wb,{type:"array",bookType:"xlsx"})}
 $("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}syncIw();
  if(typeof ExcelJS==="undefined"){toast("No se pudo generar el Excel consolidado: falta cargar ExcelJS (revise la conexión).");return}
  const B=repBuildX(iw,true);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
+ {const ml=usr.length?usrMissing(B.W):[];
+  if(!usr.length||ml.length){const msg=!usr.length?"El maestro de usuarios (Hoja1) está vacío: la Compañía y el Área de todos los tickets saldrán como #N/A.\n\n¿Generar el Excel de todos modos?\n\nAceptar = generar igual  ·  Cancelar = ir a «Auditoría de usuarios»":
+   ml.length+" cliente"+(ml.length===1?"":"s")+" de esta semana no está"+(ml.length===1?"":"n")+" en el maestro (Hoja1); su Compañía y Área saldrán como #N/A:\n\n• "+ml.slice(0,12).map(m=>m.n).join("\n• ")+(ml.length>12?"\n• …y "+(ml.length-12)+" más":"")+"\n\n¿Generar el Excel de todos modos?\n\nAceptar = generar igual  ·  Cancelar = ir a «Auditoría de usuarios» para agregarlos";
+   if(!confirm(msg)){document.querySelector('#tabs button[data-t="p5"]').click();return}}}
  let data;try{const wb=new ExcelJS.Workbook();wb.creator="Rendimiento de atenciones · Aranda";wb.created=new Date();
   await infXlsxPro(infData(iw),infSerie(iw),wb,true);await xlsxBuild(B,wb,true);usrSheet(wb);
   [["Informe",1],["Análisis",2],["Planes",3],["Historial",4],["Datos",5],["Hoja1",6]].forEach(([n,o])=>{const w=wb.getWorksheet(n);if(w)w.orderNo=o});
@@ -966,9 +1024,10 @@ function tkb(c,h){return`<b class="tk" data-tk="${esc(c)}">${esc(c)}</b>`}
  document.addEventListener("mouseout",e=>{const t=e.target.closest&&e.target.closest("[data-tk]");if(t&&!(e.relatedTarget&&t.contains(e.relatedTarget)))tip.style.display="none"});
  document.addEventListener("scroll",()=>{tip.style.display="none"},true)})();
 /* ---------- Auditoría de usuarios: ¿quién crea los tickets? ---------- */
-const CRK=["Creado por","Creador","Registrado por","Usuario creador","Solicitante","Cliente"];
+const CRK=["Autor","Creado por","Creador","Registrado por","Usuario creador","Solicitante","Cliente"];
 const nmU=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z\s]/g," ").split(/\s+/).filter(x=>x.length>1);
-function creadorKey(raw){const ks=Object.keys(raw||{}),n=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();for(const c of CRK){const k=ks.find(x=>n(x)===n(c)&&String(raw[x]).trim());if(k)return k}return null}
+function creadorKey(raw){const ks=Object.keys(raw||{}),n=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();const au=ks.find(x=>n(x)==="autor");if(au)return String(raw[au]).trim()?au:null; /* si el reporte trae «Autor», solo se usa esa columna */
+for(const c of CRK){const k=ks.find(x=>n(x)===n(c)&&String(raw[x]).trim());if(k)return k}return null}
 function renderU(){const el=$("uk"),L=sel();
  document.querySelectorAll("#gr3 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));
  if(!rows.length){el.innerHTML='<p class="mu">Cargue un Excel de Aranda para ver el origen de los tickets.</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
@@ -977,7 +1036,7 @@ function renderU(){const el=$("uk"),L=sel();
  let ccol=null;const D=L.map(r=>{const k=creadorKey(r.raw);if(k&&!ccol)ccol=k;const nm=k?String(r.raw[k]).trim():"";return{r,nm,e:nm?isEsp(nm):null,d:r.d}});
  const sin=D.filter(x=>x.e==null).length,V=D.filter(x=>x.e!=null),nE=V.filter(x=>x.e).length,nU=V.length-nE,tot=V.length,pc=n=>tot?Math.round(n/tot*100):0;
  if(!L.length){el.innerHTML='<p class="mu">No hay tickets con estos filtros.</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
- if(!tot){el.innerHTML='<p class="mu">El Excel cargado no trae una columna con el creador del ticket (se busca «Creado por», «Solicitante» o «Cliente»).</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
+ if(!tot){el.innerHTML='<p class="mu">El Excel cargado no trae una columna con el creador del ticket (se busca «Autor», «Creado por», «Solicitante» o «Cliente»).</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
  const bar=(t,sub,n,c)=>`<div class="ou"><div>${t}<small>${sub} · ${n} tickets</small></div><div class="bt"><i style="width:${pc(n)}%;background:${c}"></i></div><div class="pc">${pc(n)}%</div></div>`;
  let h=`<small class="mu">${L.length} tickets del rango seleccionado${sin?` · ${sin} sin creador en el Excel`:""}</small>`+bar("Creados por usuarios","fuera del equipo",nU,"var(--ac)")+bar("Creados por especialistas","del equipo",nE,"var(--gr)");
  const B=groupBy(V,x=>key(x.d)),ks=Object.keys(B).sort();
