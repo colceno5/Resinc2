@@ -578,8 +578,8 @@ function layout(M,meta){
 /*CORE-END*/
 
 const HEAD=["Caso","Proyecto","Estado","Tipo de caso","Fecha de registro","Asunto","Razón","Cliente","Compañía","Ci","Responsable","Grupo responsable","Progreso","Tiempo","Servicio","ANS","Categoría","Fecha de atención estimada","Fecha de atención real","Fecha de cierre","Impacto","Prioridad","Urgencia","Proveedor","Solicitante","Justificado en auditoría"];
-const WIDC=[10.3,11.1,37,19.9,105,40.9,33.3,19.7,20.7,31.6,37.9,10.1,13.7,17.7,20.1,41.1,27.9,22.9,16,9.4,10.4,10.1,11.6,33.3,60,16];
-const HEADC=["Caso","Estado","Tipo de caso","Fecha de registro","Asunto","Razón","Cliente","Compañía","Área","Responsable","Grupo responsable","Progreso","Tiempo","Servicio","ANS","Categoría","Fecha de atención estimada","Fecha de atención real","Fecha de cierre","Impacto","Prioridad","Urgencia","Proveedor","Solicitante","Justificado en auditoría","Incluido en el KPI"];
+const WIDC=[10.3,11.1,37,19.9,105,40.9,33.3,19.7,20.7,31.6,37.9,10.1,13.7,17.7,20.1,41.1,27.9,22.9,16,9.4,10.4,10.1,11.6,33.3,60,16,34];
+const HEADC=["Caso","Estado","Tipo de caso","Fecha de registro","Asunto","Razón","Cliente","Compañía","Área","Responsable","Grupo responsable","Progreso","Tiempo","Servicio","ANS","Categoría","Fecha de atención estimada","Fecha de atención real","Fecha de cierre","Impacto","Prioridad","Urgencia","Proveedor","Solicitante","Justificado en auditoría","Incluido en el KPI","Autor"];
 const WID=[10.3,24.3,11.1,24.3,19.9,105,40.9,33.3,13.1,3.6,31.6,37.9,10.1,13.7,17.7,20.1,41.1,27.9,22.9,16,9.4,10.4,10.1,11.6,33.3,60];
 const fmtP=p=>String(Math.round(p*100)/100).replace(".",",");
 function stX(c,o){
@@ -599,7 +599,7 @@ async function xlsxBuild(B,wb0,cons){
   [...usr].sort((a,b)=>(a.o||0)-(b.o||0)).forEach(u=>{const k=ukey(u.n);if(!look.has(k))look.set(k,u)}); /* BUSCARV devuelve la primera coincidencia */
   const wd=wb.addWorksheet("Datos");wd.addRow(HEADC);
   B.W.forEach((x,i)=>{const a=rowArr(x),cl=a[7]==null?null:(String(a[7]).trim()||null),u=cl?look.get(ukey(cl)):null,r=i+2,fm="+VLOOKUP($G"+r+",Hoja1!$A$1:$F$"+LM+",",
-   row=wd.addRow([a[0],a[2],a[3],a[4],a[5],a[6],cl,null,null,a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],inc.has(x.caso)?"Sí":"No"]);
+   row=wd.addRow([a[0],a[2],a[3],a[4],a[5],a[6],cl,null,null,a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],inc.has(x.caso)?"Sí":"No",autorDe(x)]);
    row.getCell(8).value={formula:fm+"6,FALSE)",result:u?(u.e||0):{error:"#N/A"}};
    row.getCell(9).value={formula:fm+"2,FALSE)",result:u?(u.a||0):{error:"#N/A"}};
    if(!inc.has(x.caso))row.hidden=true});
@@ -669,6 +669,7 @@ function xlsxFallback(B){
 /* ---------- Reporte Excel de la semana (Datos · Soporte · Informe KPI) ---------- */
 const GDEV="Grupo Soporte de desarrollo",dmyF=d=>dmy(d)+"/"+d.getFullYear();
 const fx=d=>dmyF(d)+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0");
+function autorDe(it){const r=it.raw||{};let v=r.Autor;if(v==null){const k=Object.keys(r).find(x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim()==="autor");v=k?r[k]:null}v=v==null?"":String(v).trim();return v||null}
 function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],it.np?null:fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":it.ap?"✔ Justificado · aprobado en auditoría":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
 function repBuildX(w,cons){
  const[y,m,d0]=w.split("-").map(Number),mon0=new Date(y,m-1,d0),sun=new Date(y,m-1,d0+6),fin=new Date(y,m-1,d0+7);
