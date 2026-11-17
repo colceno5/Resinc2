@@ -127,6 +127,7 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 .btn.lkb{border-color:var(--or);color:var(--or)}
 .an ul{margin:6px 0 0;padding-left:18px}.an li{margin:3px 0}.an .wc{display:flex;flex-wrap:wrap;gap:6px}
 .an td.tx{max-width:380px;white-space:pre-wrap;word-break:break-word}
+#svb tr.on td{background:var(--ac2)}#p8 .fl select,#p8 .fl .in{font-size:13px;padding:5px 8px;max-width:230px}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
 <div class="row"><small id="cs"></small>
@@ -143,7 +144,7 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 <b style="margin-left:8px">Grupos</b><details id="gd" class="dd"><summary class="btn" id="gs">Todos</summary><div class="ddm" id="gc"></div></details>
 <button class="btn" id="cf" hidden style="margin-left:auto" title="Restablece periodo, grupos y todos los filtros de las tablas">✕ Limpiar filtros</button>
 </div></div>
-<div class="tabs" id="tabs"><button class="on" data-t="p1">Rendimiento</button><button data-t="p2">Auditoría de vencidos <span id="nv"></span></button><button data-t="p6">Análisis de sustentos <span id="n6"></span></button><button data-t="p7">Análisis de acciones <span id="n7"></span></button><button data-t="p5">Auditoría de usuarios <span id="n5"></span></button><button data-t="p3">Planes de acción</button><button data-t="p4">Informe semanal</button></div></div>
+<div class="tabs" id="tabs"><button class="on" data-t="p1">Rendimiento</button><button data-t="p2">Auditoría de vencidos <span id="nv"></span></button><button data-t="p6">Análisis de sustentos <span id="n6"></span></button><button data-t="p7">Análisis de acciones <span id="n7"></span></button><button data-t="p5">Auditoría de usuarios <span id="n5"></span></button><button data-t="p8">Servicios y ANS</button><button data-t="p3">Planes de acción</button><button data-t="p4">Informe semanal</button></div></div>
 <div id="p1"><div class="kp" id="kp"></div>
 <div class="card" id="sc"><div class="row" style="justify-content:space-between"><h2>Evolución del cumplimiento <i class="ii" title="Línea: % de tickets dentro del 100 % de progreso, por fecha de registro. Barras: tickets evaluados. Línea punteada: meta 95 %.">ⓘ</i></h2>
 <div class="seg" id="gr"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div>
@@ -176,6 +177,21 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 <div class="card"><h2>Palabras más repetidas</h2><div class="wc" id="w7"></div></div>
 <div class="card"><h2>Por especialista</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Especialista</th><th>Con candado</th><th>Con acción</th><th>Sin acción</th><th>% con acción</th><th>Tipo más frecuente</th></tr></thead><tbody id="e7"></tbody></table></div></div>
 <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Detalle de acciones inmediatas</h2><div class="row"><select id="f7"><option value="">Todas</option><option value="sin">Solo sin acción</option><option value="con">Solo con acción</option></select><input class="in" id="q7" placeholder="Buscar ticket, especialista, acción…"></div></div><div class="tw" style="margin-top:8px"><table style="min-width:980px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Acción inmediata</th><th>Tipo de acción</th><th>Sustento</th><th>Revisión</th></tr></thead><tbody id="d7"></tbody></table></div></div>
+</div>
+<div id="p8" class="pn an" hidden>
+<h2 style="margin:0 0 4px">Servicios y ANS <i class="ii" title="Maestro con todos los servicios del periodo y grupos elegidos arriba. Haga clic en un servicio para filtrarlo en el análisis de abajo. El tiempo de atención son horas hábiles entre el registro y la fecha de atención real (o la de cierre si no hay). La meta sale de la fecha de atención estimada de Aranda. El cumplimiento incluye las justificaciones aprobadas, igual que el KPI.">ⓘ</i></h2>
+<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Maestro de servicios <small id="svc"></small></h2><button class="btn" id="svx">Descargar Excel</button></div>
+<div class="tw" style="margin-top:8px"><table style="min-width:1100px"><thead id="svh"></thead><tbody id="svb"></tbody></table></div></div>
+<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Filtrar y analizar</h2><button class="btn" id="svcl" style="color:var(--ac);border:0;background:none">✕ Limpiar</button></div>
+<div class="fl" style="margin:10px 0 0"><select id="svS"></select><select id="svA"></select><select id="svC"></select><select id="svT"></select><select id="svP"></select>
+<select id="svR"><option value="">Todos los resultados</option><option>Dentro</option><option>Fuera</option><option>No evaluado</option></select>
+<input class="in" id="svmin" type="number" min="0" step="any" placeholder="Tiempo mín. (h)" style="min-width:0;width:130px"><input class="in" id="svmax" type="number" min="0" step="any" placeholder="Tiempo máx. (h)" style="min-width:0;width:130px">
+<input class="in" id="svq" placeholder="Buscar caso, servicio, ANS…"></div></div>
+<div class="kp" id="svk"></div>
+<div class="card"><h2>Por ANS</h2><div class="tw"><table style="min-width:820px"><thead id="sah"></thead><tbody id="sab"></tbody></table></div></div>
+<div class="card"><h2>Por categoría</h2><div class="tw"><table style="min-width:820px"><thead id="sch"></thead><tbody id="scb"></tbody></table></div></div>
+<div class="card"><h2>Distribución del tiempo de atención <small>(horas hábiles)</small></h2><div id="svd"></div></div>
+<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Detalle de tickets <small id="svn"></small></h2></div><div class="tw" style="margin-top:8px"><table style="min-width:1100px"><thead><tr><th>Ticket</th><th>Servicio</th><th>ANS</th><th>Categoría</th><th>Prioridad</th><th>Registro</th><th>Atención real</th><th>Tiempo (h)</th><th>Progreso</th><th>Resultado</th></tr></thead><tbody id="svt"></tbody></table></div></div>
 </div>
 <div id="p3" class="pn pc" hidden>
 <h2 style="margin:0 0 4px">Planes de acción por causa raíz</h2>
@@ -375,7 +391,7 @@ const lk=t.closest("[data-lk]");if(lk){const c=lk.dataset.lk,a=aud[c];if(a&&ast(
 const v=t.closest("[data-rv]");if(v){const a=aud[v.dataset.rv];if(a&&!a.lk){a.ap=a.ap===v.dataset.v?"":v.dataset.v;saveA();render()}return}
 if(t.closest("#cf"))return resetAll()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeJ()});
-$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));$("p1").hidden=b.dataset.t!=="p1";$("p2").hidden=b.dataset.t!=="p2";$("p3").hidden=b.dataset.t!=="p3";$("p4").hidden=b.dataset.t!=="p4";$("p5").hidden=b.dataset.t!=="p5";$("p6").hidden=b.dataset.t!=="p6";$("p7").hidden=b.dataset.t!=="p7";if(b.dataset.t==="p3")renderP4();if(b.dataset.t==="p4")renderInf();if(b.dataset.t==="p5"){renderU();renderUM()}};
+$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));$("p1").hidden=b.dataset.t!=="p1";$("p2").hidden=b.dataset.t!=="p2";$("p3").hidden=b.dataset.t!=="p3";$("p4").hidden=b.dataset.t!=="p4";$("p5").hidden=b.dataset.t!=="p5";$("p6").hidden=b.dataset.t!=="p6";$("p7").hidden=b.dataset.t!=="p7";$("p8").hidden=b.dataset.t!=="p8";if(b.dataset.t==="p8")renderSv();if(b.dataset.t==="p3")renderP4();if(b.dataset.t==="p4")renderInf();if(b.dataset.t==="p5"){renderU();renderUM()}};
 $("as").onchange=$("aq").oninput=()=>renderA(CUR);
 function setTH(){document.documentElement.style.setProperty("--th",$("top").offsetHeight+"px")}
 try{new ResizeObserver(setTH).observe($("top"))}catch(e){}setTH();
@@ -1295,6 +1311,50 @@ window.addEventListener("online",()=>{if(cloudUser)cloudFlush()});
 window.addEventListener("beforeunload",e=>{if(cloudUser&&cloudDirty()){e.preventDefault();e.returnValue=""}});
 setInterval(()=>{const a=document.activeElement;if(!cloudUser||document.hidden||Date.now()-cloudLast<120000||$("ov").classList.contains("on"))return;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&a.id!=="fi")return;cloudLoad()},60000);
 window.addEventListener("beforeunload",e=>{if(cloudDirty()){e.preventDefault();e.returnValue=""}})}
+/* ---------- Servicios y ANS ---------- */
+const SV={sv:"",ans:"",cat:"",tp:"",pr:"",res:"",min:"",max:"",q:"",k:"n",d:-1};
+const svParse=s=>{if(s==null||s==="")return null;if(typeof s==="number")return s;s=String(s).trim().toLowerCase();const m=s.match(/^(\d+):(\d{2})(?::(\d{2}))?$/);if(m)return+m[1]+m[2]/60+(m[3]||0)/3600;let t=0,f=false;s.replace(/(\d+(?:[.,]\d+)?)\s*(d[ií]as?|d|horas?|hrs?|h|minutos?|mins?|m)\b/g,(_,n,u)=>{n=parseFloat(n.replace(",","."));f=true;t+=/^d/.test(u)?n*24:/^h/.test(u)?n:n/60});return f?t:null};
+const svFmt=(n,d=1)=>n==null?"—":n.toFixed(d),svAv=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const svItem=r=>{const w=r.raw||{},a=r.ar||r.fc,es=pdate(w["Fecha de atención estimada"]),tx=k=>String(w[k]==null?"":w[k]).trim();
+return{r,c:r.c,sv:tx("Servicio")||"(sin servicio)",ans:tx("ANS")||"(sin ANS)",cat:tx("Categoría")||"(sin categoría)",tp:tx("Tipo de caso")||(/^INC/.test(r.c)?"Incidentes":"Requerimiento de Servicio"),pr:tx("Prioridad")||"(sin prioridad)",tm:tx("Tiempo"),
+ev:r.e!=="Cancelado"&&r.p!=null&&!(S.no&&OPEN.includes(r.e)),ok:r.p!=null&&okR(r),ha:a&&a>r.d?wminW(r.d,a)/60:null,he:es&&es>r.d?wminW(r.d,es)/60:null,a}};
+const svRes=i=>i.ev?(i.ok?"Dentro":"Fuera"):"No evaluado";
+const svFilt=(I,sk)=>{const q=SV.q.toLowerCase(),mn=pnum(SV.min),mx=pnum(SV.max);return I.filter(i=>(sk==="sv"||!SV.sv||i.sv===SV.sv)&&(sk==="ans"||!SV.ans||i.ans===SV.ans)&&(sk==="cat"||!SV.cat||i.cat===SV.cat)&&(sk==="tp"||!SV.tp||i.tp===SV.tp)&&(sk==="pr"||!SV.pr||i.pr===SV.pr)&&(!SV.res||svRes(i)===SV.res)&&(mn==null||i.ha!=null&&i.ha>=mn)&&(mx==null||i.ha!=null&&i.ha<=mx)&&(!q||[i.c,i.r.s,i.r.r,i.sv,i.ans,i.cat].join(" ").toLowerCase().includes(q)))};
+const svStat=A=>{const E=A.filter(i=>i.ev),H=A.map(i=>i.ha).filter(h=>h!=null).sort((a,b)=>a-b),q=p=>H.length?H[Math.min(H.length-1,Math.floor(p*H.length))]:null,ok=E.filter(i=>i.ok).length;
+return{n:A.length,e:E.length,ok,f:E.length-ok,pct:E.length?ok/E.length*100:null,pg:svAv(E.map(i=>i.r.p)),ta:svAv(H),md:q(.5),p90:q(.9),he:svAv(A.map(i=>i.he).filter(h=>h!=null))}};
+const svTop=(A,k)=>{const m={};A.forEach(i=>m[i[k]]=(m[i[k]]||0)+1);const o=Object.keys(m).sort((a,b)=>m[b]-m[a]);return{top:o[0]||"—",n:o.length}};
+const svGroups=(I,k)=>{const B=groupBy(I,i=>i[k]);return Object.keys(B).map(g=>({g,A:B[g],...svStat(B[g]),cat:svTop(B[g],"cat"),ans:svTop(B[g],"ans")}))};
+const svPct=p=>p==null?"—":`<div class="row" style="gap:8px;flex-wrap:nowrap"><b style="color:${col(p)};min-width:48px">${p.toFixed(1)} %</b><div class="bar" style="flex:1"><i style="width:${Math.min(100,p)}%;background:${col(p)}"></i></div></div>`;
+const SVCOL=[["Servicio","g"],["Categoría","cat"],["ANS","ans"],["Tickets","n"],["Eval.","e"],["Dentro","ok"],["Fuera","f"],["% Cumpl.","pct"],["Prog. prom.","pg"],["T. prom. (h)","ta"],["Mediana (h)","md"],["P90 (h)","p90"],["Meta (h)","he"]];
+const svVal=(x,k)=>k==="cat"||k==="ans"?x[k].top:x[k];
+let svL=[];
+function svSelect(id,k,ttl,I){const O=groupBy(svFilt(I,k),i=>i[k]),ks=Object.keys(O).sort((a,b)=>O[b].length-O[a].length||a.localeCompare(b));if(SV[k]&&!ks.includes(SV[k]))SV[k]="";
+$(id).innerHTML=`<option value="">${ttl}</option>`+ks.map(x=>`<option value="${esc(x)}">${esc(x)} (${O[x].length})</option>`).join("");$(id).value=SV[k]}
+function svTable(h,b,G,nm,ans){const s=SV;G.sort((a,c)=>(c.n-a.n));
+$(h).innerHTML="<tr><th>"+nm+"</th><th>Tickets</th><th>Eval.</th><th>% Cumpl.</th>"+(ans?"<th>ANS (h)</th>":"")+"<th>T. prom. (h)</th><th>Mediana (h)</th><th>P90 (h)</th></tr>";
+$(b).innerHTML=G.length?G.map(x=>`<tr><td>${esc(x.g)}</td><td>${x.n}</td><td>${x.e}</td><td style="min-width:170px">${svPct(x.pct)}</td>${ans?`<td>${svFmt(svParse(x.g))}</td>`:""}<td>${svFmt(x.ta)}</td><td>${svFmt(x.md)}</td><td>${svFmt(x.p90)}</td></tr>`).join(""):`<tr><td colspan="8" class="mu">Sin datos con estos filtros.</td></tr>`}
+function renderSv(){svL=sel().map(svItem);
+if(!svL.length){$("svb").innerHTML='<tr><td class="mu">Cargue un Excel de Aranda para ver los servicios.</td></tr>';$("svh").innerHTML="";$("svk").innerHTML="";return}
+const M=svGroups(svL,"sv");$("svc").textContent="· "+M.length+" servicios · "+svL.length+" tickets";
+M.sort((a,b)=>{const x=svVal(a,SV.k),y=svVal(b,SV.k);return(x==null)-(y==null)||(typeof x==="string"?x.localeCompare(y):x-y)*(SV.k==="g"||SV.k==="cat"||SV.k==="ans"?-SV.d:SV.d)*(typeof x==="string"?-1:1)});
+$("svh").innerHTML="<tr>"+SVCOL.map(c=>`<th data-k="${c[1]}" style="cursor:pointer;white-space:nowrap">${c[0]}${SV.k===c[1]?(SV.d>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>";
+$("svb").innerHTML=M.map(x=>`<tr data-sv="${esc(x.g)}" class="${SV.sv===x.g?"on":""}" style="cursor:pointer"><td><b>${esc(x.g)}</b></td><td>${esc(x.cat.top)}${x.cat.n>1?` <small>+${x.cat.n-1}</small>`:""}</td><td>${esc(x.ans.top)}${x.ans.n>1?` <small>+${x.ans.n-1}</small>`:""}</td><td>${x.n}</td><td>${x.e}</td><td>${x.ok}</td><td>${x.f?`<b style="color:var(--rd)">${x.f}</b>`:0}</td><td style="min-width:170px">${svPct(x.pct)}</td><td>${svFmt(x.pg)} %</td><td>${svFmt(x.ta)}</td><td>${svFmt(x.md)}</td><td>${svFmt(x.p90)}</td><td>${svFmt(x.he)}</td></tr>`).join("");
+svSelect("svS","sv","Todos los servicios",svL);svSelect("svA","ans","Todos los ANS",svL);svSelect("svC","cat","Todas las categorías",svL);svSelect("svT","tp","Todos los tipos de caso",svL);svSelect("svP","pr","Todas las prioridades",svL);$("svR").value=SV.res;
+const F=svFilt(svL),K=svStat(F),sv=new Set(F.map(i=>i.sv)).size;
+$("svk").innerHTML=[["Tickets",K.n,"var(--tx)",sv+" servicio"+(sv===1?"":"s")],["Evaluados",K.e,"var(--tx)","sin cancelados"],["% de cumplimiento",fp(K.pct),col(K.pct),"meta "+META+" %"],["Fuera del 100 %",K.f,K.f?"var(--rd)":"var(--tx)","tras justificaciones"],["Tiempo promedio",svFmt(K.ta)+" h","var(--tx)","horas hábiles"],["Mediana",svFmt(K.md)+" h","var(--tx)","el 50 % se atiende antes"],["P90",svFmt(K.p90)+" h","var(--tx)","el 90 % se atiende antes"],["Meta promedio",svFmt(K.he)+" h","var(--tx)","según fecha estimada"]].map(c=>`<div class="k"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
+svTable("sah","sab",svGroups(F,"ans"),"ANS",true);svTable("sch","scb",svGroups(F,"cat"),"Categoría",false);
+const BK=[["Hasta 1 h",h=>h<=1],["1 a 4 h",h=>h>1&&h<=4],["4 a 8 h",h=>h>4&&h<=8],["8 a 24 h",h=>h>8&&h<=24],["24 a 72 h",h=>h>24&&h<=72],["Más de 72 h",h=>h>72]],C=BK.map(b=>F.filter(i=>i.ha!=null&&b[1](i.ha)).length);C.push(F.filter(i=>i.ha==null).length);const mx=Math.max(1,...C),tot=Math.max(1,F.length);
+$("svd").innerHTML=[...BK.map(b=>b[0]),"Sin fecha de atención"].map((l,j)=>`<div class="ou" style="grid-template-columns:minmax(120px,170px) 1fr 110px"><span>${l}</span><div class="bt"><i style="width:${C[j]/mx*100}%;background:${j===6?"var(--mu)":j>=4?"var(--rd)":"var(--ac)"}"></i></div><span class="pc">${C[j]} · ${(C[j]/tot*100).toFixed(0)} %</span></div>`).join("");
+const D=F.slice().sort((a,b)=>(b.ha==null)-(a.ha==null)||(b.ha||0)-(a.ha||0));$("svn").textContent="· "+F.length+(F.length>300?" (se muestran 300, de mayor a menor tiempo)":"");
+$("svt").innerHTML=D.slice(0,300).map(i=>{const t=svRes(i);return`<tr><td>${tkb(i.c)}</td><td>${esc(i.sv)}</td><td>${esc(i.ans)}</td><td>${esc(i.cat)}</td><td>${esc(i.pr)}</td><td>${dmy(i.r.d)}/${i.r.d.getFullYear()} ${pad(i.r.d.getHours())}:${pad(i.r.d.getMinutes())}</td><td>${i.a?dmy(i.a)+"/"+i.a.getFullYear():"—"}</td><td>${svFmt(i.ha)}</td><td>${i.r.p==null?"—":i.r.p.toFixed(1)+" %"}</td><td><b style="color:${t==="Dentro"?"var(--gr)":t==="Fuera"?"var(--rd)":"var(--mu)"}">${t}</b></td></tr>`}).join("")||`<tr><td colspan="10" class="mu">Sin tickets con estos filtros.</td></tr>`}
+[["svS","sv"],["svA","ans"],["svC","cat"],["svT","tp"],["svP","pr"],["svR","res"],["svmin","min"],["svmax","max"],["svq","q"]].forEach(([id,k])=>$(id).addEventListener(/^sv(min|max|q)$/.test(id)?"input":"change",e=>{SV[k]=e.target.value;renderSv()}));
+$("svcl").onclick=()=>{Object.assign(SV,{sv:"",ans:"",cat:"",tp:"",pr:"",res:"",min:"",max:"",q:""});["svmin","svmax","svq"].forEach(i=>$(i).value="");renderSv()};
+$("svb").onclick=e=>{const t=e.target.closest("tr[data-sv]");if(!t)return;SV.sv=SV.sv===t.dataset.sv?"":t.dataset.sv;renderSv()};
+$("svh").onclick=e=>{const h=e.target.closest("th");if(!h)return;const k=h.dataset.k;SV.d=SV.k===k?-SV.d:(k==="g"||k==="cat"||k==="ans"?1:-1);SV.k=k;renderSv()};
+$("svx").onclick=()=>{if(!svL.length)return alert("No hay datos para exportar.");const M=svGroups(svL,"sv").map(x=>({"Servicio":x.g,"Categoría principal":x.cat.top,"ANS principal":x.ans.top,"Tickets":x.n,"Evaluados":x.e,"Dentro":x.ok,"Fuera":x.f,"% Cumplimiento":x.pct==null?"":+x.pct.toFixed(1),"Progreso prom. %":x.pg==null?"":+x.pg.toFixed(1),"Tiempo prom. (h háb.)":x.ta==null?"":+x.ta.toFixed(2),"Mediana (h)":x.md==null?"":+x.md.toFixed(2),"P90 (h)":x.p90==null?"":+x.p90.toFixed(2),"Meta (h)":x.he==null?"":+x.he.toFixed(2)})),
+D=svFilt(svL).map(i=>({"Caso":i.c,"Servicio":i.sv,"ANS":i.ans,"Categoría":i.cat,"Tipo de caso":i.tp,"Prioridad":i.pr,"Estado":i.r.e,"Responsable":i.r.r,"Registro":i.r.d,"Atención real":i.a||"","Tiempo (h háb.)":i.ha==null?"":+i.ha.toFixed(2),"Meta (h)":i.he==null?"":+i.he.toFixed(2),"Progreso %":i.r.p==null?"":i.r.p,"Resultado":svRes(i),"Tiempo (Aranda)":i.tm})),wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(M),"Maestro de servicios");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D),"Detalle filtrado");XLSX.writeFile(wb,"Servicios_ANS.xlsx",{cellDates:true})};
+{const r0=render;render=function(){const x=r0.apply(this,arguments);if(!$("p8").hidden)renderSv();return x}}
 cloudInit();
 render();
 </script></body></html>
