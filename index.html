@@ -164,6 +164,18 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 .card:not(.pvk) .tw thead th,.pn>.tw thead th{position:sticky;top:0;z-index:2;background:var(--sf)}
 #svcf th{position:static!important}
 @media (max-width:900px){.card:not(.pvk) .tw,.pn>.tw{max-height:60vh}}
+
+/* Sin barra de desplazamiento horizontal: todas las tablas se ajustan al ancho y el texto se ajusta en varias líneas */
+.w{max-width:1680px}
+.tw,.card:not(.pvk) .tw,.pn>.tw,.pvk .tw{overflow-x:hidden!important}
+.pvk{overflow-x:hidden}
+table,.tw table,.pvk table,.pvk.wide table,.pc .at table{width:100%!important;min-width:0!important;max-width:100%}
+th,td{white-space:normal!important;overflow-wrap:anywhere;word-break:normal;min-width:0}
+#tth th,.pn th,#svb th,td>b:only-child{white-space:normal!important}
+.pn.pc .at th,.pn.pc th{min-width:0!important}
+.ar,.at td .ar,.at input[type=date].ar,.in,table .in,.at textarea{min-width:0!important;width:100%;max-width:100%}
+.tw .btn,.tw .jl{white-space:nowrap}
+.tw .tg{white-space:normal!important}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
 <div class="row"><small id="cs"></small>
