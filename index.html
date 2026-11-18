@@ -159,7 +159,8 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 
 /* Tablas largas: cada reporte con su propio scroll (alto limitado, encabezado fijo, ancho completo con scroll horizontal) */
 .card:not(.pvk) .tw,.pn>.tw{max-height:clamp(260px,52vh,460px);overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
-#sc .tw,#svrep .tw,#ua .tw,#um .tw,#umiss .tw{max-height:none}
+#sc .tw,#svrep .tw{max-height:none}
+#um .tw{max-height:clamp(260px,56vh,520px)}
 .card:not(.pvk) .tw thead th,.pn>.tw thead th{position:sticky;top:0;z-index:2;background:var(--sf)}
 #svcf th{position:static!important}
 @media (max-width:900px){.card:not(.pvk) .tw,.pn>.tw{max-height:60vh}}
