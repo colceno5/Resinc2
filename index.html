@@ -156,6 +156,13 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 .pvk .pvi img{max-width:100%}
 .pvk.wide table{min-width:860px}
 @media (max-width:900px){.pvgrid{grid-template-columns:minmax(0,1fr)}.pvk{max-height:70vh}.pvk .pvg3{grid-template-columns:minmax(0,1fr)}}
+
+/* Tablas largas: cada reporte con su propio scroll (alto limitado, encabezado fijo, ancho completo con scroll horizontal) */
+.card:not(.pvk) .tw,.pn>.tw{max-height:clamp(260px,52vh,460px);overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+#sc .tw,#svrep .tw,#ua .tw,#um .tw,#umiss .tw{max-height:none}
+.card:not(.pvk) .tw thead th,.pn>.tw thead th{position:sticky;top:0;z-index:2;background:var(--sf)}
+#svcf th{position:static!important}
+@media (max-width:900px){.card:not(.pvk) .tw,.pn>.tw{max-height:60vh}}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
 <div class="row"><small id="cs"></small>
