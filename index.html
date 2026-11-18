@@ -1493,12 +1493,20 @@ function pptExtra(pres,D){const X=D.ext;if(!X)return;const sh=(t,n)=>{t=String(t
  tbl(s2,x2,1.15,w2,"Principales solicitantes",["Solicitante","Tickets","% del total"],X.solic.map(c=>[c.k,c.n,fp(c.n/t5*100)]),col(w2,[.56,.18,.26]));
  const gb=D.esp.filter(e=>e.pct!=null).sort((x,y)=>y.f-x.f).slice(0,5);
  tbl(s2,m,3.9,W-2*m,"Especialistas con más tickets fuera del 100 %",["Especialista","Evaluados","Dentro","Fuera","Cumplimiento"],gb.map(e=>[e.k,e.n,e.a,{text:String(e.f),options:{bold:true,color:e.f?RD:GR}},{text:fp(e.pct),options:{bold:true,color:cc(e.pct)}}]),col(W-2*m,[.4,.15,.15,.15,.15]))}}
+/* la lámina de cierre («Gracias») debe quedar siempre al final, después de las láminas añadidas */
+function pptCierreAlFinal(pres){try{const a=pres.slides;if(!Array.isArray(a)||a.length<2)return;
+ const tx=o=>typeof o.text==="string"?o.text:Array.isArray(o.text)?o.text.map(t=>t&&t.text||"").join(" "):"";
+ let g=a.find(sl=>(sl._slideObjects||[]).some(o=>/gracias/i.test(tx(o))));
+ if(!g)g=a[PPT_N0-1];
+ if(g&&a.indexOf(g)>=0&&a[a.length-1]!==g){a.splice(a.indexOf(g),1);a.push(g);
+  a.forEach((sl,i)=>{sl._slideId=i+256;sl._rId=i+2}) /* PptxGenJS enlaza cada lámina por su posición: se renumera tras reordenar */}}catch(e){console.warn("cierre PPT",e)}}
+let PPT_N0=0;
 $("pptg").onclick=async()=>{
  if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
  if(typeof PptxGenJS==="undefined"||!window.PPTG||!window.PPT_BG){toast("No se cargaron los componentes de PowerPoint. Revise la conexión y que ppt-gerencia.js y ppt-plantilla.js estén junto a index.html.");return}
  const D=pptData();if(!D){toast("No hay tickets evaluables con el periodo y los filtros actuales.");return}
  const bt=$("pptg");bt.disabled=true;toast("Generando la presentación…");
- try{const pres=PPTG.build(PptxGenJS,D,window.PPT_BG);try{pptExtra(pres,D)}catch(e){console.warn("láminas extra",e)}const data=await pres.write({outputType:"arraybuffer"}),fn="KPI_Gerencia_"+ymd(D.d1)+"_a_"+ymd(D.d2)+".pptx";dl(fn,data);toast("Presentación generada: "+fn)}
+ try{const pres=PPTG.build(PptxGenJS,D,window.PPT_BG);PPT_N0=(pres.slides||[]).length;try{pptExtra(pres,D)}catch(e){console.warn("láminas extra",e)}pptCierreAlFinal(pres);const data=await pres.write({outputType:"arraybuffer"}),fn="KPI_Gerencia_"+ymd(D.d1)+"_a_"+ymd(D.d2)+".pptx";dl(fn,data);toast("Presentación generada: "+fn)}
  catch(e){console.error(e);toast("No se pudo generar la presentación.")}
  bt.disabled=false};
 const CFG=window.APP_CONFIG||{},CLOUD=!!(window.supabase&&CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/TU-PROYECTO|TU-ANON/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
