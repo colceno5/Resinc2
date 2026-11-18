@@ -170,12 +170,78 @@ tr.lkd td{background:var(--or2)}tr.lkd td:first-child{box-shadow:inset 3px 0 0 v
 .tw,.card:not(.pvk) .tw,.pn>.tw,.pvk .tw{overflow-x:hidden!important}
 .pvk{overflow-x:hidden}
 table,.tw table,.pvk table,.pvk.wide table,.pc .at table{width:100%!important;min-width:0!important;max-width:100%}
-th,td{white-space:normal!important;overflow-wrap:anywhere;word-break:normal;min-width:0}
-#tth th,.pn th,#svb th,td>b:only-child{white-space:normal!important}
+th,td{white-space:normal!important;overflow-wrap:break-word;word-break:normal;min-width:0}
+#tth th,.pn th,#svb th{white-space:normal!important}
+.nw{white-space:nowrap!important}
 .pn.pc .at th,.pn.pc th{min-width:0!important}
 .ar,.at td .ar,.at input[type=date].ar,.in,table .in,.at textarea{min-width:0!important;width:100%;max-width:100%}
 .tw .btn,.tw .jl{white-space:nowrap}
 .tw .tg{white-space:normal!important}
+
+/* Correcciones de diseño: nada truncado con «…», gráficos al ancho, filtros completos */
+.ou>span:first-child{overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:anywhere}
+#ch svg,#ac svg,.tw svg,.card svg{max-width:min(100%,900px)!important;min-width:0!important}
+#p8 .fl select,#p8 .fl .in{max-width:none!important;min-width:0}
+.at select,td select{min-width:150px}
+td select{max-width:100%}
+
+#p3 table th,#p3 table td{min-width:0!important}
+#p3 table textarea,#p3 table input,#p3 table select{min-width:0!important;width:100%;max-width:100%;box-sizing:border-box}
+#p3 table td{padding-left:4px;padding-right:4px;font-size:12px}
+
+/* Planes de acción con todas las columnas: ajustado al ancho sin barra inferior */
+#p3 table{table-layout:fixed}
+#p3 table input[type=date]{font-size:11px;padding:3px 2px}
+#p3 table input[type=date]::-webkit-calendar-picker-indicator{display:none}
+#p3 table th,#p3 table td{font-size:11.5px;padding-left:3px;padding-right:3px}
+#p3 table .ar,#p3 table select,#p3 table textarea,#p3 table input{padding-left:4px;padding-right:4px;font-size:11.5px}
+#p3 table thead th:nth-child(1){width:4%}
+#p3 table thead th:nth-child(2){width:5%}
+#p3 table thead th:nth-child(3){width:7%}
+#p3 table thead th:nth-child(4){width:6%}
+#p3 table thead th:nth-child(5){width:6%}
+#p3 table thead th:nth-child(6){width:7%}
+#p3 table thead th:nth-child(7){width:7%}
+#p3 table thead th:nth-child(8){width:6%}
+#p3 table thead th:nth-child(9){width:6%}
+#p3 table thead th:nth-child(10){width:5%}
+#p3 table thead th:nth-child(11){width:4%}
+#p3 table thead th:nth-child(12){width:5%}
+#p3 table thead th:nth-child(13){width:4%}
+#p3 table thead th:nth-child(14){width:4%}
+#p3 table thead th:nth-child(15){width:5%}
+#p3 table thead th:nth-child(16){width:5%}
+#p3 table thead th:nth-child(17){width:5%}
+#p3 table thead th:nth-child(18){width:4%}
+#p3 table thead th:nth-child(19){width:4%}
+#p3 table thead th:nth-child(20){width:7%}
+#p3 table thead th:nth-child(21){width:3%}
+/* ajuste fino de columnas de Planes */
+#p3 table thead th{font-size:9px;letter-spacing:0;overflow-wrap:normal;hyphens:auto}
+#p3 table .tg{font-size:10px;padding:2px 5px}
+#p3 table thead th:nth-child(1){width:3.5%}
+#p3 table thead th:nth-child(2){width:5.5%}
+#p3 table thead th:nth-child(3){width:7%}
+#p3 table thead th:nth-child(4){width:5%}
+#p3 table thead th:nth-child(5){width:6%}
+#p3 table thead th:nth-child(6){width:7%}
+#p3 table thead th:nth-child(7){width:7%}
+#p3 table thead th:nth-child(8){width:6%}
+#p3 table thead th:nth-child(9){width:6%}
+#p3 table thead th:nth-child(10){width:5%}
+#p3 table thead th:nth-child(11){width:3.5%}
+#p3 table thead th:nth-child(12){width:6%}
+#p3 table thead th:nth-child(13){width:4%}
+#p3 table thead th:nth-child(14){width:4%}
+#p3 table thead th:nth-child(15){width:5%}
+#p3 table thead th:nth-child(16){width:5%}
+#p3 table thead th:nth-child(17){width:7%}
+#p3 table thead th:nth-child(18){width:4%}
+#p3 table thead th:nth-child(19){width:6%}
+#p3 table thead th:nth-child(20){width:6%}
+#p3 table thead th:nth-child(21){width:3.5%}
+
+.pvstack{display:grid;gap:12px;align-content:start;min-width:0}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
 <div class="row"><small id="cs"></small>
@@ -854,7 +920,7 @@ const cor=`<div class="card" style="margin-top:22px"><h2>Evolución de los corte
 <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Texto para correo o chat</summary><pre style="white-space:pre-wrap;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;font:13px/1.5 inherit">${esc(infText(d))}</pre></details>`;
 
 const bk=(h,c)=>`<section class="card pvk${c?" "+c:""}">${h}</section>`;
-$("ib").innerHTML=head+cards+`<div class="pvgrid">${bk(evo)}${bk(crH)}${bk(esp)}${cam}${bk(pla,"full wide")}</div>`+cor}
+$("ib").innerHTML=head+cards+`<div class="pvgrid">${bk(evo)}${bk(crH)}${bk(esp)}<div class="pvstack">${cam}</div>${bk(pla,"full wide")}</div>`+cor}
 $("isv").onclick=()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}syncIw();const d=infData(iw);inf=inf.filter(s=>s.w!==iw).concat([{w:iw,at:new Date().toISOString(),K:{pO:d.K.pO,pct:d.K.pct,n:d.K.n,f:d.K.f},avg:d.avg,P:d.P.map(x=>({id:x.q.id,est:x.q.est||"Pendiente",av:clamp(x.q.av),v:x.v}))}]).sort((a,b)=>a.w>b.w?1:-1);svI();renderInf();toast("Corte guardado: "+wkL(iw))};
 /* ---------- Excel profesional del informe semanal (planes y cortes) ---------- */
 const wkS=w=>{const[y,m,d]=w.split("-").map(Number);return dmy(new Date(y,m-1,d))+" – "+dmy(new Date(y,m-1,d+6))};
@@ -1317,6 +1383,17 @@ $("t4c").onclick=()=>{const c=$("p3").classList.toggle("pc");$("t4c").textConten
 window.APP_BUILD="2026-11-16-maestro-usuarios";
 /* ---------- Nube compartida (Supabase) ---------- */
 /* ---------- Presentación PPT para gerencia (formato de la plantilla ValorA) ---------- */
+/* quién crea los tickets: misma regla que la pestaña Auditoría de usuarios (es del equipo si el creador coincide con un especialista) */
+function creadoresData(L){
+ const team=rows.map(r=>r.r).filter(x=>x&&x!=="(sin responsable)"),TS=[...new Set(team.map(x=>nmU(x).sort().join(" ")))].map(x=>new Set(x.split(" "))),cache=new Map();
+ const isEsp=name=>{if(cache.has(name))return cache.get(name);const t=new Set(nmU(name));let ok=false;if(t.size)for(const m of TS){let c=0;t.forEach(x=>{if(m.has(x))c++});if(c>=2&&c===Math.min(t.size,m.size)){ok=true;break}if(t.size===1&&m.size===1&&c===1){ok=true;break}}cache.set(name,ok);return ok};
+ const D=L.map(r=>{const k=creadorKey(r.raw),nm=k?String(r.raw[k]).trim():"";return{r,nm,e:nm?isEsp(nm):null,d:r.d}}),V=D.filter(x=>x.e!=null);
+ if(!V.length)return null;
+ const nE=V.filter(x=>x.e).length,mes=S.gran==="month",kf=d=>mes?d.getFullYear()+"-"+pad(d.getMonth()+1):ymd(mon(d)),B=groupBy(V,x=>kf(x.d)),ks=Object.keys(B).sort();
+ const lb=k=>{const q=k.split("-").map(Number);return mes?MES[q[1]-1]+" "+String(q[0]).slice(2):"S"+isoW(new Date(q[0],q[1]-1,q[2]))[1]};
+ const per=ks.map(k=>{const a=B[k],e=a.filter(x=>x.e).length;return{k,lab:lb(k),e,u:a.length-e,n:a.length}});
+ const C=groupBy(V.filter(x=>x.nm),x=>x.nm),CL=Object.entries(C).map(([n,a])=>({n,c:a.length,e:a[0].e})).sort((x,y)=>y.c-x.c||x.n.localeCompare(y.n,"es")),CU=CL.filter(x=>!x.e),CE=CL.filter(x=>x.e);
+ return{tot:V.length,nU:V.length-nE,nE,sin:D.length-V.length,per,topU:CU.slice(0,8),topE:CE.slice(0,5),nCre:CL.length,nCreU:CU.length,nCreE:CE.length}}
 /* Usa el mismo periodo (todo / semana / rango de fechas) y los mismos filtros de grupos, especialistas y «excluir abiertos» del encabezado. */
 function pptData(){
  const[a,b]=range(),L=sel(),E=ev(L);if(!E.length)return null;
@@ -1358,14 +1435,70 @@ function pptData(){
  let evoPng=null;try{if(_s.length)evoPng=infPng(_s,860)}catch(e){console.warn(e)}
  const dias=Object.entries(groupBy(E,r=>ymd(r.d))).sort((x,y)=>x[0]<y[0]?-1:1).map(([k,v])=>{const[yy,mm,dd]=k.split("-").map(Number),st=stat(v);return{k,lab:pad(dd)+"/"+pad(mm),dd,dow:new Date(yy,mm-1,dd).getDay(),n:st.n,pct:st.pct}});
  const semNum=+ymd(mon(d1))===+ymd(mon(d2))?isoW(d1)[1]:null;
- return{titulo:"KPI de Resolución de Incidencias",rango:dmyF(d1)+" – "+dmyF(d2),d1,d2,alcance:infAlc().replace(/^[^:]*:\s*/,""),meta:META,fechaGen:dmyF(new Date()),granTxt:gn,plTxt:pl_,sem,evoPng,dias,semNum,K,canc,sinp,total:LF.length,sinAbiertos:!!S.no,
+ /* información complementaria para las láminas de análisis: tiempos, tipo de caso, prioridad, categorías con más incumplimientos y principales solicitantes */
+ let ext=null;try{
+  const IT=E.map(svItem),st=svStat(IT),gp=k=>svGroups(IT,k).map(x=>({k:x.g,n:x.n,e:x.e,f:x.f,pct:x.pct})).sort((p,q)=>q.n-p.n);
+  const ca=gp("cat").sort((p,q)=>q.f-p.f||q.n-p.n).filter(x=>x.f>0&&x.k!=="(sin categoría)").slice(0,5);
+  const sol=Object.entries(groupBy(E.filter(r=>r.raw&&String(r.raw.Cliente||"").trim()),r=>String(r.raw.Cliente).trim())).map(([k,v])=>({k,n:v.length})).sort((p,q)=>q.n-p.n||p.k.localeCompare(q.k,"es")).slice(0,5);
+  const dp=dias.slice().sort((x,y)=>y.n-x.n)[0],pd=dias.filter(x=>x.n>=3&&x.pct!=null).sort((x,y)=>x.pct-y.pct)[0],sl=sem.length;
+  ext={tiempos:{ta:st.ta,md:st.md,p90:st.p90,he:st.he},tipos:gp("tp"),prior:gp("pr").filter(x=>x.k!=="(sin prioridad)"),cats:ca,solic:sol,
+   diaPico:dp?{lab:dp.lab,n:dp.n}:null,peorDia:pd&&pd.pct<META?{lab:pd.lab,n:pd.n,pct:pd.pct}:null,
+   varSem:sl>1&&sem[sl-1].pct!=null&&sem[sl-2].pct!=null?{a:sem[sl-1].lab,b:sem[sl-2].lab,d:sem[sl-1].pct-sem[sl-2].pct}:null}}catch(e){console.warn("ext PPT",e)}
+ try{const cr=creadoresData(L);if(cr){ext=ext||{};ext.crea=cr}}catch(e){console.warn("creadores PPT",e)}
+ return{ext,titulo:"KPI de Resolución de Incidencias",rango:dmyF(d1)+" – "+dmyF(d2),d1,d2,alcance:infAlc().replace(/^[^:]*:\s*/,""),meta:META,fechaGen:dmyF(new Date()),granTxt:gn,plTxt:pl_,sem,evoPng,dias,semNum,K,canc,sinp,total:LF.length,sinAbiertos:!!S.no,
   serie:pts.map(p=>({k:p.k,lab:lab(p.k),labFull:lab(p.k,1),n:p.n,a:p.a,o:p.o,f:p.f,pct:p.pct,pO:p.pO})),grupos,esp,cat,estados,abiertos,aud:au,planes,notas:{lectura:lect,atencion:aten}}}
+/* láminas de análisis complementario (se añaden al final de la presentación) */
+function pptExtra(pres,D){const X=D.ext;if(!X)return;const sh=(t,n)=>{t=String(t||"");return t.length>n?t.slice(0,n-1)+"…":t};
+ const W=(pres.presLayout&&pres.presLayout.width?pres.presLayout.width/914400:13.33),H=(pres.presLayout&&pres.presLayout.height?pres.presLayout.height/914400:7.5),m=.5,NV="1B2A5E",AC="2F5BD0",GR="1E7B34",RD="C62828",MU="667085",BD="D9DEE8",F="Calibri";
+ const fh=h=>h==null?"—":h.toFixed(1)+" h",fp=v=>v==null?"—":n1(v)+" %",cc=v=>v==null?MU:v>=D.meta?GR:RD;
+ const head=(sl,t,sub)=>{sl.background={color:"FFFFFF"};sl.addShape(pres.ShapeType.rect,{x:0,y:0,w:W,h:.9,fill:{color:NV},line:{color:NV}});
+  sl.addText(t,{x:m,y:.12,w:W-2*m,h:.45,fontSize:22,bold:true,color:"FFFFFF",fontFace:F});sl.addText(sub,{x:m,y:.52,w:W-2*m,h:.3,fontSize:11,color:"C9D3F0",fontFace:F});
+  sl.addText("KPI de Resolución de Incidencias · "+D.rango+" · generado el "+D.fechaGen,{x:m,y:H-.4,w:W-2*m,h:.3,fontSize:9,color:MU,fontFace:F})};
+ const box=(sl,x,y,w,t,v,sub,c)=>{sl.addShape(pres.ShapeType.roundRect,{x,y,w,h:1.25,fill:{color:"F5F7FB"},line:{color:BD},rectRadius:.08});
+  sl.addText(t,{x:x+.15,y:y+.08,w:w-.3,h:.3,fontSize:11,color:MU,fontFace:F});sl.addText(v,{x:x+.15,y:y+.38,w:w-.3,h:.5,fontSize:26,bold:true,color:c||NV,fontFace:F});
+  if(sub)sl.addText(sub,{x:x+.15,y:y+.88,w:w-.3,h:.3,fontSize:10,color:MU,fontFace:F})};
+ const tbl=(sl,x,y,w,t,cols,rows,cw)=>{sl.addText(t,{x,y,w,h:.35,fontSize:14,bold:true,color:NV,fontFace:F});
+  const hd=cols.map((c,i)=>({text:c,options:{bold:true,color:"FFFFFF",fill:{color:AC},align:i?"center":"left",fontSize:11,fontFace:F}}));
+  const bd=rows.length?rows:[[{text:"Sin datos para este periodo",options:{color:MU,italic:true}}].concat(cols.slice(1).map(()=>({text:""})))];
+  sl.addTable([hd].concat(bd.map(r=>r.map((c,i)=>{const o=typeof c==="object"?c:{text:String(c)};return{text:o.text,options:Object.assign({fontSize:11,fontFace:F,color:"1B1F27",align:i?"center":"left",border:{type:"solid",pt:.5,color:BD}},o.options||{})}}))),{x,y:y+.4,w,colW:cw,rowH:.32})};
+ const half=(W-2*m-.4)/2,col=(w,a)=>a.map(v=>w*v);
+ /* lámina: ¿quién crea los tickets? (gráficos de barras) */
+ if(X.crea){const C=X.crea,s0=pres.addSlide();head(s0,"¿Quién crea los tickets?","Tickets del periodo según el creador registrado en el Excel de Aranda · usuarios = fuera del equipo, especialistas = del equipo");
+  const b0=(W-2*m-.6)/4,pc=v=>C.tot?n1(v/C.tot*100)+" %":"—",mc=C.topU[0]||C.topE[0];
+  box(s0,m,1.15,b0,"Creados por usuarios",String(C.nU),pc(C.nU)+" · fuera del equipo",AC);box(s0,m+b0+.2,1.15,b0,"Creados por especialistas",String(C.nE),pc(C.nE)+" · del equipo",GR);
+  box(s0,m+2*(b0+.2),1.15,b0,"Creadores distintos",String(C.nCre),C.nCreU+" usuarios · "+C.nCreE+" especialistas");box(s0,m+3*(b0+.2),1.15,b0,"Mayor creador",mc?String(mc.c):"—",mc?sh(mc.n,34)+" · "+pc(mc.c):"");
+  const P=C.per.slice(-16),cy=2.55,chh=H-cy-.5,cw=(W-2*m)*.57,rx=m+cw+.3,rw=W-m-rx,lbs=P.map(q=>q.lab);
+  s0.addChart(pres.charts.BAR,[{name:"Usuarios",labels:lbs,values:P.map(q=>q.u)},{name:"Especialistas",labels:lbs,values:P.map(q=>q.e)}],{x:m,y:cy,w:cw,h:chh,barDir:"col",barGrouping:"stacked",chartColors:[AC,GR],showLegend:true,legendPos:"b",legendFontSize:10,legendFontFace:F,showValue:true,dataLabelColor:"FFFFFF",dataLabelFontSize:10,dataLabelFormatCode:"0;;;",catAxisLabelFontSize:10,valAxisLabelFontSize:10,valGridLine:{color:"E5E7EB",size:.5},showTitle:true,title:"Tickets creados por "+(S.gran==="month"?"mes":"semana")+(C.per.length>P.length?" (últimos "+P.length+")":""),titleFontSize:13,titleColor:NV,titleFontFace:F});
+  const bar=(y,h,t,A,c)=>s0.addChart(pres.charts.BAR,[{name:"Tickets creados",labels:A.map(a=>sh(a.n,30)),values:A.map(a=>a.c)}],{x:rx,y,w:rw,h,barDir:"bar",catAxisOrientation:"maxMin",chartColors:[c],showLegend:false,showValue:true,dataLabelPosition:"outEnd",dataLabelFontSize:10,dataLabelColor:"1B1F27",catAxisLabelFontSize:9,valAxisHidden:true,valGridLine:{style:"none"},showTitle:true,title:t,titleFontSize:13,titleColor:NV,titleFontFace:F});
+  if(C.topE.length){const hh=(chh-.1)/2;bar(cy,hh,"Usuarios que más tickets crean",C.topU.slice(0,5),AC);bar(cy+hh+.1,hh,"Especialistas que más tickets crean",C.topE,GR)}
+  else if(C.topU.length)bar(cy,chh,"Usuarios que más tickets crean",C.topU,AC);
+  if(C.sin)s0.addText(C.sin+" ticket"+(C.sin===1?"":"s")+" sin creador en el Excel no se incluye"+(C.sin===1?"":"n")+" en este análisis.",{x:m,y:H-.65,w:W-2*m,h:.25,fontSize:9,italic:true,color:MU,fontFace:F})}
+ if(X.tiempos){
+ /* lámina 1: tiempos y tipos de caso */
+ const s1=pres.addSlide();head(s1,"Tiempos de atención y tipos de caso","Tiempo en horas hábiles entre el registro y la atención real · tickets evaluados del periodo");
+ const bw=(W-2*m-.6)/4;
+ box(s1,m,1.15,bw,"Tiempo promedio",fh(X.tiempos.ta),"horas hábiles");box(s1,m+bw+.2,1.15,bw,"Mediana",fh(X.tiempos.md),"el 50 % se atiende antes");
+ box(s1,m+2*(bw+.2),1.15,bw,"P90",fh(X.tiempos.p90),"el 90 % se atiende antes");
+ const vs=X.varSem;box(s1,m+3*(bw+.2),1.15,bw,"Variación semanal",vs?(vs.d>=0?"+":"")+n1(vs.d)+" pts":"—",vs?vs.a+" vs "+vs.b:"se necesitan 2 semanas",vs?(vs.d>=0?GR:RD):NV);
+ const FW=W-2*m,w1=X.prior.length?half:FW,cw3=w=>col(w,[.56,.2,.24]);
+ tbl(s1,m,2.75,w1,"Cumplimiento por tipo de caso",["Tipo de caso","Tickets","Cumpl."],X.tipos.slice(0,6).map(t=>[t.k,t.n,{text:fp(t.pct),options:{bold:true,color:cc(t.pct)}}]),cw3(w1));
+ if(X.prior.length)tbl(s1,m+half+.4,2.75,half,"Cumplimiento por prioridad",["Prioridad","Tickets","Cumpl."],X.prior.slice(0,6).map(t=>[t.k,t.n,{text:fp(t.pct),options:{bold:true,color:cc(t.pct)}}]),cw3(half));
+ const nt=[];if(X.diaPico)nt.push("Día con más tickets: "+X.diaPico.lab+" ("+X.diaPico.n+").");if(X.peorDia)nt.push("Día con menor cumplimiento (3 o más tickets): "+X.peorDia.lab+" ("+n1(X.peorDia.pct)+" %).");
+ if(nt.length)s1.addText(nt.join("   ·   "),{x:m,y:H-.85,w:W-2*m,h:.35,fontSize:11,color:NV,bold:true,fontFace:F});
+ /* lámina 2: dónde se concentran los incumplimientos */
+ const s2=pres.addSlide();head(s2,"Dónde se concentran los incumplimientos","Categorías con más tickets fuera del 100 % y principales solicitantes del periodo");
+ const t5=D.K.n||1;
+ const w2=X.cats.length?half:W-2*m,x2=X.cats.length?m+half+.4:m;
+ if(X.cats.length)tbl(s2,m,1.15,half,"Categorías con más tickets fuera",["Categoría","Tickets","Fuera","Cumpl."],X.cats.map(c=>[c.k,c.n,{text:String(c.f),options:{bold:true,color:RD}},{text:fp(c.pct),options:{color:cc(c.pct)}}]),col(half,[.52,.16,.14,.18]));
+ tbl(s2,x2,1.15,w2,"Principales solicitantes",["Solicitante","Tickets","% del total"],X.solic.map(c=>[c.k,c.n,fp(c.n/t5*100)]),col(w2,[.56,.18,.26]));
+ const gb=D.esp.filter(e=>e.pct!=null).sort((x,y)=>y.f-x.f).slice(0,5);
+ tbl(s2,m,3.9,W-2*m,"Especialistas con más tickets fuera del 100 %",["Especialista","Evaluados","Dentro","Fuera","Cumplimiento"],gb.map(e=>[e.k,e.n,e.a,{text:String(e.f),options:{bold:true,color:e.f?RD:GR}},{text:fp(e.pct),options:{bold:true,color:cc(e.pct)}}]),col(W-2*m,[.4,.15,.15,.15,.15]))}}
 $("pptg").onclick=async()=>{
  if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}
  if(typeof PptxGenJS==="undefined"||!window.PPTG||!window.PPT_BG){toast("No se cargaron los componentes de PowerPoint. Revise la conexión y que ppt-gerencia.js y ppt-plantilla.js estén junto a index.html.");return}
  const D=pptData();if(!D){toast("No hay tickets evaluables con el periodo y los filtros actuales.");return}
  const bt=$("pptg");bt.disabled=true;toast("Generando la presentación…");
- try{const pres=PPTG.build(PptxGenJS,D,window.PPT_BG),data=await pres.write({outputType:"arraybuffer"}),fn="KPI_Gerencia_"+ymd(D.d1)+"_a_"+ymd(D.d2)+".pptx";dl(fn,data);toast("Presentación generada: "+fn)}
+ try{const pres=PPTG.build(PptxGenJS,D,window.PPT_BG);try{pptExtra(pres,D)}catch(e){console.warn("láminas extra",e)}const data=await pres.write({outputType:"arraybuffer"}),fn="KPI_Gerencia_"+ymd(D.d1)+"_a_"+ymd(D.d2)+".pptx";dl(fn,data);toast("Presentación generada: "+fn)}
  catch(e){console.error(e);toast("No se pudo generar la presentación.")}
  bt.disabled=false};
 const CFG=window.APP_CONFIG||{},CLOUD=!!(window.supabase&&CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/TU-PROYECTO|TU-ANON/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
@@ -1515,4 +1648,10 @@ w.document.close();w.focus();setTimeout(()=>w.print(),500)};
 {const r0=render;render=function(){const x=r0.apply(this,arguments);if(!$("p8").hidden)renderSv();return x}}
 cloudInit();
 render();
+</script><script>
+/* evita que códigos como REQ-8811 o PA-001 se partan en dos líneas */
+(function(){const RX=/^[A-Za-z]{1,5}-\d+$/;let q=0;
+function fix(){q=0;document.querySelectorAll("td,th,td>b,td>a,td>span").forEach(e=>{if(!e.classList.contains("nw")&&e.children.length<2&&RX.test(e.textContent.trim()))e.classList.add("nw")})}
+const go=()=>{if(!q)q=requestAnimationFrame(fix)};
+new MutationObserver(go).observe(document.documentElement,{childList:true,subtree:true});go()})();
 </script></body></html>
