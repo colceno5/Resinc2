@@ -263,6 +263,10 @@ td select{max-width:100%}
 <div class="card" id="sc"><div class="row" style="justify-content:space-between"><h2>Evolución del cumplimiento <i class="ii" title="Línea: % de tickets dentro del 100 % de progreso, por fecha de registro. Barras: tickets evaluados. Línea punteada: meta 95 %.">ⓘ</i></h2>
 <div class="seg" id="gr"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div>
 <div class="tw"><div id="ch"></div></div></div>
+<div class="card" id="sb"><div class="row" style="justify-content:space-between"><h2>Tickets por resultado <i class="ii" title="Cantidad de tickets por fecha de registro: dentro del 100 % (incluye justificaciones aprobadas), fuera del 100 % y cancelados. Respeta el periodo y los grupos del encabezado. El filtro de esta tarjeta permite ver todos los especialistas, un grupo de especialistas o un especialista individual. Los tickets sin progreso no se cuentan.">ⓘ</i></h2>
+<div class="row"><select id="bs" title="Especialistas a mostrar"></select><div class="seg" id="gr4"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div></div>
+<div class="row" id="bk" style="gap:18px;margin:8px 0 2px"></div>
+<div class="tw"><div id="bc"></div></div></div>
 <div class="card" id="sd"><div class="row" style="justify-content:space-between"><h2>Detalle</h2><div class="seg" id="by"><button data-b="p">Por periodo</button><button data-b="g">Por grupo</button><button data-b="r">Por especialista</button></div></div><div class="tw"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div></div>
 <div class="card" id="st"><div class="row" style="justify-content:space-between"><h2>Tickets del periodo <small id="tc"></small></h2>
 <div class="row"><input class="in" id="tq" placeholder="Buscar caso, asunto, especialista…">
@@ -389,7 +393,7 @@ const SER2=[{f:"pO",q:"o",n:"Sin sustentar",c:"var(--rd)",r:5},{f:"pct",q:"a",n:
 let CUR=[];
 const buckets=E=>{const B=groupBy(E,r=>key(r.d));return Object.keys(B).sort().map(k=>({k,...stat(B[k])}))};
 const spList=()=>[...new Set(rows.filter(r=>!S.groups||S.groups.has(r.g)).map(r=>r.r))].sort();
-const resetAll=()=>{S.mode="all";S.week="";S.from="";S.to="";S.groups=null;S.esp=null;S.no=false;tq="";tf="";$("tq").value="";$("tf").value="";$("as").value="";$("aq").value="";render()};
+const resetAll=()=>{S.mode="all";S.week="";S.from="";S.to="";S.groups=null;S.esp=null;S.no=false;BS="";tq="";tf="";$("tq").value="";$("tf").value="";$("as").value="";$("aq").value="";render()};
 function lineChart(el,pts,ser,bars){
 if(!pts.length){el.innerHTML='<p class="mu">'+(rows.length?"No hay tickets evaluables con estos filtros.":"Cargue un Excel de Aranda para ver el rendimiento.")+"</p>";return}
 const w=Math.max(640,pts.length*34),h=300,Lm=44,R=14,T=26,Bm=34,bw=(w-Lm-R)/pts.length,mx=Math.max(...pts.map(p=>p.n)),
@@ -410,11 +414,11 @@ const wk=groupBy(rows.filter(r=>(!S.groups||S.groups.has(r.g))&&(!S.esp||S.esp.h
 if(rows.length&&(!S.week||!wks.includes(S.week)))S.week=wks[0]||"";
 $("pw").innerHTML=wks.map(k=>{const[y,m,d]=k.split("-").map(Number);return`<option value="${k}">Semana ${isoW(new Date(y,m-1,d))[1]} · ${dmy(new Date(y,m-1,d))} – ${dmy(new Date(y,m-1,d+6))}/${new Date(y,m-1,d+6).getFullYear()} (${wk[k].length})</option>`}).join("");
 $("pm").value=S.mode;$("pw").value=S.week;$("pw").hidden=S.mode!=="week";$("pr").hidden=S.mode!=="range";$("pd").value=S.from;$("ph").value=S.to;$("no").checked=S.no;saveF();
-document.querySelectorAll("#gr button,#gr2 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));document.querySelectorAll("#by button").forEach(b=>b.classList.toggle("on",b.dataset.b===S.by));
+document.querySelectorAll("#gr button,#gr2 button,#gr4 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));document.querySelectorAll("#by button").forEach(b=>b.classList.toggle("on",b.dataset.b===S.by));
 const L=sel(),E=ev(L),K=stat(E),canc=L.filter(r=>r.e==="Cancelado").length,sinp=L.filter(r=>r.e!=="Cancelado"&&r.p==null).length;
 const gap=K.pct==null?null:K.pct-META;
 $("kp").innerHTML=[["Evaluados",K.n,"var(--tx)","sin cancelados"],["Dentro del 100 %",K.a,"var(--gr)",K.a-K.o?"incluye "+(K.a-K.o)+" aprobados":"atendidos a tiempo"],["Fuera del 100 %",K.f,K.f?"var(--rd)":"var(--tx)","excedidos"],["Meta",META+" %","var(--tx)","tickets dentro del 100 %"],["KPI original",fp(K.pO),"var(--tx)","Atendidos dentro del SLA"],["KPI justificado",fp(K.pct),col(K.pct),gap==null?"":(gap>=0?"Meta alcanzada (+":"Brecha de ")+Math.abs(gap).toFixed(1)+" pts"+(gap>=0?")":"")]].map(c=>`<div class="${kcl(c[0])}"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
-const pts=buckets(E);lineChart($("ch"),pts,SER1,1);lineChart($("ac"),pts,SER2);CUR=E;
+const pts=buckets(E);lineChart($("ch"),pts,SER1,1);lineChart($("ac"),pts,SER2);CUR=E;renderB(L);
 let H,Rw;if(S.by==="p"){H=["Periodo"];Rw=pts.map(p=>[lab(p.k,1),p]).reverse()}else{const f=S.by==="g"?r=>r.g||"—":r=>r.r;H=[S.by==="g"?"Grupo":"Especialista"];Rw=Object.entries(groupBy(E,f)).map(([k,v])=>{const st=stat(v);if(S.by==="r")st.cr=v.filter(r=>{const ck=creadorKey(r.raw);return ck&&mismoNombre(String(r.raw[ck]).trim(),k)}).length;return[k,st]}).sort((a,b)=>b[1].n-a[1].n)}
 const esR=S.by==="r",hasC=esR&&E.some(r=>creadorKey(r.raw)),NC=esR?6:5;
 $("th").innerHTML="<tr><th>"+H[0]+"</th><th>Evaluados</th>"+(esR?'<th title="Tickets evaluados de este especialista que él mismo creó (el creador coincide con el responsable)">Creadas por el especialista</th>':"")+"<th>Dentro 100 %</th><th>Fuera</th><th>Cumplimiento</th></tr>";
@@ -526,7 +530,7 @@ $("tth").onclick=e=>{const h=e.target.closest("th");if(!h)return;const k=h.datas
 $("gc").onclick=e=>{const b=e.target.closest("[data-gb]");if(b){S.groups=b.dataset.gb==="*"?null:new Set();render()}};
 $("gc").onchange=e=>{const g=e.target.dataset.gs;if(g==null)return;const all=[...new Set(rows.map(r=>r.g).filter(Boolean))],s=new Set(S.groups||all);e.target.checked?s.add(g):s.delete(g);S.groups=s.size===all.length?null:s;render()};
 $("pm").onchange=e=>{S.mode=e.target.value;render()};$("pw").onchange=e=>{S.week=e.target.value;render()};$("pd").onchange=e=>{S.from=e.target.value;render()};$("ph").onchange=e=>{S.to=e.target.value;render()};$("no").onchange=e=>{S.no=e.target.checked;render()};
-$("gr3").onclick=$("gr2").onclick=$("gr").onclick=e=>{const b=e.target.closest("button");if(b){S.gran=b.dataset.g;render()}};$("by").onclick=e=>{const b=e.target.closest("button");if(b){S.by=b.dataset.b;render()}};
+$("gr4").onclick=$("gr3").onclick=$("gr2").onclick=$("gr").onclick=e=>{const b=e.target.closest("button");if(b){S.gran=b.dataset.g;render()}};$("by").onclick=e=>{const b=e.target.closest("button");if(b){S.by=b.dataset.b;render()}};
 function mkRow(j0){const j={};for(const k in j0){const v=j0[k];j[k]=v instanceof Date&&typeof fx==="function"?fx(v):v}
 const d=pdate(j["Fecha de registro"]);if(!j.Caso||!d)return null;
 return{c:j.Caso,e:j.Estado,d,g:j["Grupo responsable"]||"",r:j.Responsable||"(sin responsable)",p:pnum(j.Progreso),s:j.Asunto||"",ar:pdate(j["Fecha de atención real"]),fc:pdate(j["Fecha de cierre"]),raw:j}}
@@ -1658,6 +1662,26 @@ $("svrp").onclick=()=>{const w=window.open("","_blank");if(!w)return alert("Perm
 w.document.write('<!doctype html><html lang="es" data-theme="light"><head><meta charset="utf-8"><title>Informe de SLA por servicio y categoría</title>'+[...document.querySelectorAll("style")].map(s=>s.outerHTML).join("")+'<style>body{background:#fff;color:#1b1f27;padding:24px;max-width:1000px;margin:0 auto}.noprint{display:none!important}#svrep{box-shadow:none!important;border:0!important;padding:0!important}tr,.ou{break-inside:avoid}h3{break-after:avoid}.tw{overflow:visible}</style></head><body><div id="svrep">'+$("svrep").innerHTML+'</div></body></html>');
 w.document.close();w.focus();setTimeout(()=>w.print(),500)};
 {const r0=render;render=function(){const x=r0.apply(this,arguments);if(!$("p8").hidden)renderSv();return x}}
+
+/* ---------- Tickets por resultado (barras verticales: dentro / fuera / cancelados) ---------- */
+let BS="";
+const RES3=[["Dentro del 100 %","var(--gr)",r=>r.e!=="Cancelado"&&r.p!=null&&okR(r)],["Fuera del 100 %","var(--rd)",r=>r.e!=="Cancelado"&&r.p!=null&&!okR(r)],["Cancelados","var(--mu)",r=>r.e==="Cancelado"]];
+function renderB(L){
+ const gs=[...new Set(L.map(r=>r.g).filter(Boolean))].sort(),es=[...new Set(L.map(r=>r.r).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+ if(BS&&!(BS.startsWith("g:")&&gs.includes(BS.slice(2)))&&!(BS.startsWith("e:")&&es.includes(BS.slice(2))))BS="";
+ $("bs").innerHTML='<option value="">Todos los especialistas</option>'+(gs.length?'<optgroup label="Grupos de especialistas">'+gs.map(g=>`<option value="g:${esc(g)}">${esc(g.replace(/^Grupo /,""))}</option>`).join("")+"</optgroup>":"")+(es.length?'<optgroup label="Especialista individual">'+es.map(x=>`<option value="e:${esc(x)}">${esc(x)}</option>`).join("")+"</optgroup>":"");
+ $("bs").value=BS;
+ const F=!BS?L:BS.startsWith("g:")?L.filter(r=>r.g===BS.slice(2)):L.filter(r=>r.r===BS.slice(2));
+ const tot=RES3.map(x=>F.filter(x[2]).length);
+ $("bk").innerHTML=RES3.map((x,i)=>`<span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${x[1]};margin-right:6px"></i>${x[0]}: <b>${tot[i]}</b></span>`).join("")+`<small>${F.length} ticket${F.length===1?"":"s"} en total</small>`;
+ const B=groupBy(F,r=>key(r.d)),ks=Object.keys(B).sort(),el=$("bc");
+ if(!ks.length||!tot.some(v=>v)){el.innerHTML='<p class="mu">'+(rows.length?"No hay tickets con estos filtros.":"Cargue un Excel de Aranda para ver los tickets.")+"</p>";return}
+ const P=ks.map(k=>({k,v:RES3.map(x=>B[k].filter(x[2]).length)})),mx=Math.max(1,...P.flatMap(p=>p.v)),stp=[1,2,5,10,20,25,50,100,200,500,1000].find(x=>mx/x<=5)||Math.ceil(mx/5),top=Math.ceil(mx/stp)*stp;
+ const gw=Math.max(70,Math.min(130,Math.floor(820/P.length))),w=Math.max(640,P.length*gw+60),h=300,Lm=44,R=14,T=22,Bm=34,pw=w-Lm-R,sl=pw/P.length,bw=Math.min(30,sl/4),Y=v=>T+(top-v)/top*(h-T-Bm),X=i=>Lm+sl*(i+.5),step=Math.ceil(P.length/Math.floor(pw/46));
+ let g="";for(let v=0;v<=top;v+=stp)g+=`<line x1="${Lm}" x2="${w-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--bd)"/><text x="${Lm-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+ g+=P.map((p,i)=>`<g>`+p.v.map((v,j)=>{const x=X(i)+(j-1)*(bw+3)-bw/2,hh=v/top*(h-T-Bm);return`<rect x="${x}" y="${Y(v)}" width="${bw}" height="${hh}" rx="2" fill="${RES3[j][1]}"><title>${esc(lab(p.k,1))} · ${RES3[j][0]}: ${v}</title></rect>`+(v?`<text x="${x+bw/2}" y="${Y(v)-4}" text-anchor="middle" style="fill:var(--tx);font-weight:600">${v}</text>`:"")}).join("")+(i%step===0?`<text x="${X(i)}" y="${h-Bm+16}" text-anchor="middle">${esc(lab(p.k))}</text>`:"")+"</g>").join("");
+ el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:${w}px;height:auto" role="img" aria-label="Tickets dentro del 100 %, fuera del 100 % y cancelados por periodo">${g}</svg>`}
+$("bs").onchange=e=>{BS=e.target.value;renderB(sel())};
 cloudInit();
 render();
 </script><script>
