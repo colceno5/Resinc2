@@ -415,9 +415,10 @@ const L=sel(),E=ev(L),K=stat(E),canc=L.filter(r=>r.e==="Cancelado").length,sinp=
 const gap=K.pct==null?null:K.pct-META;
 $("kp").innerHTML=[["Evaluados",K.n,"var(--tx)","sin cancelados"],["Dentro del 100 %",K.a,"var(--gr)",K.a-K.o?"incluye "+(K.a-K.o)+" aprobados":"atendidos a tiempo"],["Fuera del 100 %",K.f,K.f?"var(--rd)":"var(--tx)","excedidos"],["Meta",META+" %","var(--tx)","tickets dentro del 100 %"],["KPI original",fp(K.pO),"var(--tx)","Atendidos dentro del SLA"],["KPI justificado",fp(K.pct),col(K.pct),gap==null?"":(gap>=0?"Meta alcanzada (+":"Brecha de ")+Math.abs(gap).toFixed(1)+" pts"+(gap>=0?")":"")]].map(c=>`<div class="${kcl(c[0])}"><small>${c[0]}</small><b style="color:${c[2]}">${c[1]}</b><small>${c[3]}</small></div>`).join("");
 const pts=buckets(E);lineChart($("ch"),pts,SER1,1);lineChart($("ac"),pts,SER2);CUR=E;
-let H,Rw;if(S.by==="p"){H=["Periodo"];Rw=pts.map(p=>[lab(p.k,1),p]).reverse()}else{const f=S.by==="g"?r=>r.g||"—":r=>r.r;H=[S.by==="g"?"Grupo":"Especialista"];Rw=Object.entries(groupBy(E,f)).map(([k,v])=>[k,stat(v)]).sort((a,b)=>b[1].n-a[1].n)}
-$("th").innerHTML="<tr><th>"+H[0]+"</th><th>Evaluados</th><th>Dentro 100 %</th><th>Fuera</th><th>Cumplimiento</th></tr>";
-$("tb").innerHTML=Rw.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td><td>${s.a}</td><td>${s.f}</td><td><b style="color:${col(s.pct)}">${fp(s.pct)}</b><div class="bar"><i style="width:${Math.min(s.pct,100)}%;background:${col(s.pct)}"></i></div></td></tr>`).join("")||'<tr><td colspan="5" class="mu">Sin datos.</td></tr>';renderT(L);renderA(E);renderP4();if(!$("p4").hidden)renderInf();if(!$("p5").hidden)renderU();$("cf").hidden=!(S.mode!=="all"||S.groups||S.esp||S.no||tq||tf)}
+let H,Rw;if(S.by==="p"){H=["Periodo"];Rw=pts.map(p=>[lab(p.k,1),p]).reverse()}else{const f=S.by==="g"?r=>r.g||"—":r=>r.r;H=[S.by==="g"?"Grupo":"Especialista"];Rw=Object.entries(groupBy(E,f)).map(([k,v])=>{const st=stat(v);if(S.by==="r")st.cr=v.filter(r=>{const ck=creadorKey(r.raw);return ck&&mismoNombre(String(r.raw[ck]).trim(),k)}).length;return[k,st]}).sort((a,b)=>b[1].n-a[1].n)}
+const esR=S.by==="r",hasC=esR&&E.some(r=>creadorKey(r.raw)),NC=esR?6:5;
+$("th").innerHTML="<tr><th>"+H[0]+"</th><th>Evaluados</th>"+(esR?'<th title="Tickets evaluados de este especialista que él mismo creó (el creador coincide con el responsable)">Creadas por el especialista</th>':"")+"<th>Dentro 100 %</th><th>Fuera</th><th>Cumplimiento</th></tr>";
+$("tb").innerHTML=Rw.map(([k,s])=>`<tr><td>${esc(k)}</td><td>${s.n}</td>${esR?`<td>${hasC?s.cr:"—"}</td>`:""}<td>${s.a}</td><td>${s.f}</td><td><b style="color:${col(s.pct)}">${fp(s.pct)}</b><div class="bar"><i style="width:${Math.min(s.pct,100)}%;background:${col(s.pct)}"></i></div></td></tr>`).join("")||`<tr><td colspan="${NC}" class="mu">Sin datos.</td></tr>`;renderT(L);renderA(E);renderP4();if(!$("p4").hidden)renderInf();if(!$("p5").hidden)renderU();$("cf").hidden=!(S.mode!=="all"||S.groups||S.esp||S.no||tq||tf)}
 let aud={};try{aud=JSON.parse(localStorage.getItem("aud_rend")||"{}")}catch(e){aud={}}
 const saveA=()=>{try{localStorage.setItem("aud_rend",JSON.stringify(aud))}catch(e){}cloudKick()};
 const ast=c=>{const a=aud[c]||{},s=(a.sus||"").trim();return a.real&&s?"Sustentado":(a.real||s||(a.acc||"").trim())?"Incompleto":"Pendiente"};
@@ -1209,6 +1210,9 @@ function tkb(c,h){return`<b class="tk" data-tk="${esc(c)}">${esc(c)}</b>`}
 /* ---------- Auditoría de usuarios: ¿quién crea los tickets? ---------- */
 const CRK=["Autor","Creado por","Creador","Registrado por","Usuario creador","Solicitante","Cliente"];
 const nmU=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z\s]/g," ").split(/\s+/).filter(x=>x.length>1);
+/* ¿dos nombres son la misma persona? (mismas palabras sin tildes, en cualquier orden; mínimo 2 coincidentes o nombre de una sola palabra idéntico) */
+const _nmc=new Map();
+function mismoNombre(a,b){const T=x=>{if(!_nmc.has(x))_nmc.set(x,new Set(nmU(x)));return _nmc.get(x)},t=T(a),m=T(b);if(!t.size||!m.size)return false;let c=0;t.forEach(x=>{if(m.has(x))c++});return(c>=2&&c===Math.min(t.size,m.size))||(t.size===1&&m.size===1&&c===1)}
 function creadorKey(raw){const ks=Object.keys(raw||{}),n=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();const au=ks.find(x=>n(x)==="autor");if(au)return String(raw[au]).trim()?au:null; /* si el reporte trae «Autor», solo se usa esa columna */
 for(const c of CRK){const k=ks.find(x=>n(x)===n(c)&&String(raw[x]).trim());if(k)return k}return null}
 function renderU(){const el=$("uk"),L=sel();
