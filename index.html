@@ -242,6 +242,7 @@ td select{max-width:100%}
 #p3 table thead th:nth-child(21){width:3.5%}
 
 .pvstack{display:grid;gap:12px;align-content:start;min-width:0}
+#ded .md{max-width:min(1500px,96vw);height:92vh;display:flex;flex-direction:column;overflow:hidden}#dedw{flex:1;overflow:auto;border:1px solid var(--bd);border-radius:10px}#dedt{min-width:0;width:max-content}#dedt th{position:sticky;top:0;z-index:2;background:var(--sf);white-space:nowrap}#dedt td{padding:5px 10px;font-size:13px;white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}#dedt td:first-child{position:sticky;left:0;background:var(--sf);z-index:1}#dedt td.ro{color:var(--mu)}#dedt td[contenteditable]:focus{outline:2px solid var(--ac);outline-offset:-2px;background:var(--bg);white-space:pre-wrap;max-width:420px;overflow:visible}#dedt td.ed{background:var(--am2)}
 </style></head><body class="nologin"><div class="w"><div id="top">
 <header class="row"><div><h1>Rendimiento de atenciones</h1></div>
 <div class="row"><small id="cs"></small>
@@ -531,11 +532,20 @@ $("gc").onclick=e=>{const b=e.target.closest("[data-gb]");if(b){S.groups=b.datas
 $("gc").onchange=e=>{const g=e.target.dataset.gs;if(g==null)return;const all=[...new Set(rows.map(r=>r.g).filter(Boolean))],s=new Set(S.groups||all);e.target.checked?s.add(g):s.delete(g);S.groups=s.size===all.length?null:s;render()};
 $("pm").onchange=e=>{S.mode=e.target.value;render()};$("pw").onchange=e=>{S.week=e.target.value;render()};$("pd").onchange=e=>{S.from=e.target.value;render()};$("ph").onchange=e=>{S.to=e.target.value;render()};$("no").onchange=e=>{S.no=e.target.checked;render()};
 $("gr4").onclick=$("gr3").onclick=$("gr2").onclick=$("gr").onclick=e=>{const b=e.target.closest("button");if(b){S.gran=b.dataset.g;render()}};$("by").onclick=e=>{const b=e.target.closest("button");if(b){S.by=b.dataset.b;render()}};
+/* ---------- Sábana de datos de Aranda: solo 1er Especialista, SLA Calendario, Solución y Descripción, acoplados al ticket por «Numero Ticket» ---------- */
+const SABK=[["1er Especialista","1er especialista"],["SLA Calendario","sla calendario"],["Solución","solucion"],["Descripción","descripcion"]],SABX=new Map();
+const sabNk=x=>String(x==null?"":x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim().toLowerCase();
+function sabParse(wb){const ws=wb.Sheets[wb.SheetNames[0]];if(!ws)return null;const A=XLSX.utils.sheet_to_json(ws,{header:1,defval:"",raw:true});
+ const hi=A.slice(0,30).findIndex(r=>r.some(c=>sabNk(c)==="numero ticket"));if(hi<0)return null;
+ const H=A[hi].map(sabNk),ci=H.indexOf("numero ticket"),cols=SABK.map(([k,n])=>[k,H.indexOf(n)]).filter(x=>x[1]>=0);if(!cols.length)return null;
+ const out=new Map();A.slice(hi+1).forEach(r=>{const c=String(r[ci]==null?"":r[ci]).trim();if(!c)return;const o={};cols.forEach(([k,j])=>{const v=r[j];const t=v==null?"":String(v).replace(/\r/g,"").trim();if(t)o[k]=t.length>6000?t.slice(0,6000)+"…":t});out.set(c,o)});return out}
+function sab_add(M){M.forEach((o,c)=>SABX.set(c,Object.assign(SABX.get(c)||{},o)));return M.size}
+function sabApply(){let ok=0;const seen=new Set();rows.forEach(r=>{const o=SABX.get(r.c);if(!o)return;r.raw=r.raw||{};SABK.forEach(([k])=>{if(o[k]!=null)r.raw[k]=o[k]});seen.add(r.c);ok++});return{ok,no:SABX.size-seen.size}}
 function mkRow(j0){const j={};for(const k in j0){const v=j0[k];j[k]=v instanceof Date&&typeof fx==="function"?fx(v):v}
 const d=pdate(j["Fecha de registro"]);if(!j.Caso||!d)return null;
 return{c:j.Caso,e:j.Estado,d,g:j["Grupo responsable"]||"",r:j.Responsable||"(sin responsable)",p:pnum(j.Progreso),s:j.Asunto||"",ar:pdate(j["Fecha de atención real"]),fc:pdate(j["Fecha de cierre"]),raw:j}}
-$("fi").onchange=async e=>{try{const m=new Map(rows.map(r=>[r.c,r])),ld=[];let n=0;for(const f of e.target.files){const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true});XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""}).forEach(j=>{const x=mkRow(j);if(!x)return;m.set(x.c,x);ld.push(x);n++})}
-rows=[...m.values()];S.groups=null;S.esp=null;S.week="";render();renderP4();if(typeof cloudKick==="function")cloudKick();userCheck(ld)}catch(x){alert("No se pudo leer el archivo.")}e.target.value=""};
+$("fi").onchange=async e=>{try{const m=new Map(rows.map(r=>[r.c,r])),ld=[];let n=0,sabN=0;for(const f of e.target.files){const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true});const sb0=sabParse(wb);if(sb0){sabN+=sab_add(sb0);continue}XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""}).forEach(j=>{const x=mkRow(j);if(!x)return;const old=m.get(x.c);if(old&&old.raw)SABK.forEach(([k])=>{if(old.raw[k]!=null&&x.raw[k]==null)x.raw[k]=old.raw[k]});m.set(x.c,x);ld.push(x);n++})}
+rows=[...m.values()];const sr=sabApply();if(sabN)toast("Sábana de datos: "+sabN+" tickets leídos · "+sr.ok+" acoplados a su ticket"+(sr.no?" · "+sr.no+" sin ticket cargado en el aplicativo (cargue primero el Excel de Aranda de esos tickets)":""),sr.no?9000:5000);S.groups=null;S.esp=null;S.week="";render();renderP4();if(typeof cloudKick==="function")cloudKick();userCheck(ld)}catch(x){alert("No se pudo leer el archivo.")}e.target.value=""};
 /* ---------- Planes de acción (copiado de seguimiento_tickets10) ---------- */
 function toast(m,ms){const e=$("ts");e.textContent=m;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",ms||4000)}
 function dlLocal(name,data){const ext=(name.split(".").pop()||"").toLowerCase(),mt={xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",csv:"text/csv;charset=utf-8",pptx:"application/vnd.openxmlformats-officedocument.presentationml.presentation"}[ext]||"application/octet-stream";
@@ -741,7 +751,7 @@ async function xlsxBuild(B,wb0,cons){
    row=wd.addRow([a[0],a[2],a[3],a[4],a[5],a[6],cl,null,null,a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],inc.has(x.caso)?"Sí":"No",(x.raw&&String(x.raw.Autor==null?"":x.raw.Autor).trim())||null]);
    row.getCell(8).value={formula:fm+"6,FALSE)",result:u?(u.e||0):{error:"#N/A"}};
    row.getCell(9).value={formula:fm+"2,FALSE)",result:u?(u.a||0):{error:"#N/A"}};
-   if(!inc.has(x.caso))row.hidden=true});
+   if(!inc.has(x.caso))row.hidden=true;const es=B.ed&&B.ed.get(x.caso);if(es)es.forEach(ci=>{row.getCell(ci+1).fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFFFF2CC"}}})});
   WIDC.forEach((w,i)=>{wd.getColumn(i+1).width=w});
   const h=wd.getRow(1);h.height=15.75;h.eachCell(c=>{c.font={name:"Calibri",size:12,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF808080"}};c.alignment={horizontal:"center"}});
   wd.autoFilter={from:{row:1,column:1},to:{row:Math.max(2,B.W.length+1),column:HEADC.length}}}
@@ -808,16 +818,17 @@ function xlsxFallback(B){
 /* ---------- Reporte Excel de la semana (Datos · Soporte · Informe KPI) ---------- */
 const GDEV="Grupo Soporte de desarrollo",dmyF=d=>dmy(d)+"/"+d.getFullYear();
 const fx=d=>dmyF(d)+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0");
-function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],it.np?null:fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":it.ap?"✔ Justificado · aprobado en auditoría":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
-function repBuildX(w,cons){
+function rowArr(it){const r=it.raw,ja=r["Fecha de atención real"],jc=r["Fecha de cierre"];return[r.Caso,r.Proyecto||"Service Desk Grupo Valora",r.Estado,r["Tipo de caso"]||(/^INC/.test(r.Caso)?"Incidentes":"Requerimiento de Servicio"),r["Fecha de registro"],r.Asunto,r["Razón"],r.Cliente,r["Compañía"]||"Grupo Valora",r.Ci,it.resp,r["Grupo responsable"],it.np?null:fmtP(it.pr),r.Tiempo,r.Servicio,r.ANS,it.cat,r["Fecha de atención estimada"],it.jd?fx(it.jd):ja,it.jd&&jc?fx(it.jd):jc,r.Impacto,r.Prioridad,r.Urgencia,r.Proveedor,r.Solicitante||r.Cliente,it.jt!=null?it.jt:it.jd?"✔ Justificado · fecha y hora real: "+fx(it.jd)+" (original: atención "+(ja||"—")+(jc?"; cierre "+jc:"")+")":it.ap?"✔ Justificado · aprobado en auditoría":null].map(v=>v===""||v==null?null:v instanceof Date?fx(v):String(v))}
+function repBuildX(w,cons,ov){
  const[y,m,d0]=w.split("-").map(Number),mon0=new Date(y,m-1,d0),sun=new Date(y,m-1,d0+6),fin=new Date(y,m-1,d0+7);
- const inW=rows.filter(r=>r.d>=mon0&&r.d<fin).sort((a,b)=>b.d-a.d);if(!inW.length)return null;
+ const ovw=ov||{},inW=rows.filter(r=>r.d>=mon0&&r.d<fin).sort((a,b)=>b.d-a.d).map(r=>dedApply(r,ovw[r.c]));if(!inW.length)return null;
  const inS=inW.filter(r=>infFl(r)&&!(S.no&&OPEN.includes(r.e)));
- const lockOf=r=>{const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r))return null;const j=new Date(a.real);return isNaN(j)||j<r.d?null:j};
- const mk=r=>{const jd=lockOf(r),pc=jd?wminW(r.d,jd)/4.8:r.p,rw=r.raw||{};const pr=Math.round((pc==null?0:pc)*100)/100,ap=isCl(r)&&(aud[r.c]||{}).ap==="Aprobada",np=pc==null,ev=r.e!=="Cancelado"&&!np;return{raw:rw,jd,ap,np,ev,ok:ev&&(pr<=100||ap),caso:r.c,estado:r.e,resp:rw.Responsable||"(sin asignar)",cat:rw["Categoría"]||"(sin categoría)",pr}};
+ const lockOf=r=>{if(r.noJ)return null;const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r))return null;const j=new Date(a.real);return isNaN(j)||j<r.d?null:j};
+ const mk=r=>{const jd=lockOf(r),pc=jd?wminW(r.d,jd)/4.8:r.p,rw=r.raw||{};const pr=Math.round((pc==null?0:pc)*100)/100,ap=r.apO!=null?r.apO:isCl(r)&&(aud[r.c]||{}).ap==="Aprobada",np=pc==null,ev=r.e!=="Cancelado"&&!np;return{raw:rw,jt:r.jt,jd,ap,np,ev,ok:ev&&(pr<=100||ap),caso:r.c,estado:r.e,resp:rw.Responsable||"(sin asignar)",cat:rw["Categoría"]||"(sin categoría)",pr}};
  const W=inW.map(mk),items=inS.map(mk),wn=isoW(mon0)[1],nj=W.filter(x=>x.jd).length,M=repModel(items),title="Informe de Resolución de Incidencias – Semana "+wn,rowIdx=new Map(W.map((x,i)=>[x.caso,i]));
- const nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · "+(cons?"Hoja Datos: todos los tickets del periodo (la columna «Incluido en el KPI» marca los que pasan los filtros; Compañía y Área se buscan en la hoja Hoja1, el maestro de usuarios) · Hoja Análisis: solo tickets incluidos en el KPI. ":"Hoja Datos: todos los tickets del periodo · Hoja Soporte e Informe KPI: solo tickets que pasan los filtros. ")+infAlc()+" · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de "+(cons?"Datos":"Datos y Soporte")+").":"");
- return{wn,fn:"CasosSemana"+wn+"-Reporte.xlsx",nj,items,W,M,lay:layout(M,{title,items,nota,cons:!!cons,rowOf:cons?(it=>2+rowIdx.get(it.caso)):null}),title,n:inW.length}}
+ let nota="Periodo: tickets registrados del "+dmyF(mon0)+" al "+dmyF(sun)+" · "+(cons?"Hoja Datos: todos los tickets del periodo (la columna «Incluido en el KPI» marca los que pasan los filtros; Compañía y Área se buscan en la hoja Hoja1, el maestro de usuarios) · Hoja Análisis: solo tickets incluidos en el KPI. ":"Hoja Datos: todos los tickets del periodo · Hoja Soporte e Informe KPI: solo tickets que pasan los filtros. ")+infAlc()+" · Progreso: con candados de la auditoría."+(nj?" "+nj+" ticket(s) justificado(s) en auditoría con fecha y hora reales aplicadas (marcados con ✔ en la columna «Justificado en auditoría» de "+(cons?"Datos":"Datos y Soporte")+").":"");
+ const ed=new Map();let ne=0;W.forEach(x=>{const o=ovw[x.caso];if(!o)return;const st=new Set();for(const k in o){const c=DED.find(d=>d[1]===k);if(c){st.add(c[0]);ne++}}if(st.size)ed.set(x.caso,st)});if(ne&&cons)nota+=" Hoja Datos con "+ne+' edición(es) manual(es) hecha(s) en el aplicativo (celdas en amarillo).';
+  return{ed,ne,wn,fn:"CasosSemana"+wn+"-Reporte.xlsx",nj,items,W,M,lay:layout(M,{title,items,nota,cons:!!cons,rowOf:cons?(it=>2+rowIdx.get(it.caso)):null}),title,n:inW.length}}
 /* ---------- Informe semanal ---------- */
 const INFK="inf_aranda";let inf=[],iw="";
 try{inf=JSON.parse(localStorage.getItem(INFK)||"[]")}catch(e){inf=[]}
@@ -1169,6 +1180,47 @@ add("Resumen",[["Informe semanal de cumplimiento y planes de acción"],[d.lab],[
 add("Planes",[["N.º plan","Causa detectada","Responsable","Fecha compromiso","Alerta","Estado","Avance (%)","Medición","Meta","Indicador de la semana (%)","Semana anterior (%)"]].concat(d.P.map(x=>[x.q.id,x.q.cause,x.q.resp,iso2(x.q.fecha),x.a,x.q.est||"Pendiente",clamp(x.q.av),MET[x.k||""].n,x.has?mtL(x.k,x.t):"",x.v==null?"":+x.v.toFixed(1),x.pv==null?"":+x.pv.toFixed(1)])));
 add("Historial",[["Corte","KPI original (%)","KPI justificado (%)","Planes cumplidos","Planes","Avance promedio (%)"]].concat(inf.map(s=>[wkL(s.w),s.K.pO==null?"":+s.K.pO.toFixed(1),s.K.pct==null?"":+s.K.pct.toFixed(1),s.P.filter(x=>x.est==="Cumplido / validado").length,s.P.length,s.avg==null?"":+s.avg.toFixed(1)])));
 return XLSX.write(wb,{type:"array",bookType:"xlsx"})}
+/* ---------- Edición de la hoja «Datos» antes de generar el Excel consolidado ---------- */
+/* [índice en HEADC, clave en el ticket, etiqueta, ancho px, índice en rowArr] */
+const DED=[[1,"Estado","Estado",100,2],[2,"Tipo de caso","Tipo de caso",150,3],[3,"Fecha de registro","Fecha de registro",140,4],[4,"Asunto","Asunto",300,5],[5,"Razón","Razón",200,6],[6,"Cliente","Cliente",180,7],[9,"Responsable","Responsable",180,10],[10,"Grupo responsable","Grupo responsable",190,11],[11,"Progreso","Progreso",80,12],[12,"Tiempo","Tiempo",90,13],[13,"Servicio","Servicio",150,14],[14,"ANS","ANS",130,15],[15,"Categoría","Categoría",160,16],[16,"Fecha de atención estimada","Atención estimada",140,17],[17,"Fecha de atención real","Atención real",140,18],[18,"Fecha de cierre","Cierre",140,19],[19,"Impacto","Impacto",80,20],[20,"Prioridad","Prioridad",80,21],[21,"Urgencia","Urgencia",80,22],[22,"Proveedor","Proveedor",150,23],[23,"Solicitante","Solicitante",180,24],[24,"_j","Justificado en auditoría",220,25],[26,"Autor","Autor",120,-1]];
+const DEDS={};
+function dedApply(r,o){if(!o)return r;const q={...r,raw:{...(r.raw||{})}};
+ for(const k in o){const v=o[k];
+  if(k==="Progreso"){if(v==="")q.p=null;else{const n=Number(String(v).replace(",","."));if(!isNaN(n))q.p=n}q.noJ=true}
+  else if(k==="_j"){q.jt=v;q.apO=/justificado/i.test(v);if(!q.apO)q.noJ=true}
+  else{q.raw[k]=v;if(k==="Estado")q.e=v;else if(k==="Grupo responsable")q.g=v;else if(k==="Responsable")q.r=v||"(sin responsable)";else if(k==="Fecha de atención real"||k==="Fecha de cierre")q.noJ=true}}
+ return q}
+function dedVals(x){const a=rowArr(x),o={};DED.forEach(([h,k,l,w,ra])=>{o[k]=ra<0?String(x.raw&&x.raw.Autor!=null?x.raw.Autor:"").trim():String(a[ra]==null?"":a[ra])});return o}
+function dedOpen(w,gen){
+ const ov=DEDS[w]||(DEDS[w]={}),B0=repBuildX(w,true,{});if(!B0){gen(ov);return}
+ let B=repBuildX(w,true,ov);const orig=B0.W.map(dedVals),cur=B.W.map(dedVals);
+ let el=$("ded");if(el)el.remove();el=document.createElement("div");el.className="ov on";el.id="ded";
+ const cell=(i,k)=>{const c=B0.W[i].caso,ed=ov[c]&&k in ov[c];return`<td contenteditable="true" spellcheck="false" data-k="${esc(k)}"${ed?` class="ed" title="Original: ${esc(orig[i][k]||"(vacío)")}"`:""}>${esc(cur[i][k])}</td>`};
+ const inc0=new Set(B.items.map(i=>i.caso));
+ el.innerHTML=`<div class="md" id="dedm"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px"><div><h2 style="margin:0">Editar la hoja «Datos»</h2><small class="mu" id="dedn"></small></div><div class="row" style="gap:8px"><button class="btn" id="dedr">Restablecer</button><button class="btn" id="dedx">Cancelar</button><button class="btn p" id="dedg">Generar Excel</button></div></div>
+<div class="row" style="gap:8px;margin:10px 0"><input id="dedq" placeholder="Buscar caso, asunto, responsable…" style="max-width:320px"><select id="dedf"><option value="">Todos los tickets</option><option value="inc">Solo incluidos en el KPI</option><option value="ed">Solo editados</option></select><small class="mu" id="dedk"></small></div>
+<div class="tw" id="dedw"><table id="dedt"><thead><tr><th>Caso</th>${DED.map(d=>`<th style="min-width:${d[3]}px">${esc(d[2])}</th>`).join("")}<th>Incluido en el KPI</th></tr></thead><tbody>${B0.W.map((x,i)=>`<tr data-i="${i}"><td class="ro">${tkb(x.caso)}</td>${DED.map(d=>cell(i,d[1])).join("")}<td class="ro inc">${inc0.has(x.caso)?"Sí":"No"}</td></tr>`).join("")}</tbody></table></div>
+<small class="mu" style="margin-top:8px">Haga clic en una celda para editarla (Enter confirma, Esc deshace). Compañía y Área se siguen buscando en Hoja1 con el Cliente. Los cambios se aplican solo al Excel; no modifican los datos cargados. Las celdas editadas salen en amarillo.</small></div>`;
+ document.body.appendChild(el);
+ const tb=el.querySelector("tbody"),trs=[...tb.rows],close=()=>{el.remove();document.removeEventListener("keydown",esc1)},esc1=e=>{if(e.key==="Escape"&&!e.target.isContentEditable)close()};
+ document.addEventListener("keydown",esc1);
+ const nEd=()=>Object.values(ov).reduce((a,o)=>a+Object.keys(o).length,0);
+ const filt=()=>{const q=$("dedq").value.toLowerCase().trim(),f=$("dedf").value;trs.forEach(tr=>{const i=+tr.dataset.i,c=B0.W[i].caso,ok=(!q||tr.textContent.toLowerCase().includes(q))&&(!f||(f==="ed"?!!ov[c]:tr.querySelector(".inc").textContent==="Sí"));tr.hidden=!ok})};
+ const refresh=()=>{B=repBuildX(w,true,ov);const inc=new Set(B.items.map(i=>i.caso));trs.forEach(tr=>{tr.querySelector(".inc").textContent=inc.has(B0.W[+tr.dataset.i].caso)?"Sí":"No"});
+  const M=B.M;$("dedn").textContent=B.W.length+" tickets del periodo · "+B.items.length+" incluidos en el KPI · "+nEd()+" celda"+(nEd()===1?"":"s")+" editada"+(nEd()===1?"":"s");
+  $("dedk").textContent="KPI de la hoja Análisis: "+(M.kpi*100).toFixed(1).replace(".",",")+" % ("+M.num+" de "+M.den+" evaluados)";filt()};
+ tb.addEventListener("keydown",e=>{const td=e.target;if(!td.dataset||!td.dataset.k)return;if(e.key==="Enter"){e.preventDefault();td.blur()}else if(e.key==="Escape"){e.preventDefault();const i=+td.parentNode.dataset.i,c=B0.W[i].caso,k=td.dataset.k;td.textContent=ov[c]&&k in ov[c]?ov[c][k]:orig[i][k];td.blur()}});
+ tb.addEventListener("paste",e=>{const td=e.target.closest("td[contenteditable]");if(!td)return;e.preventDefault();document.execCommand("insertText",false,(e.clipboardData.getData("text")||"").replace(/\s+/g," "))});
+ tb.addEventListener("focusout",e=>{const td=e.target.closest&&e.target.closest("td[contenteditable]");if(!td)return;const i=+td.parentNode.dataset.i,c=B0.W[i].caso,k=td.dataset.k,v=td.textContent.replace(/\s+/g," ").trim(),o0=orig[i][k],pv=ov[c]&&k in ov[c]?ov[c][k]:o0;
+  if(k==="Progreso"&&v!==""&&!/^\d+([.,]\d+)?$/.test(v)){td.textContent=pv;toast("Progreso: escriba un número, por ejemplo 85,5");return}
+  if(v===pv){td.textContent=v;return}
+  if(v===o0){delete ov[c][k];if(!Object.keys(ov[c]).length)delete ov[c];td.classList.remove("ed");td.removeAttribute("title")}
+  else{(ov[c]=ov[c]||{})[k]=v;td.classList.add("ed");td.title="Original: "+(o0||"(vacío)")}
+  td.textContent=v;refresh()});
+ $("dedq").oninput=filt;$("dedf").onchange=filt;$("dedx").onclick=close;
+ $("dedr").onclick=()=>{if(!nEd()){toast("No hay ediciones que restablecer.");return}if(!confirm("¿Restablecer las "+nEd()+" celdas editadas a sus valores originales?"))return;Object.keys(ov).forEach(k=>delete ov[k]);trs.forEach(tr=>{const i=+tr.dataset.i;tr.querySelectorAll("td[data-k]").forEach(td=>{td.textContent=orig[i][td.dataset.k];td.classList.remove("ed");td.removeAttribute("title")})});refresh()};
+ $("dedg").onclick=()=>{close();gen(ov)};
+ refresh()}
 $("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Aranda.");return}syncIw();
  if(typeof ExcelJS==="undefined"){toast("No se pudo generar el Excel consolidado: falta cargar ExcelJS (revise la conexión).");return}
  const B=repBuildX(iw,true);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
@@ -1176,7 +1228,8 @@ $("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Ar
   if(!usr.length||ml.length){const msg=!usr.length?"El maestro de usuarios (Hoja1) está vacío: la Compañía y el Área de todos los tickets saldrán como #N/A.\n\n¿Generar el Excel de todos modos?\n\nAceptar = generar igual  ·  Cancelar = ir a «Auditoría de usuarios»":
    ml.length+" cliente"+(ml.length===1?"":"s")+" de esta semana no está"+(ml.length===1?"":"n")+" en el maestro (Hoja1); su Compañía y Área saldrán como #N/A:\n\n• "+ml.slice(0,12).map(m=>m.n).join("\n• ")+(ml.length>12?"\n• …y "+(ml.length-12)+" más":"")+"\n\n¿Generar el Excel de todos modos?\n\nAceptar = generar igual  ·  Cancelar = ir a «Auditoría de usuarios» para agregarlos";
    if(!confirm(msg)){document.querySelector('#tabs button[data-t="p5"]').click();return}}}
- let data;try{const wb=new ExcelJS.Workbook();wb.creator="Rendimiento de atenciones · Aranda";wb.created=new Date();
+ const gen=async ov=>{const B=repBuildX(iw,true,ov);if(!B||!B.items.length){toast("No hay tickets de Soporte en la semana elegida con los filtros actuales.");return}
+  let data;try{const wb=new ExcelJS.Workbook();wb.creator="Rendimiento de atenciones · Aranda";wb.created=new Date();
   await infXlsxPro(infData(iw),infSerie(iw),wb,true);await xlsxBuild(B,wb,true);usrSheet(wb);
   [["Informe",1],["Análisis",2],["Planes",3],["Historial",4],["Datos",5],["Hoja1",6]].forEach(([n,o])=>{const w=wb.getWorksheet(n);if(w)w.orderNo=o});
   wb.views=[{activeTab:0}];
@@ -1188,6 +1241,7 @@ $("ixc").onclick=async()=>{if(!rows.length){toast("Cargue primero el Excel de Ar
  catch(e){console.error(e);toast("No se pudo generar el Excel consolidado.");return}
  const fn="Consolidado_Semana"+B.wn+".xlsx";dl(fn,data);const mf=usr.length?usrMissing(B.W).length:-1;
  toast("Consolidado generado: "+fn+(mf<0?" · ⚠ el maestro de usuarios está vacío: Compañía y Área saldrán como #N/A":mf?" · ⚠ "+mf+" cliente"+(mf===1?"":"s")+" de esta semana no está"+(mf===1?"":"n")+" en el maestro (saldrán #N/A en Compañía y Área); agréguelos en «Auditoría de usuarios»":""),mf?9000:4000)};
+  dedOpen(iw,gen)};
 $("ib").addEventListener("click",e=>{const b=e.target.closest(".dli");if(!b)return;if(!b.dataset.arm){b.dataset.arm="1";b.textContent="¿Eliminar?";setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent="✕"}},3000);return}inf=inf.filter(s=>s.w!==b.dataset.w);svI();renderInf()});
 /* ---------- Progreso justificado y descripción del ticket al pasar el mouse ---------- */
 function jprog(r){const a=aud[r.c];if(!a||a.ap!=="Aprobada"||!a.real||!isCl(r)||r.p==null||r.p<=100)return null;const j=new Date(a.real);if(isNaN(j)||j<r.d)return null;return{pc:Math.round(wminW(r.d,j)/4.8*100)/100,jd:j}}
@@ -1195,17 +1249,18 @@ function tkb(c,h){return`<b class="tk" data-tk="${esc(c)}">${esc(c)}</b>`}
 (function(){let idx=null,idxFor=null;const tip=document.createElement("div");tip.id="tkp";document.body.appendChild(tip);
  const find=c=>{if(idxFor!==rows){idx=new Map(rows.map(r=>[r.c,r]));idxFor=rows}return idx.get(c)};
  const clip=(t,n)=>{t=String(t==null?"":t).replace(/<[^>]*>/g," ").replace(/[ \t]+/g," ").trim();return t.length>n?t.slice(0,n)+"…":t};
- const nk=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+ const clip2=(t,n)=>{t=String(t==null?"":t).replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n").trim();return t.length>n?t.slice(0,n)+"…":t};
+  const nk=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
  const DK=[/^descripcion/,/^detalle/,/^descripc/,/^comentario/,/^observacion/,/^notas?$/,/^resumen/,/^contenido/,/^texto/];
  const dkey=raw=>{const ks=Object.keys(raw||{}).filter(k=>String(raw[k]).trim());for(const re of DK){const k=ks.find(x=>re.test(nk(x)));if(k)return k}return null};
  function html(r){const raw=r.raw||{},jp=jprog(r);
   const m=[r.e,(r.g||"").replace(/^Grupo /,""),r.r,raw["Categoría"]].filter(Boolean).map(esc).join(" · ");
   const dt=v=>{const d=pdate(v);return d&&!isNaN(d)?fr(d):String(v==null?"":v).trim()};
   const pc=r.p==null?"":`<b style="color:${r.e==="Cancelado"?"var(--mu)":r.p<=100?"var(--gr)":"var(--rd)"}">${r.p.toFixed(1)} %</b>${r.e!=="Cancelado"?(r.p<=100?" · dentro del SLA":" · fuera del SLA"):""}`;
-  const L=[["Progreso",pc],["Justificado",jp?`<b style="color:var(--gr)">${jp.pc.toFixed(1)} %</b> (aprobado)`:""],["Servicio",esc(raw.Servicio||"")],["ANS",esc(raw.ANS||"")],["Tiempo",esc(raw.Tiempo||"")],
+  const L=[["1er especialista",esc(raw["1er Especialista"]||"")],["SLA calendario",esc(raw["SLA Calendario"]||"")],["Solución",esc(clip2(raw["Solución"]||"",260))],["Progreso",pc],["Justificado",jp?`<b style="color:var(--gr)">${jp.pc.toFixed(1)} %</b> (aprobado)`:""],["Servicio",esc(raw.Servicio||"")],["ANS",esc(raw.ANS||"")],["Tiempo",esc(raw.Tiempo||"")],
    ["Registro",esc(dt(raw["Fecha de registro"]||r.d))],["Atención estimada",esc(dt(raw["Fecha de atención estimada"]))],["Atención real",esc(dt(raw["Fecha de atención real"]))],["Cierre",esc(dt(raw["Fecha de cierre"]))]]
    .filter(x=>x[1]).map(x=>`<div class="r"><span>${x[0]}</span><span>${x[1]}</span></div>`).join("");
-  return`<b>${esc(r.c)}</b><div class="m">${m}</div><div class="g">${L}</div>`}
+  return`<b>${esc(r.c)}</b><div class="m">${m}</div>${raw["Descripción"]?`<div class="d">${esc(clip2(raw["Descripción"],700))}</div>`:""}<div class="g">${L}</div>`}
  function pos(e){const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+16,y=e.clientY+18;if(x+w>innerWidth-8)x=Math.max(8,e.clientX-w-16);if(y+h>innerHeight-8)y=Math.max(8,e.clientY-h-12);tip.style.left=x+"px";tip.style.top=y+"px"}
  document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest("[data-tk]");if(!t){return}const r=find(t.dataset.tk);if(!r)return;tip.innerHTML=html(r);tip.style.display="block";pos(e)});
  document.addEventListener("mousemove",e=>{if(tip.style.display==="block")pos(e)});
