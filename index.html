@@ -363,12 +363,12 @@ const FILK="filtros_rend";
 if(["all","week","range"].includes(v.mode))S.mode=v.mode;
 if(typeof v.week==="string")S.week=v.week;if(typeof v.from==="string")S.from=v.from;if(typeof v.to==="string")S.to=v.to;
 if(["day","week","month"].includes(v.gran))S.gran=v.gran;if(["p","g","r"].includes(v.by))S.by=v.by;S.no=v.no===true;
-if(Array.isArray(v.groups)&&v.groups.length)S.groups=new Set(v.groups.map(String));
+if(Array.isArray(v.groups))S.groups=new Set(v.groups.map(String));
 if(Array.isArray(v.esp)&&v.esp.length)S.esp=new Set(v.esp.map(String))}catch(e){}})();
 const saveF=()=>{if(!rows.length)return;try{localStorage.setItem(FILK,JSON.stringify({mode:S.mode,week:S.week,from:S.from,to:S.to,gran:S.gran,by:S.by,no:S.no,groups:S.groups?[...S.groups]:null,esp:S.esp?[...S.esp]:null}))}catch(e){}};
 /* al cambiar los datos, conserva la selección de grupos/especialistas que sigan existiendo */
 const pruneF=()=>{const gs=new Set(rows.map(r=>r.g)),es=new Set(rows.map(r=>r.r));
-if(S.groups){const n=new Set([...S.groups].filter(g=>gs.has(g)));S.groups=n.size&&n.size<gs.size?n:null}
+if(S.groups&&S.groups.size){const n=new Set([...S.groups].filter(g=>gs.has(g)));S.groups=n.size&&n.size<gs.size?n:null}
 if(S.esp){const n=new Set([...S.esp].filter(g=>es.has(g)));S.esp=n.size?n:null}};
 const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()),dmy=d=>pad(d.getDate())+"/"+pad(d.getMonth()+1);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -378,6 +378,8 @@ function pdate(s){if(s instanceof Date)return s;const m=String(s||"").match(/(\d
 function pnum(v){if(v===""||v==null)return null;let s=String(v).replace(/[%\s]/g,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");const n=parseFloat(s);return isNaN(n)?null:n}
 function range(){if(S.mode==="week"&&S.week){const[y,m,d]=S.week.split("-").map(Number);return[new Date(y,m-1,d),new Date(y,m-1,d+7)]}
 if(S.mode==="range"){const a=S.from?new Date(S.from+"T00:00:00"):null,b=S.to?new Date(S.to+"T00:00:00"):null;if(b)b.setDate(b.getDate()+1);return[a,b]}return[null,null]}
+/* grupos disponibles = solo los que tienen tickets dentro del periodo elegido */
+const pgl=()=>{const[a,b]=range();return[...new Set(rows.filter(r=>(!a||r.d>=a)&&(!b||r.d<b)).map(r=>r.g).filter(Boolean))].sort()};
 const sel=()=>{const[a,b]=range();return rows.filter(r=>(!a||r.d>=a)&&(!b||r.d<b)&&(!S.groups||S.groups.has(r.g))&&(!S.esp||S.esp.has(r.r)))};
 const ev=L=>L.filter(r=>r.e!=="Cancelado"&&r.p!=null&&!(S.no&&OPEN.includes(r.e)));
 const isCl=r=>r.e==="Cerrado"||r.e==="Resuelto";
@@ -407,10 +409,10 @@ el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:${w}px;he
 ser.map((s,j)=>`<text x="${Lm+j*130}" y="12" style="fill:${s.c}">● ${s.n}</text><polyline fill="none" stroke="${s.c}" stroke-width="2" points="${pts.map((p,i)=>X(i)+","+Y(p[s.f])).join(" ")}"/>`).join("")+
 pts.map((p,i)=>ser.map(s=>`<circle cx="${X(i)}" cy="${Y(p[s.f])}" r="${s.r}" fill="${s.dc?s.dc(p):s.c}"><title>${esc(lab(p.k,1))} · ${s.n}: ${p[s.f].toFixed(1)} % (${p[s.q]} de ${p.n})</title></circle>`).join("")+(i%step===0?`<text x="${X(i)}" y="${h-Bm+16}" text-anchor="middle">${esc(lab(p.k))}</text>`:"")).join("")+`</svg>`}
 function render(){
-const gs=[...new Set(rows.map(r=>r.g).filter(Boolean))].sort();
+const gs=pgl();
 const gt0=$("gc").scrollTop;
 $("gc").innerHTML='<div class="bt"><button class="btn" data-gb="*">Todos</button><button class="btn" data-gb="-">Ninguno</button></div>'+gs.map(g=>`<label><input type="checkbox" data-gs="${esc(g)}" ${!S.groups||S.groups.has(g)?"checked":""}> ${esc(g.replace(/^Grupo /,""))}</label>`).join("");$("gc").scrollTop=gt0;
-$("gs").textContent=!S.groups?"Todos ("+gs.length+")":S.groups.size+" de "+gs.length;
+{const k=S.groups?gs.filter(g=>S.groups.has(g)).length:gs.length;$("gs").textContent=k===gs.length?"Todos ("+gs.length+")":k+" de "+gs.length}
 const wk=groupBy(rows.filter(r=>(!S.groups||S.groups.has(r.g))&&(!S.esp||S.esp.has(r.r))),r=>ymd(mon(r.d))),wks=Object.keys(wk).sort().reverse();
 if(rows.length&&(!S.week||!wks.includes(S.week)))S.week=wks[0]||"";
 $("pw").innerHTML=wks.map(k=>{const[y,m,d]=k.split("-").map(Number);return`<option value="${k}">Semana ${isoW(new Date(y,m-1,d))[1]} · ${dmy(new Date(y,m-1,d))} – ${dmy(new Date(y,m-1,d+6))}/${new Date(y,m-1,d+6).getFullYear()} (${wk[k].length})</option>`}).join("");
@@ -529,7 +531,7 @@ $("tt").innerHTML=A.slice(0,500).map(r=>{const t=tag(r);const jp=jprog(r);return
 $("tq").oninput=e=>{tq=e.target.value;renderT(sel())};
 $("tth").onclick=e=>{const h=e.target.closest("th");if(!h)return;const k=h.dataset.k;ts=ts.k===k?{k,d:-ts.d}:{k,d:k==="d"||k==="p"?-1:1};renderT(sel())};$("tf").onchange=e=>{tf=e.target.value;renderT(sel())};
 $("gc").onclick=e=>{const b=e.target.closest("[data-gb]");if(b){S.groups=b.dataset.gb==="*"?null:new Set();render()}};
-$("gc").onchange=e=>{const g=e.target.dataset.gs;if(g==null)return;const all=[...new Set(rows.map(r=>r.g).filter(Boolean))],s=new Set(S.groups||all);e.target.checked?s.add(g):s.delete(g);S.groups=s.size===all.length?null:s;render()};
+$("gc").onchange=e=>{const g=e.target.dataset.gs;if(g==null)return;const all=[...new Set(rows.map(r=>r.g).filter(Boolean))],s=new Set(S.groups||all);e.target.checked?s.add(g):s.delete(g);S.groups=all.every(x=>s.has(x))?null:s;render()};
 $("pm").onchange=e=>{S.mode=e.target.value;render()};$("pw").onchange=e=>{S.week=e.target.value;render()};$("pd").onchange=e=>{S.from=e.target.value;render()};$("ph").onchange=e=>{S.to=e.target.value;render()};$("no").onchange=e=>{S.no=e.target.checked;render()};
 $("gr4").onclick=$("gr3").onclick=$("gr2").onclick=$("gr").onclick=e=>{const b=e.target.closest("button");if(b){S.gran=b.dataset.g;render()}};$("by").onclick=e=>{const b=e.target.closest("button");if(b){S.by=b.dataset.b;render()}};
 /* ---------- Sábana de datos de Aranda: solo 1er Especialista, SLA Calendario, Solución y Descripción, acoplados al ticket por «Numero Ticket» ---------- */
@@ -545,7 +547,7 @@ function mkRow(j0){const j={};for(const k in j0){const v=j0[k];j[k]=v instanceof
 const d=pdate(j["Fecha de registro"]);if(!j.Caso||!d)return null;
 return{c:j.Caso,e:j.Estado,d,g:j["Grupo responsable"]||"",r:j.Responsable||"(sin responsable)",p:pnum(j.Progreso),s:j.Asunto||"",ar:pdate(j["Fecha de atención real"]),fc:pdate(j["Fecha de cierre"]),raw:j}}
 $("fi").onchange=async e=>{try{const m=new Map(rows.map(r=>[r.c,r])),ld=[];let n=0,sabN=0;for(const f of e.target.files){const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true});const sb0=sabParse(wb);if(sb0){sabN+=sab_add(sb0);continue}XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""}).forEach(j=>{const x=mkRow(j);if(!x)return;const old=m.get(x.c);if(old&&old.raw)SABK.forEach(([k])=>{if(old.raw[k]!=null&&x.raw[k]==null)x.raw[k]=old.raw[k]});m.set(x.c,x);ld.push(x);n++})}
-rows=[...m.values()];const sr=sabApply();if(sabN)toast("Sábana de datos: "+sabN+" tickets leídos · "+sr.ok+" acoplados a su ticket"+(sr.no?" · "+sr.no+" sin ticket cargado en el aplicativo (cargue primero el Excel de Aranda de esos tickets)":""),sr.no?9000:5000);S.groups=null;S.esp=null;S.week="";render();renderP4();if(typeof cloudKick==="function")cloudKick();userCheck(ld)}catch(x){alert("No se pudo leer el archivo.")}e.target.value=""};
+rows=[...m.values()];const sr=sabApply();if(sabN)toast("Sábana de datos: "+sabN+" tickets leídos · "+sr.ok+" acoplados a su ticket"+(sr.no?" · "+sr.no+" sin ticket cargado en el aplicativo (cargue primero el Excel de Aranda de esos tickets)":""),sr.no?9000:5000);pruneF();S.esp=null;S.week="";render();renderP4();if(typeof cloudKick==="function")cloudKick();userCheck(ld)}catch(x){alert("No se pudo leer el archivo.")}e.target.value=""};
 /* ---------- Planes de acción (copiado de seguimiento_tickets10) ---------- */
 function toast(m,ms){const e=$("ts");e.textContent=m;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",ms||4000)}
 function dlLocal(name,data){const ext=(name.split(".").pop()||"").toLowerCase(),mt={xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",csv:"text/csv;charset=utf-8",pptx:"application/vnd.openxmlformats-officedocument.presentationml.presentation"}[ext]||"application/octet-stream";
