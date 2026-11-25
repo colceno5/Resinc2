@@ -282,18 +282,12 @@ td select{max-width:100%}
 <div id="p6" class="pn an" hidden>
 <h2 style="margin:0 0 4px">Análisis de sustentos <i class="ii" title="Solo entran los tickets vencidos y sustentados a los que se les aplicó el candado en «Auditoría de vencidos», dentro del periodo y los grupos elegidos arriba. Los temas se detectan por palabras clave en el texto del sustento; un sustento puede pertenecer a más de un tema.">ⓘ</i></h2>
 <div class="kp" id="k6"></div>
-<div class="card" id="l6"></div>
-<div class="card"><h2>Temas del sustento</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Tema</th><th>Tickets</th><th>% de candados</th><th>Aprobadas</th><th>Desaprobadas</th><th>Progreso original prom.</th></tr></thead><tbody id="t6"></tbody></table></div></div>
-<div class="card"><h2>Palabras más repetidas</h2><div class="wc" id="w6"></div></div>
 <div class="card"><h2>Por especialista</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Especialista</th><th>Con candado</th><th>Aprobadas</th><th>Desaprobadas</th><th>Sustentos breves</th><th>Tema más frecuente</th></tr></thead><tbody id="e6"></tbody></table></div></div>
 <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Detalle de sustentos</h2><input class="in" id="q6" placeholder="Buscar ticket, especialista, sustento…"></div><div class="tw" style="margin-top:8px"><table style="min-width:980px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Progreso</th><th>Temas</th><th>Sustento</th><th>Revisión</th><th>Candado</th></tr></thead><tbody id="d6"></tbody></table></div></div>
 </div>
 <div id="p7" class="pn an" hidden>
 <h2 style="margin:0 0 4px">Análisis de acciones inmediatas <i class="ii" title="Solo entran los tickets vencidos y sustentados con candado, dentro del periodo y los grupos elegidos arriba. La acción inmediata es opcional: los tickets con candado sin acción registrada se listan primero para darles seguimiento.">ⓘ</i></h2>
 <div class="kp" id="k7"></div>
-<div class="card" id="l7"></div>
-<div class="card"><h2>Tipos de acción</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Tipo de acción</th><th>Tickets</th><th>% de acciones</th><th>Aprobadas</th><th>Desaprobadas</th><th>Progreso original prom.</th></tr></thead><tbody id="t7"></tbody></table></div></div>
-<div class="card"><h2>Palabras más repetidas</h2><div class="wc" id="w7"></div></div>
 <div class="card"><h2>Por especialista</h2><div class="tw"><table style="min-width:640px"><thead><tr><th>Especialista</th><th>Con candado</th><th>Con acción</th><th>Sin acción</th><th>% con acción</th><th>Tipo más frecuente</th></tr></thead><tbody id="e7"></tbody></table></div></div>
 <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Detalle de acciones inmediatas</h2><div class="row"><select id="f7"><option value="">Todas</option><option value="sin">Solo sin acción</option><option value="con">Solo con acción</option></select><input class="in" id="q7" placeholder="Buscar ticket, especialista, acción…"></div></div><div class="tw" style="margin-top:8px"><table style="min-width:980px"><thead><tr><th>Ticket</th><th>Especialista</th><th>Acción inmediata</th><th>Tipo de acción</th><th>Sustento</th><th>Revisión</th></tr></thead><tbody id="d7"></tbody></table></div></div>
 </div>
@@ -478,9 +472,6 @@ function renderS6(){const I=LKC,n=I.length,ap=I.filter(i=>i.a.ap==="Aprobada").l
 const cnt={};I.forEach(i=>{const k=nrm(i.sus).replace(/\s+/g," ").trim();if(k)cnt[k]=(cnt[k]||0)+1});const rp=I.filter(i=>cnt[nrm(i.sus).replace(/\s+/g," ").trim()]>1).length;
 const po=anAvg(I.map(i=>i.r.p)),pr=anAvg(I.filter(i=>i.pr!=null).map(i=>i.pr));
 $("k6").innerHTML=n?[anK("Con candado",n,"var(--or)","sustentados bloqueados"),anK("Aprobadas",ap,"var(--gr)","cuentan como cumplidas"),anK("Desaprobadas",rc,"var(--rd)","siguen fuera"),anK("Sin revisar",n-ap-rc,"var(--am)","aún sin decisión"),anK("Progreso original",anF(po)+" %","var(--rd)","promedio del Excel"),anK("Con fecha real",anF(pr)+" %","var(--gr)","promedio sustentado"),anK("Sustentos breves",br,"var(--am)","menos de 40 caracteres"),anK("Sustentos repetidos",rp,"var(--am)","mismo texto en 2+ tickets")].join(""):"";
-const top=n?anTop(I,TM_S,"sus"):"",L=[];if(n){L.push("Tema más frecuente: <b>"+esc(top)+"</b>.");L.push("Longitud promedio del sustento: "+Math.round(anAvg(I.map(i=>i.sus.length)))+" caracteres.");if(br)L.push(br+" sustento"+(br===1?"":"s")+" muy breve"+(br===1?"":"s")+" (menos de 40 caracteres): conviene pedir más evidencia.");if(rp)L.push(rp+" ticket"+(rp===1?"":"s")+" comparte"+(rp===1?"":"n")+" exactamente el mismo texto de sustento con otro: revisar si es copia.");if(n-ap-rc)L.push((n-ap-rc)+" ticket"+(n-ap-rc===1?"":"s")+" con candado sin aprobar ni desaprobar.")}
-$("l6").innerHTML=n?"<h2>Lectura automática</h2><ul>"+L.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"";$("l6").hidden=!n;
-$("t6").innerHTML=n?anTabla(I,TM_S,"sus"):anVacio(6);$("w6").innerHTML=n?anPal(I,"sus"):'<span class="mu">—</span>';
 const g={};I.forEach(i=>(g[i.r.r]=g[i.r.r]||[]).push(i));
 $("e6").innerHTML=Object.entries(g).sort((x,y)=>y[1].length-x[1].length).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.length}</td><td>${v.filter(i=>i.a.ap==="Aprobada").length}</td><td>${v.filter(i=>i.a.ap==="Rechazada").length}</td><td>${v.filter(i=>i.sus.length<40).length}</td><td>${esc(anTop(v,TM_S,"sus"))}</td></tr>`).join("")||anVacio(6);
 const q=nrm($("q6").value);
@@ -488,9 +479,6 @@ $("d6").innerHTML=I.map(i=>({i,t:anTemas(i.sus,TM_S)})).filter(x=>!q||nrm([x.i.r
 function renderS7(){const I=LKC,n=I.length,C=I.filter(i=>i.acc),S=I.filter(i=>!i.acc),br=C.filter(i=>i.acc.length<25).length;
 const cnt={};C.forEach(i=>{const k=nrm(i.acc).replace(/\s+/g," ").trim();cnt[k]=(cnt[k]||0)+1});const rp=C.filter(i=>cnt[nrm(i.acc).replace(/\s+/g," ").trim()]>1).length;
 $("k7").innerHTML=n?[anK("Con candado",n,"var(--or)","sustentados bloqueados"),anK("Con acción inmediata",C.length,"var(--gr)","registrada"),anK("Sin acción",S.length,S.length?"var(--am)":"var(--tx)","para dar seguimiento"),anK("% con acción",anPct(C.length,n),"var(--tx)","de los candados"),anK("Acciones breves",br,"var(--am)","menos de 25 caracteres"),anK("Acciones repetidas",rp,"var(--am)","mismo texto en 2+ tickets")].join(""):"";
-const L=[];if(n){if(C.length)L.push("Tipo de acción más frecuente: <b>"+esc(anTop(C,TM_A,"acc"))+"</b>.");if(S.length)L.push(S.length+" ticket"+(S.length===1?"":"s")+" con candado sin acción inmediata registrada ("+anPct(S.length,n)+"): se listan primero en el detalle.");if(br)L.push(br+" acción"+(br===1?"":"es")+" muy breve"+(br===1?"":"s")+" (menos de 25 caracteres, p. ej. una sola palabra): pedir más detalle.");if(rp)L.push(rp+" ticket"+(rp===1?"":"s")+" repite"+(rp===1?"":"n")+" el mismo texto de acción.")}
-$("l7").innerHTML=n?"<h2>Lectura automática</h2><ul>"+L.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"";$("l7").hidden=!n||!L.length;
-$("t7").innerHTML=C.length?anTabla(C,TM_A,"acc"):'<tr><td colspan="6" class="mu">'+(n?"Ningún ticket con candado tiene acción inmediata registrada.":"Aún no hay tickets con candado.")+"</td></tr>";$("w7").innerHTML=C.length?anPal(C,"acc"):'<span class="mu">—</span>';
 const g={};I.forEach(i=>(g[i.r.r]=g[i.r.r]||[]).push(i));
 $("e7").innerHTML=Object.entries(g).sort((x,y)=>y[1].length-x[1].length).map(([k,v])=>{const c=v.filter(i=>i.acc);return`<tr><td>${esc(k)}</td><td>${v.length}</td><td>${c.length}</td><td>${v.length-c.length}</td><td>${anPct(c.length,v.length)}</td><td>${esc(c.length?anTop(c,TM_A,"acc"):"—")}</td></tr>`}).join("")||anVacio(6);
 const q=nrm($("q7").value),f=$("f7").value;
