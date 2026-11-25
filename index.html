@@ -329,7 +329,6 @@ td select{max-width:100%}
 <div class="kp" id="ukp"></div>
 <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">¿Quién crea los tickets?</h2><div class="seg" id="gr3"><button data-g="day">Días</button><button data-g="week">Semanas</button><button data-g="month">Meses</button></div></div>
 <div id="uk"></div></div>
-<div class="card" id="ua"></div>
 <div id="uc"></div>
 </div>
 <div class="ov" id="uov"><form class="md" id="uf"><h2 id="uft" style="margin:0 0 2px">Agregar usuario</h2><small>Estos datos llenan las columnas Compañía y Área del Excel consolidado.</small>
@@ -1266,13 +1265,13 @@ function creadorKey(raw){const ks=Object.keys(raw||{}),n=x=>String(x).normalize(
 for(const c of CRK){const k=ks.find(x=>n(x)===n(c)&&String(raw[x]).trim());if(k)return k}return null}
 function renderU(){const el=$("uk"),L=sel();
  document.querySelectorAll("#gr3 button").forEach(b=>b.classList.toggle("on",b.dataset.g===S.gran));
- if(!rows.length){el.innerHTML='<p class="mu">Cargue un Excel de Aranda para ver el origen de los tickets.</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
+ if(!rows.length){el.innerHTML='<p class="mu">Cargue un Excel de Aranda para ver el origen de los tickets.</p>';$("ukp").innerHTML="";$("uc").innerHTML="";return}
  const team=rows.map(r=>r.r).filter(x=>x&&x!=="(sin responsable)"),TS=[...new Set(team.map(x=>nmU(x).sort().join(" ")))].map(x=>new Set(x.split(" "))),cache=new Map();
  const isEsp=name=>{if(cache.has(name))return cache.get(name);const t=new Set(nmU(name));let ok=false;if(t.size)for(const m of TS){let c=0;t.forEach(x=>{if(m.has(x))c++});if(c>=2&&c===Math.min(t.size,m.size)){ok=true;break}if(t.size===1&&m.size===1&&c===1){ok=true;break}}cache.set(name,ok);return ok};
  let ccol=null;const D=L.map(r=>{const k=creadorKey(r.raw);if(k&&!ccol)ccol=k;const nm=k?String(r.raw[k]).trim():"";return{r,nm,e:nm?isEsp(nm):null,d:r.d}});
  const sin=D.filter(x=>x.e==null).length,V=D.filter(x=>x.e!=null),nE=V.filter(x=>x.e).length,nU=V.length-nE,tot=V.length,pc=n=>tot?Math.round(n/tot*100):0;
- if(!L.length){el.innerHTML='<p class="mu">No hay tickets con estos filtros.</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
- if(!tot){el.innerHTML='<p class="mu">El Excel cargado no trae una columna con el creador del ticket (se busca «Autor», «Creado por», «Solicitante» o «Cliente»).</p>';$("ukp").innerHTML="";$("ua").hidden=true;$("uc").innerHTML="";return}
+ if(!L.length){el.innerHTML='<p class="mu">No hay tickets con estos filtros.</p>';$("ukp").innerHTML="";$("uc").innerHTML="";return}
+ if(!tot){el.innerHTML='<p class="mu">El Excel cargado no trae una columna con el creador del ticket (se busca «Autor», «Creado por», «Solicitante» o «Cliente»).</p>';$("ukp").innerHTML="";$("uc").innerHTML="";return}
  const bar=(t,sub,n,c)=>`<div class="ou"><div>${t}<small>${sub} · ${n} tickets</small></div><div class="bt"><i style="width:${pc(n)}%;background:${c}"></i></div><div class="pc">${pc(n)}%</div></div>`;
  let h=`<small class="mu">${L.length} tickets del rango seleccionado${sin?` · ${sin} sin creador en el Excel`:""}</small>`+bar("Creados por usuarios","fuera del equipo",nU,"var(--ac)")+bar("Creados por especialistas","del equipo",nE,"var(--gr)");
  const B=groupBy(V,x=>key(x.d)),ks=Object.keys(B).sort();
@@ -1292,20 +1291,12 @@ function renderU(){const el=$("uk"),L=sel();
  const C=groupBy(V.filter(x=>x.nm),x=>x.nm),CL=Object.entries(C).map(([n,a])=>{const rs=a.map(x=>x.r),dy=new Set(a.map(x=>ymd(x.d))),cats=groupBy(rs,r=>(r.raw&&r.raw["Categoría"])||"(sin categoría)"),tc=Object.entries(cats).sort((x,y)=>y[1].length-x[1].length)[0],st=stat(ev(rs));
   return{n,c:a.length,e:a[0].e,dias:dy.size,prom:a.length/dy.size,pct:st.pct,ne:st.n,cat:tc?tc[0]:"—",auto:a[0].e?a.filter(x=>same(n,x.r.r)).length:0}}).sort((x,y)=>y.c-x.c||x.n.localeCompare(y.n,"es"));
  const CU=CL.filter(x=>!x.e),CE=CL.filter(x=>x.e),top3=CL.slice(0,3).reduce((a,x)=>a+x.c,0),mxC=CL[0];
- const sU=stat(ev(V.filter(x=>!x.e).map(x=>x.r))),sE=stat(ev(V.filter(x=>x.e).map(x=>x.r)));
  kcards("ukp",[["Tickets analizados",tot,"con creador identificado"],["Creadores distintos",CL.length,CU.length+" usuarios · "+CE.length+" especialistas"],["Creados por usuarios",nU,pp(nU),"var(--ac)"],["Creados por especialistas",nE,pp(nE),"var(--gr)"],["Mayor creador",mxC.c,mxC.n+" · "+pp(mxC.c)],["Top 3 concentran",tot?f1(top3/tot*100)+" %":"—","de todos los tickets"]]);
- const A=[];
- A.push("Los usuarios crearon "+nU+" tickets ("+pp(nU)+") y los especialistas "+nE+" ("+pp(nE)+"), de "+tot+" analizados.");
- if(sU.pct!=null&&sE.pct!=null){const d=sU.pct-sE.pct;A.push("Cumplimiento del SLA según quién crea el ticket: usuarios "+f1(sU.pct)+" % ("+sU.n+" evaluados) frente a especialistas "+f1(sE.pct)+" % ("+sE.n+" evaluados)"+(Math.abs(d)>=.05?"; diferencia de "+f1(Math.abs(d))+" pts a favor de "+(d>0?"los usuarios":"los especialistas")+".":"."))}
- A.push("Los 3 mayores creadores ("+CL.slice(0,3).map(x=>x.n+" "+x.c).join(", ")+") concentran "+(tot?f1(top3/tot*100):"0")+" % de los tickets.");
- if(CU.length){const rec=CU.filter(x=>x.c>=3),uno=CU.filter(x=>x.c===1);A.push(CU.length+" usuarios distintos crearon tickets: "+rec.length+(rec.length===1?" es recurrente":" son recurrentes")+" (3 o más tickets, "+rec.reduce((a,x)=>a+x.c,0)+" tickets en total) y "+uno.length+(uno.length===1?" creó":" crearon")+" un solo ticket.")}
- if(CE.length){const au=CE.reduce((a,x)=>a+x.auto,0),me=CE[0];A.push("Entre los especialistas, "+me.n+" es quien más crea ("+me.c+" tickets, "+pp(me.c)+" del total); "+au+" de los "+nE+" tickets de especialistas ("+(nE?f1(au/nE*100):"0")+" %) se los asignó el mismo creador.")}
- {const pk=ks.map(k=>{const a=B[k],e=a.filter(x=>x.e).length;return{k,n:a.length,e,u:a.length-e}}).sort((x,y)=>y.n-x.n)[0];if(pk&&ks.length>1)A.push("Periodo con más tickets: "+lab(pk.k,1)+" con "+pk.n+" ("+pk.u+" de usuarios y "+pk.e+" de especialistas).")}
- $("ua").hidden=false;$("ua").innerHTML="<h2>Análisis</h2><ul style='margin:4px 0 0;padding-left:20px'>"+A.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>";
- const LIM=15,tbl=(tit,L,esp)=>{let acu=0;const g=esp?CE.reduce((a,x)=>a+x.c,0):CU.reduce((a,x)=>a+x.c,0);
-  return`<div class="card"><h2>${tit} <small>· ${L.length} creador${L.length===1?"":"es"}${L.length>LIM?" (se muestran "+LIM+")":""}</small></h2><div class="tw"><table style="min-width:${esp?980:860}px"><thead><tr><th>#</th><th>Creador</th><th>Tickets</th><th>% del total</th><th>% del grupo</th><th>Acumulado</th><th>Días activos</th><th>Prom./día activo</th><th>Cumplimiento SLA</th><th>Categoría frecuente</th>${esp?"<th>Autoasignados</th>":""}</tr></thead><tbody>`+
-  (L.slice(0,LIM).map((x,i)=>{acu+=x.c;return`<tr><td>${i+1}</td><td>${esc(x.n)}</td><td><b>${x.c}</b></td><td>${pp(x.c)}</td><td>${g?f1(x.c/g*100)+" %":"—"}</td><td>${g?f1(acu/g*100)+" %":"—"}</td><td>${x.dias}</td><td>${f1(x.prom)}</td><td>${x.pct==null?"—":`<b style="color:${col(x.pct)}">${f1(x.pct)} %</b> <small>(${x.ne})</small>`}</td><td>${esc(x.cat)}</td>${esp?`<td>${x.auto}</td>`:""}</tr>`}).join("")||`<tr><td colspan="${esp?11:10}" class="mu">Sin creadores de este tipo.</td></tr>`)+`</tbody></table></div></div>`};
- $("uc").innerHTML=tbl("Ranking de usuarios que crean tickets",CU,false)+tbl("Ranking de especialistas que crean tickets",CE,true)+`<small class="mu">«% del grupo» es la parte que tiene cada creador dentro de su tipo (usuarios o especialistas). «Cumplimiento SLA» usa los tickets evaluados que creó (entre paréntesis). «Autoasignados» son tickets que el especialista creó y quedaron a su nombre.</small>`}
+ const LIM=15,esp=URK==="e",R=esp?CE:CU;
+ $("uc").innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Ranking de ${esp?"especialistas":"usuarios"} que crean tickets <small>· ${R.length} creador${R.length===1?"":"es"}${R.length>LIM?" (se muestran "+LIM+")":""}</small></h2><div class="seg" id="urk"><button data-k="u"${esp?"":' class="on"'}>Usuarios</button><button data-k="e"${esp?' class="on"':""}>Especialistas</button></div></div><div class="tw" style="margin-top:8px"><table style="min-width:${esp?720:620}px"><thead><tr><th>#</th><th>Creador</th><th>Tickets</th>${esp?"<th>Autoasignados</th>":""}<th>Cumplimiento SLA</th><th>Categoría frecuente</th></tr></thead><tbody>`+
+  (R.slice(0,LIM).map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.n)}</td><td><b>${x.c}</b></td>${esp?`<td>${x.auto}</td>`:""}<td>${x.pct==null?"—":`<b style="color:${col(x.pct)}">${f1(x.pct)} %</b> <small>(${x.ne})</small>`}</td><td>${esc(x.cat)}</td></tr>`).join("")||`<tr><td colspan="${esp?6:5}" class="mu">Sin creadores de este tipo.</td></tr>`)+`</tbody></table></div><small class="mu" style="display:block;margin-top:6px">«Cumplimiento SLA» usa los tickets evaluados que creó (entre paréntesis).${esp?" «Autoasignados» son tickets que el especialista creó y quedaron a su nombre.":""}</small></div>`}
+var URK="u";
+$("uc").onclick=e=>{const b=e.target.closest("#urk button");if(b&&b.dataset.k!==URK){URK=b.dataset.k;renderU()}};
 /* ---------- Maestro de usuarios: alimenta Compañía y Área del Excel consolidado (hoja Hoja1) ---------- */
 var USRK="usr_maestro",usr=[],UF={q:"",e:"",lim:50},UE=null;
 try{usr=JSON.parse(localStorage.getItem(USRK)||"[]")}catch(e){usr=[]}
